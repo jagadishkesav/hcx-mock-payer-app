@@ -1,4 +1,4 @@
-import { useState } from "react";
+import React, { useState } from "react";
 import Table from "../common/Table";
 import Modal from "../common/Modal";
 
@@ -8,26 +8,35 @@ export default function CoverageEligibilityHome() {
     <>
       <Table
         title="Coverage Eligibility"
-        headers={["name", "email", "phone", "status"]}
+        headers={[
+          "name",
+          "insurance_no",
+          "available_amount",
+          "expiry",
+          "status",
+        ]}
         onRowClick={(id) => setSelectedRequest(id)}
         data={[
           {
             id: "1",
             name: "John Doe",
-            email: "johndoe@swasthapp.com",
-            phone: "1234567890",
-            status: "Active",
+            insurance_no: "1234567890",
+            available_amount: "₹1000",
+            expiry: "2021-12-31",
+            status: "pending",
           },
           {
             id: "2",
             name: "Jane Doe",
-            email: "janedoe@swasthapp.com",
-            phone: "1234567890",
-            status: "Active",
+            insurance_no: "1234567890",
+            available_amount: "₹1000",
+            expiry: "2021-12-31",
+            status: "pending",
           },
         ]}
         rowActions={{
-          edit: () => {},
+          approve: () => {},
+          reject: () => {},
         }}
       />
       {selectedRequest && (

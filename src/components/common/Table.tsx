@@ -1,3 +1,4 @@
+import React from "react";
 import { properText } from "../../utils/StringUtils";
 
 function classNames(...classes: any[]) {
@@ -98,7 +99,22 @@ export default function Table({
                     {rowActions && (
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
                         <span className="text-indigo-600 hover:text-indigo-900">
-                          Edit<span className="sr-only">, {item.name}</span>
+                          {Object.entries(rowActions).map(
+                            ([key, action], index) => (
+                              <span
+                                key={key}
+                                className="cursor-pointer"
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  action();
+                                }}
+                              >
+                                {index > 0 && " | "}
+                                {properText(key)}
+                              </span>
+                            )
+                          )}
+                          <span className="sr-only">, {item.name}</span>
                         </span>
                       </td>
                     )}
