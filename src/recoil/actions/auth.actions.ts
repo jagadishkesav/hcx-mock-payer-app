@@ -11,6 +11,7 @@ export function useAuthActions() {
 
   return {
     login: temp_login,
+    loginApi: _login,
     logout,
     currentUser,
   };

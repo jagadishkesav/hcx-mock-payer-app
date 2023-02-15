@@ -136,7 +136,7 @@ export default function Layout({ children }: any) {
                   </nav>
                 </div>
                 <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-                  <a href="#" className="group block flex-shrink-0">
+                  <div className="group block flex-shrink-0">
                     <div className="flex items-center">
                       <div>
                         <img
@@ -154,7 +154,7 @@ export default function Layout({ children }: any) {
                         </p>
                       </div>
                     </div>
-                  </a>
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -202,7 +202,7 @@ export default function Layout({ children }: any) {
             </nav>
           </div>
           <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-            <a href="#" className="group block w-full flex-shrink-0">
+            <div className="group block w-full flex-shrink-0">
               <div className="flex items-center">
                 <div>
                   <img
@@ -220,7 +220,7 @@ export default function Layout({ children }: any) {
                   </p>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
         </div>
       </div>
