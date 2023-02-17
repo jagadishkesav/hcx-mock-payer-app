@@ -13,14 +13,16 @@ export default function Table({
   data,
   rowActions,
   onRowClick,
+  primaryColumnIndex = 0,
 }: {
   title: string;
   action?: () => void;
   actionText?: string;
   headers: string[];
   data: { [key: string]: string }[];
-  rowActions?: { [key: string]: () => void };
+  rowActions?: { [key: string]: (id: string) => void };
   onRowClick?: (id: string) => void;
+  primaryColumnIndex?: number;
 }) {
   return (
     <div className="px-6 lg:px-8">
@@ -85,11 +87,10 @@ export default function Table({
                     {headers.map((header, index) => (
                       <td
                         className={classNames(
-                          `${
-                            index === 0
-                              ? "pl-6 pr-3 font-medium text-gray-900 lg:pl-8"
-                              : "px-3 text-gray-500"
-                          }`,
+                          index === 0
+                            ? "pl-6 pr-3 text-gray-900 lg:pl-8"
+                            : "px-3 text-gray-500",
+                          index === primaryColumnIndex && "font-medium",
                           "whitespace-nowrap py-4 text-sm"
                         )}
                       >
@@ -98,24 +99,22 @@ export default function Table({
                     ))}
                     {rowActions && (
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
-                        <span className="text-indigo-600 hover:text-indigo-900">
+                        <div className="inline-flex space-x-2">
                           {Object.entries(rowActions).map(
                             ([key, action], index) => (
-                              <span
+                              <button
                                 key={key}
-                                className="cursor-pointer"
+                                className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
                                 onClick={(e) => {
                                   e.stopPropagation();
-                                  action();
+                                  action(item.id);
                                 }}
                               >
-                                {index > 0 && " | "}
                                 {properText(key)}
-                              </span>
+                              </button>
                             )
                           )}
-                          <span className="sr-only">, {item.name}</span>
-                        </span>
+                        </div>
                       </td>
                     )}
                   </tr>

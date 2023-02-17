@@ -1,7 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import Modal from "../common/Modal";
 import ClaimDetails from "./ClaimDetails";
+import { listRequest } from "../../api/api";
 
 type ClaimDetailProps = {
   id: string;
@@ -19,28 +20,73 @@ type ClaimDetailProps = {
   }[];
 };
 
-const createMockClaim = (id: string) => {
+type ClaimDetail = {
+  id: string;
+  request_no: string;
+  name: string;
+  insurance_no: string;
+  available_amount: string;
+  requested_amount: string;
+  expiry: string;
+  status: string;
+};
+
+function makeClaimDetailProps(claim: ClaimDetail) : ClaimDetailProps {
   return {
-    id: id,
-    details: {
-      request_no: "claim-3431",
-      name: "John Doe",
-      insurance_no: "1234567890",
-      available_amount: "₹1000",
-      requested_amount: "₹500",
-      expiry: "2021-12-31",
-    },
+    id: claim.id,
+    details: claim,
     attachments: [
       {
-        name: "mri_report_p_13458.pdf",
-        url: "https://www.google.com",
+        name: "Photo",
+        url: "google.com",
       },
-    ],
-  };
-};
+      {
+        name: "Photo",
+        url: "google.com",
+      }
+    ]
+  }
+}
+
+export function resoureType(type: string) {
+  return (entry: any) => entry.resource.resourceType === type;
+}
+
+async function getClaims(): Promise<ClaimDetail[]> {
+  const res: any = listRequest({ type: "claim" });
+
+  return res.claim.map((claim: any) => {
+    const name = claim.entry.find(resoureType("Patient"))?.resource.name[0]
+      .text;
+    const insurance_no = claim.entry.find(resoureType("Coverage"))?.resource
+      .subscriberId;
+    // const available_amount = claim.entry.find(resoureType("Coverage"))?.resource.subscriberId;
+    // const requested_amount = claim.entry.find(resoureType("Coverage"))?.resource.subscriberId;
+    // const expiry = claim.entry.find(resoureType("Coverage"))?.resource.subscriberId;
+    // const status = claim.entry.find(resoureType("Coverage"))?.resource.subscriberId;
+    // const showActions = status === "pending"
+
+    return {
+      id: claim.id,
+      request_no: claim.id,
+      name,
+      insurance_no,
+      available_amount: "",
+      requested_amount: "",
+      expiry: "",
+      status: "",
+    };
+  });
+}
 
 export default function Claims() {
   const [selectedRequest, setSelectedRequest] = useState<ClaimDetailProps>();
+  const [claims, setClaims] = useState<ClaimDetail[]>([]);
+
+  useEffect(() => {
+    getClaims().then(setClaims);
+  }, []);
+
   return (
     <>
       <Table
@@ -54,29 +100,13 @@ export default function Claims() {
           "expiry",
           "status",
         ]}
-        onRowClick={(id) => setSelectedRequest(() => createMockClaim(id))}
-        data={[
-          {
-            id: "1",
-            request_no: "claim-3431",
-            name: "John Doe",
-            insurance_no: "1234567890",
-            available_amount: "₹1000",
-            requested_amount: "₹500",
-            expiry: "2021-12-31",
-            status: "Active",
-          },
-          {
-            id: "2",
-            request_no: "claim-3432",
-            name: "Jane Doe",
-            insurance_no: "1234567890",
-            available_amount: "₹1000",
-            requested_amount: "₹500",
-            expiry: "2021-12-31",
-            status: "Active",
-          },
-        ]}
+        onRowClick={(id) =>
+          setSelectedRequest(
+            () => makeClaimDetailProps(claims?.find((claim) => claim.id === id) as any)
+          )
+        }
+        data={claims}
+        primaryColumnIndex={1}
       />
       {selectedRequest && (
         <Modal

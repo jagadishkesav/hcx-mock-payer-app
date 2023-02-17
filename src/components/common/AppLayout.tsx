@@ -14,15 +14,15 @@ import { Link } from "raviger";
 import { usePath } from "raviger";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
-  { name: "Claims", href: "/claims", icon: CheckBadgeIcon, current: false },
+  { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Claims", href: "/claims", icon: CheckBadgeIcon},
   {
     name: "Coverage Eligibility",
     href: "/coverage",
     icon: ClipboardDocumentCheckIcon,
-    current: false,
   },
-  { name: "Reports", href: "/reports", icon: ChartBarIcon, current: false },
+  { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon},
+  { name: "Reports", href: "/reports", icon: ChartBarIcon },
 ];
 
 // Classes function that accepts a list of class names and returns a string

@@ -19,6 +19,10 @@ export default function Dashboard() {
             title: "Coverage Eligibility",
             href: "/coverage",
           },
+          {
+            title: "Pre Auth",
+            href: "/preauths",
+          }
         ].map((item, index) => {
           return (
             <Link

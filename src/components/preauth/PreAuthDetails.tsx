@@ -2,7 +2,7 @@ import React from "react";
 import { properText } from "../../utils/StringUtils";
 
 import { PaperClipIcon } from "@heroicons/react/20/solid";
-import { approveClaim, rejectClaim } from "../../api/api";
+import { approvePreauth, rejectPreauth } from "../../api/api";
 
 const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
   return (
@@ -25,24 +25,24 @@ const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
   );
 };
 
-export default function ClaimDetails({ claim }: any) {
+export default function PreAuthDetails({ preauth }: any) {
   const [activeTab, setActiveTab] = React.useState("Patient Details");
 
   const handleReject = () => {
     if (activeTab === "Medical Info") {
-      rejectClaim({identifier: claim.id, type: "medical"})
+      rejectPreauth({identifier: preauth.id, type: "medical"})
     }
     if (activeTab === "Financial Info") {
-      rejectClaim({identifier: claim.id, type: "financial"})
+      rejectPreauth({identifier: preauth.id, type: "financial"})
     }
   }
 
   const handleApprove = () => {
     if (activeTab === "Medical Info") {
-      approveClaim({identifier: claim.id, type: "medical"})
+      approvePreauth({identifier: preauth.id, type: "medical"})
     }
     if (activeTab === "Financial Info") {
-      approveClaim({identifier: claim.id, type: "financial"})
+      approvePreauth({identifier: preauth.id, type: "financial"})
     }
   }
 
@@ -58,16 +58,16 @@ export default function ClaimDetails({ claim }: any) {
           <div className="overflow-hidden bg-white shadow sm:rounded-lg text-left">
             <div className="px-4 py-5 sm:px-6 max-w-4xl w-full">
               <h3 className="text-lg font-medium leading-6 text-gray-900">
-                Claim Details
+                Pre Auth Details
               </h3>
               <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                {claim.details.request_no}
+                {preauth.details.request_no}
               </p>
             </div>
 
             <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
               <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                {Object.entries(claim.details).map(([name, detail]: any) => {
+                {Object.entries(preauth.details).map(([name, detail]: any) => {
                   return (
                     <div className="sm:col-span-1">
                       <dt className="text-sm font-medium text-gray-500">
@@ -83,7 +83,7 @@ export default function ClaimDetails({ claim }: any) {
                   </dt>
                   <dd className="mt-1 text-sm text-gray-900">
                     <ul className="divide-y divide-gray-200 rounded-md border border-gray-200">
-                      {claim.attachments.map((_attachment: any) => (
+                      {preauth.attachments.map((_attachment: any) => (
                         <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                           <div className="flex w-0 flex-1 items-center">
                             <PaperClipIcon
