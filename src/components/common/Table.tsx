@@ -97,7 +97,7 @@ export default function Table({
                         {item[header]}
                       </td>
                     ))}
-                    {rowActions && (
+                    {rowActions && item.status === "pending" && (
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
                         <div className="inline-flex space-x-2">
                           {Object.entries(rowActions).map(

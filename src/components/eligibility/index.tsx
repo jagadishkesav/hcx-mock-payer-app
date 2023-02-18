@@ -6,13 +6,12 @@ import {
   listRequest,
   rejectCoverageEligibilityRequest,
 } from "../../api/api";
-
-export function resoureType(type: string) {
-  return (entry: any) => entry.resource.resourceType === type;
-}
+import CoverageDetail from "./CoverageDetail";
+import { toast } from "react-toastify";
+import { resoureType } from "../../utils/StringUtils";
 
 async function getCoverage() {
-  const res: any = listRequest({ type: "coverageeligibility" });
+  const res: any = await listRequest({ type: "coverageeligibility" });
 
   return res.coverageeligibility.map((coverage: any) => {
     let id = coverage.id;
@@ -74,9 +73,15 @@ export default function CoverageEligibilityHome() {
         rowActions={{
           approve: (identifier) => {
             approveCoverageEligibilityRequest({ identifier });
+            toast("Coverage Eligibility Request Approved", {
+              type: "success",
+            });
           },
           reject: (identifier) => {
             rejectCoverageEligibilityRequest({ identifier });
+            toast("Coverage Eligibility Request Rejected", {
+              type: "error",
+            });
           },
         }}
         primaryColumnIndex={1}
@@ -86,43 +91,12 @@ export default function CoverageEligibilityHome() {
           onClose={() => setSelectedRequest("")}
           className="max-w-3xl w-full"
         >
-          <div className="flex flex-col justify-start w-full space-y-4">
-            <div className="overflow-hidden bg-white shadow sm:rounded-lg text-left">
-              <div className="px-4 py-5 sm:px-6 max-w-4xl w-full">
-                <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Coverage Details
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">Name</p>
-              </div>
-
-              <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
-                <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-                  {Object.entries({
-                    ...coverageEligibilityRequests.find(
-                      (request) => request.id === selectedRequest
-                    ),
-                  }).map(([name, detail]: any) => {
-                    return (
-                      <div className="sm:col-span-1">
-                        <dt className="text-sm font-medium text-gray-500">
-                          {name}
-                        </dt>
-                        <dd className="mt-1 text-sm text-gray-900">{detail}</dd>
-                      </div>
-                    );
-                  })}
-                </dl>
-              </div>
-              <div className="flex flex-row justify-end space-x-4 p-5 border-t border-gray-200 px-4 py-5 sm:px-6">
-                <button className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500">
-                  Reject
-                </button>
-                <button className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                  Approve
-                </button>
-              </div>
-            </div>
-          </div>
+          <CoverageDetail
+            onAction={() => setSelectedRequest("")}
+            coverage={coverageEligibilityRequests.find(
+              (request) => request.id === selectedRequest
+            )}
+          />
         </Modal>
       )}
     </>
