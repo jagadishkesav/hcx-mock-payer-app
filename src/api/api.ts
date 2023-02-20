@@ -1,5 +1,3 @@
-import { coverageeligibilitylistres, claimslistres, preauthlistres } from "./dummyresponse";
-
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const request = (options: any) => {
@@ -54,15 +52,6 @@ export function claims(data: { username: string; password: string }) {
 }
 
 export function listRequest(data: { type: string }) {
-  if (data.type === "coverageeligibility") {
-    return coverageeligibilitylistres;
-  }
-  if (data.type === "claim") {
-    return claimslistres;
-  }
-  if (data.type === "preauth") {
-    return preauthlistres;
-  }
   return request({
     url: API_BASE_URL + "/request/list",
     method: "POST",
@@ -71,7 +60,7 @@ export function listRequest(data: { type: string }) {
 }
 
 export function approveCoverageEligibilityRequest(data: {
-  identifier: string;
+  request_id: string;
 }) {
   return request({
     url: API_BASE_URL + "/coverageeligibility/approve",
@@ -80,7 +69,7 @@ export function approveCoverageEligibilityRequest(data: {
   });
 }
 
-export function rejectCoverageEligibilityRequest(data: { identifier: string }) {
+export function rejectCoverageEligibilityRequest(data: { request_id: string }) {
   return request({
     url: API_BASE_URL + "/coverageeligibility/reject",
     method: "POST",
@@ -88,7 +77,12 @@ export function rejectCoverageEligibilityRequest(data: { identifier: string }) {
   });
 }
 
-export function approvePreauth(data: { identifier: string; type: string, remarks: string, approved_amount: number }) {
+export function approvePreauth(data: {
+  request_id: string;
+  type: string;
+  remarks: string;
+  approved_amount: number;
+}) {
   return request({
     url: API_BASE_URL + "/preauth/approve",
     method: "POST",
@@ -96,7 +90,7 @@ export function approvePreauth(data: { identifier: string; type: string, remarks
   });
 }
 
-export function rejectPreauth(data: { identifier: string; type: string, remarks: string }) {
+export function rejectPreauth(data: { request_id: string; type: string }) {
   return request({
     url: API_BASE_URL + "/preauth/reject",
     method: "POST",
@@ -105,7 +99,7 @@ export function rejectPreauth(data: { identifier: string; type: string, remarks:
 }
 
 export function approveClaim(data: {
-  identifier: string;
+  request_id: string;
   type: string;
   remarks: string;
   approved_amount: number;
@@ -117,11 +111,7 @@ export function approveClaim(data: {
   });
 }
 
-export function rejectClaim(data: {
-  identifier: string;
-  type: string;
-  remarks: string;
-}) {
+export function rejectClaim(data: { request_id: string; type: string }) {
   return request({
     url: API_BASE_URL + "/claim/reject",
     method: "POST",

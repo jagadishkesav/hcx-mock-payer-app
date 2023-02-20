@@ -7,13 +7,13 @@ import { toast } from "react-toastify";
 
 export default function CoverageDetail({ onAction, coverage }: any) {
   const handleReject = () => {
-    rejectCoverageEligibilityRequest({ identifier: coverage.id });
+    rejectCoverageEligibilityRequest({ request_id: coverage.request_id });
     toast("Rejected Coverage Eligibility Request", { type: "error" });
     onAction();
   };
 
   const handleApprove = () => {
-    approveCoverageEligibilityRequest({ identifier: coverage.id });
+    approveCoverageEligibilityRequest({ request_id: coverage.request_id });
     toast("Aproved Coverage Eligibility Request", { type: "success" });
     onAction();
   };
@@ -42,7 +42,7 @@ export default function CoverageDetail({ onAction, coverage }: any) {
             })}
           </dl>
         </div>
-        {coverage.status === "pending" && (
+        {coverage.status === "Pending" && (
           <div className="flex flex-row justify-end space-x-4 p-5 border-t border-gray-200 px-4 py-5 sm:px-6">
             <button
               className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"

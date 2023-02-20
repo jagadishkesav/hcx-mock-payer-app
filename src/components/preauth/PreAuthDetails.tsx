@@ -10,9 +10,9 @@ const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
     <div className="flex flex-col justify-start w-1/4 space-y-4 mt-8">
       {tabs.map((tab: any) => (
         <button
-          key={tab}
+          key={tab.id}
           className={`py-2 text-sm ${
-            activeTab === tab
+            activeTab.id === tab.id
               ? "border-r-2 transform border-blue-500 font-bold"
               : " transform -translate-x-2"
           }`}
@@ -20,53 +20,84 @@ const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
             setActiveTab(tab);
           }}
         >
-          {tab}
+          {tab.name}
         </button>
       ))}
     </div>
   );
 };
 
+const tabList = [
+  { id: "patient_details", name: "Patient Details" },
+  { id: "medical", name: "Medical Info" },
+  { id: "financial", name: "Financial Info" },
+];
+
 export default function PreAuthDetails({ id }: { id: string }) {
-  const [activeTab, setActiveTab] = React.useState("Patient Details");
+  const [activeTab, setActiveTab] = React.useState({
+    id: "patient_details",
+    name: "Patient Details",
+  });
   const [preauth, setPreauth] = React.useState<any>({});
-  const [approvedAmount, setApprovedAmount] = React.useState(0);
-  const [remarks, setRemarks] = React.useState("");
+  const [approvedAmount, setApprovedAmount] = React.useState<any>({
+    medical: 0,
+    financial: 0,
+  });
+  const [remarks, setRemarks] = React.useState<any>({
+    medical: "",
+    financial: "",
+  });
 
   useEffect(() => {
     async function fetchData() {
       let allPreAuths = await listRequest({ type: "preauth" });
       if (allPreAuths) {
         let preAuth = allPreAuths.preauth.find(
-          (preauth: any) => preauth.id === id
+          (preauth: any) => preauth.request_id === id
         );
-        const name = preAuth.entry.find(resoureType("Patient"))?.resource
+        let preAuthPayload = JSON.parse(preAuth.payload);
+        const name = preAuthPayload.entry.find(resoureType("Patient"))?.resource
           .name[0].text;
-        const insurance_no = preAuth.entry.find(resoureType("Coverage"))
+        const insurance_no = preAuthPayload.entry.find(resoureType("Coverage"))
           ?.resource.subscriberId;
 
         setPreauth({
-          id: preAuth.id,
-          request_no: preAuth.identifier.value,
+          id: preAuth.request_id,
+          request_no: preAuthPayload.identifier.value,
           name,
           insurance_no,
           available_amount: "₹1000",
           requested_amount: "₹1000",
           expiry: "2023-12-12",
-          status: "pending",
+          status: preAuth.status,
         });
+
+        let additionalInfo = preAuth.additional_info;
+
+        if (additionalInfo.medical.status === "Approved") {
+          setApprovedAmount({
+            ...approvedAmount,
+            medical: additionalInfo.medical.approved_amount,
+          });
+          setRemarks({ ...remarks, medical: additionalInfo.medical.remarks });
+        }
+        if (additionalInfo.financial.status === "Approved") {
+          setApprovedAmount({
+            ...approvedAmount,
+            financial: additionalInfo.financial.approved_amount,
+          });
+          setRemarks({
+            ...remarks,
+            financial: additionalInfo.financial.remarks,
+          });
+        }
       }
     }
     fetchData();
   }, [id]);
 
   const handleReject = () => {
-    if (activeTab === "Medical Info") {
-      rejectPreauth({ identifier: preauth.id, type: "medical", remarks });
-    }
-    if (activeTab === "Financial Info") {
-      rejectPreauth({ identifier: preauth.id, type: "financial", remarks });
-    }
+    rejectPreauth({ request_id: preauth.request_id, type: activeTab.id });
     toast("Preauth Rejected", {
       type: "error",
     });
@@ -74,22 +105,12 @@ export default function PreAuthDetails({ id }: { id: string }) {
   };
 
   const handleApprove = () => {
-    if (activeTab === "Medical Info") {
-      approvePreauth({
-        identifier: preauth.id,
-        type: "medical",
-        remarks,
-        approved_amount: approvedAmount,
-      });
-    }
-    if (activeTab === "Financial Info") {
-      approvePreauth({
-        identifier: preauth.id,
-        type: "financial",
-        remarks,
-        approved_amount: approvedAmount,
-      });
-    }
+    approvePreauth({
+      request_id: preauth.id,
+      type: activeTab.id,
+      remarks: remarks[activeTab.id],
+      approved_amount: approvedAmount[activeTab.id],
+    });
     toast("Preauth Approved", {
       type: "success",
     });
@@ -101,7 +122,7 @@ export default function PreAuthDetails({ id }: { id: string }) {
       <div className="flex flex-col justify-start w-full space-y-4">
         <div className="flex flex-row justify-start w-full">
           <Tabs
-            tabs={["Patient Details", "Medical Info", "Financial Info"]}
+            tabs={tabList}
             activeTab={activeTab}
             setActiveTab={(next: any) => setActiveTab(next)}
           />
@@ -128,8 +149,8 @@ export default function PreAuthDetails({ id }: { id: string }) {
                       </div>
                     );
                   })}
-                  {activeTab !== "Patient Details" &&
-                    preauth.status === "pending" && (
+                  {activeTab.id !== "patient_details" &&
+                    preauth.status === "Pending" && (
                       <>
                         <div className="sm:col-span-2">
                           <dt className="text-sm font-medium text-gray-500">
@@ -138,9 +159,12 @@ export default function PreAuthDetails({ id }: { id: string }) {
                           <dd className="mt-1 text-sm text-gray-900">
                             <input
                               type="number"
-                              value={approvedAmount}
+                              value={approvedAmount[activeTab.id]}
                               onChange={(e) =>
-                                setApprovedAmount(parseInt(e.target.value))
+                                setApprovedAmount({
+                                  ...approvedAmount,
+                                  [activeTab.id]: e.target.value,
+                                })
                               }
                               className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             />
@@ -152,8 +176,13 @@ export default function PreAuthDetails({ id }: { id: string }) {
                           </dt>
                           <dd className="mt-1 text-sm text-gray-900">
                             <textarea
-                              value={remarks}
-                              onChange={(e) => setRemarks(e.target.value)}
+                              value={remarks[activeTab.id]}
+                              onChange={(e) =>
+                                setRemarks({
+                                  ...remarks,
+                                  [activeTab.id]: e.target.value,
+                                })
+                              }
                               className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
                             ></textarea>
                           </dd>
@@ -164,8 +193,8 @@ export default function PreAuthDetails({ id }: { id: string }) {
               </div>
             </div>
             {/* Action Buttons */}
-            {activeTab !== "Patient Details" &&
-              preauth.status === "pending" && (
+            {activeTab.id !== "patient_details" &&
+              preauth.status === "Pending" && (
                 <div className="flex flex-row justify-end w-full space-x-4 p-5">
                   <button
                     onClick={handleReject}

@@ -3,15 +3,16 @@ import { properText, resoureType } from "../../utils/StringUtils";
 import { approveClaim, listRequest, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
 import { navigate } from "raviger";
+import { claimsMapper } from ".";
 
 const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
   return (
     <div className="flex flex-col justify-start w-1/4 space-y-4 mt-8">
       {tabs.map((tab: any) => (
         <button
-          key={tab}
+          key={tab.id}
           className={`py-2 text-sm ${
-            activeTab === tab
+            activeTab.id === tab.id
               ? "border-r-2 transform border-blue-500 font-bold"
               : " transform -translate-x-2"
           }`}
@@ -19,50 +20,65 @@ const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
             setActiveTab(tab);
           }}
         >
-          {tab}
+          {tab.name}
         </button>
       ))}
     </div>
   );
 };
 
-export default function ClaimDetails({ id }: { id: string }) {
-  const [activeTab, setActiveTab] = React.useState("Patient Details");
+const tabList = [
+  { id: "patient_details", name: "Patient Details" },
+  { id: "medical", name: "Medical Info" },
+  { id: "financial", name: "Financial Info" },
+];
+
+function ItemTable(items: any) {
+  return (
+    <table>
+      <thead>
+        <tr>
+          <th>Display</th>
+          <th>Code</th>
+          <th>Value</th>
+        </tr>
+      </thead>
+      <tbody>
+        {items.map((item: any) => (
+          <tr key={item.productOrService.coding[0].code}>
+            <td>{item.productOrService.coding[0].display}</td>
+            <td>{item.productOrService.coding[0].code}</td>
+            <td>{item.unitPrice.value} {item.unitPrice.currency}</td>
+          </tr>
+        ))}
+      </tbody>
+    </table>
+  );
+}
+
+
+export default function ClaimDetails({ request_id }: { request_id: string }) {
+  const [activeTab, setActiveTab] = React.useState({
+    id: "patient_details",
+    name: "Patient Details",
+  });
   const [claim, setClaim] = React.useState<any>({});
   const [approvedAmount, setApprovedAmount] = React.useState(0);
   const [remarks, setRemarks] = React.useState("");
 
+  async function getClaims(): Promise<any> {
+    const res: any = await listRequest({ type: "claim" });
+    const claim = res.claim.find((claim: any) => claim.request_id === request_id);
+    console.log(res,claim);
+    return claimsMapper(claim);
+  }
+
   useEffect(() => {
-    async function fetchData() {
-      let allClaims = await listRequest({ type: "claim" });
-      if (allClaims) {
-        let claim = allClaims.claim.find((claim: any) => claim.id === id);
-        const name = claim.entry.find(resoureType("Patient"))?.resource.name[0]
-          .text;
-        const insurance_no = claim.entry.find(resoureType("Coverage"))?.resource
-          .subscriberId;
-        setClaim({
-          id,
-          request_no: claim.identifier.value,
-          name,
-          insurance_no,
-          available_amount: "₹1000",
-          requested_amount: "₹1000",
-          expiry: "2023-12-12",
-          status: "pending",
-        });
-      }
-    }
-    fetchData();
-  }, [id]);
+    getClaims().then(setClaim);
+  }, [request_id]);
 
   const handleReject = () => {
-    if (activeTab === "Medical Info") {
-      rejectClaim({ identifier: id, type: "medical", remarks });
-    }
-    if (activeTab === "Financial Info") {
-      rejectClaim({ identifier: id, type: "financial", remarks });
-    }
+    rejectClaim({ request_id: claim.request_id, type: activeTab.id });
     toast("Claim Rejected", {
       type: "success",
     });
@@ -70,22 +86,12 @@ export default function ClaimDetails({ id }: { id: string }) {
   };
 
   const handleApprove = () => {
-    if (activeTab === "Medical Info") {
-      approveClaim({
-        identifier: id,
-        type: "medical",
-        remarks,
-        approved_amount: approvedAmount,
-      });
-    }
-    if (activeTab === "Financial Info") {
-      approveClaim({
-        identifier: id,
-        type: "financial",
-        remarks,
-        approved_amount: approvedAmount,
-      });
-    }
+    approveClaim({
+      request_id: claim.request_id,
+      type: activeTab.id,
+      remarks,
+      approved_amount: approvedAmount,
+    });
     toast("Claim Approved", {
       type: "success",
     });
@@ -97,7 +103,7 @@ export default function ClaimDetails({ id }: { id: string }) {
       <div className="flex flex-col justify-start w-full space-y-4">
         <div className="flex flex-row justify-start w-full">
           <Tabs
-            tabs={["Patient Details", "Medical Info", "Financial Info"]}
+            tabs={tabList}
             activeTab={activeTab}
             setActiveTab={(next: any) => setActiveTab(next)}
           />
@@ -124,7 +130,10 @@ export default function ClaimDetails({ id }: { id: string }) {
                       </div>
                     );
                   })}
-                  {activeTab !== "Patient Details" && (
+                  {activeTab.id === "patient_details" && (
+                    ItemTable(claim.items)
+                  )}
+                  {activeTab.id !== "patient_details" && (
                     <>
                       <div className="sm:col-span-2">
                         <dt className="text-sm font-medium text-gray-500">
@@ -160,7 +169,7 @@ export default function ClaimDetails({ id }: { id: string }) {
                 </dl>
               </div>
             </div>
-            {activeTab !== "Patient Details" && (
+            {activeTab.id !== "patient_details" && (
               <div className="flex flex-row justify-end w-full space-x-4 p-5">
                 <button
                   onClick={handleReject}

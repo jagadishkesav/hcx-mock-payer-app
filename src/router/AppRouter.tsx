@@ -13,7 +13,7 @@ const routes = {
   "/coverage": () => <CoverageEligibilityHome />,
   "/coverage/:id" : ({id}: any) => <CoverageDetail id={id} />,
   "/claims": () => <Claims />,
-  "/claims/:id" : ({id}: any) => <ClaimDetails id={id} />,
+  "/claims/:request_id" : ({request_id}: any) => <ClaimDetails request_id={request_id} />,
   "/preauths": () => <PreAuths />,
   "/preauths/:id" : ({id}: any) => <PreAuthDetails id={id} />,
 };

@@ -9,6 +9,7 @@ export default function Table({
   title,
   action,
   actionText,
+  showRowActions,
   headers,
   data,
   rowActions,
@@ -18,6 +19,7 @@ export default function Table({
   title: string;
   action?: () => void;
   actionText?: string;
+  showRowActions?: (id: string) => boolean;
   headers: string[];
   data: { [key: string]: string }[];
   rowActions?: { [key: string]: (id: string) => void };
@@ -79,8 +81,8 @@ export default function Table({
                     key={item.id}
                     className={
                       onRowClick
-                        ? "hover:bg-gray-50 hover:text-gray-900 cursor-pointer"
-                        : ""
+                        ? "hover:bg-gray-50 hover:text-gray-900 cursor-pointer bg-white"
+                        : "bg-white"
                     }
                     onClick={() => onRowClick && onRowClick(item.id)}
                   >
@@ -97,26 +99,28 @@ export default function Table({
                         {item[header]}
                       </td>
                     ))}
-                    {rowActions && item.status === "pending" && (
-                      <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
-                        <div className="inline-flex space-x-2">
-                          {Object.entries(rowActions).map(
-                            ([key, action], index) => (
-                              <button
-                                key={key}
-                                className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  action(item.id);
-                                }}
-                              >
-                                {properText(key)}
-                              </button>
-                            )
-                          )}
-                        </div>
-                      </td>
-                    )}
+                    {rowActions &&
+                      showRowActions &&
+                      showRowActions(item.id) ? (
+                        <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
+                          <div className="inline-flex space-x-2">
+                            {Object.entries(rowActions).map(
+                              ([key, action], index) => (
+                                <button
+                                  key={key}
+                                  className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    action(item.id);
+                                  }}
+                                >
+                                  {properText(key)}
+                                </button>
+                              )
+                            )}
+                          </div>
+                        </td>
+                      ) : <div className="w-full bg-white" />}
                   </tr>
                 ))}
               </tbody>
