@@ -42,7 +42,9 @@ export function FinancialInfo({
 }: { claim: ClaimDetail } & RejectApproveHandlers) {
   const financial_info = claim.financial_info;
   const [approvedAmount, setApprovedAmount] = React.useState(
-    financial_info.approved_amount
+    financial_info.approved_amount ||
+      claim.medical_info.approved_amount ||
+      claim.requested_amount
   );
   const [remarks, setRemarks] = React.useState(financial_info.remarks);
   const status = financial_info.status;
@@ -145,7 +147,7 @@ export function MedicalInfo({
   ...props
 }: { claim: ClaimDetail } & RejectApproveHandlers) {
   const [approvedAmount, setApprovedAmount] = React.useState(
-    claim.medical_info.approved_amount
+    claim.medical_info.approved_amount || claim.requested_amount
   );
   const [remarks, setRemarks] = React.useState(claim.medical_info.remarks);
   const status = claim.medical_info.status;

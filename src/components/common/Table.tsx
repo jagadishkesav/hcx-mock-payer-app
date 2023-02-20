@@ -9,7 +9,7 @@ function classNames(...classes: any[]) {
 // Dictionary with ReactNodes as values and one required key "id" of type string and one optional key "status" of type string
 interface TableRowData {
   id: string;
-  status?: string;
+  showActions?: boolean;
   [key: string]: React.ReactNode;
 }
 
@@ -124,12 +124,18 @@ export default function Table({
                           {Object.entries(rowActions).map(([name, action]) => (
                             <button
                               className={classNames(
-                                action.actionType === "primary" &&
+                                item.showActions !== false &&
+                                  action.actionType === "primary" &&
                                   "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
-                                action.actionType === "secondary" &&
+                                item.showActions !== false &&
+                                  action.actionType === "secondary" &&
                                   "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
-                                action.actionType === "danger" &&
+                                item.showActions !== false &&
+                                  action.actionType === "danger" &&
                                   "bg-red-600 hover:bg-red-700 focus:ring-red-500",
+                                // showActions === false ? disabled
+                                item.showActions === false &&
+                                  "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
                                 "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
                               )}
                               onClick={(e) => {
