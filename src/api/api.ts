@@ -1,3 +1,5 @@
+import { coverageeligibilitylistres, claimslistres, preauthlistres } from "./dummyresponse";
+
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const request = (options: any) => {
@@ -52,6 +54,15 @@ export function claims(data: { username: string; password: string }) {
 }
 
 export function listRequest(data: { type: string }) {
+  if (data.type === "coverageeligibility") {
+    return coverageeligibilitylistres;
+  }
+  if (data.type === "claim") {
+    return claimslistres;
+  }
+  if (data.type === "preauth") {
+    return preauthlistres;
+  }
   return request({
     url: API_BASE_URL + "/request/list",
     method: "POST",
