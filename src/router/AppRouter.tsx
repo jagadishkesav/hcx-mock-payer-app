@@ -13,9 +13,9 @@ const routes = {
   "/coverage": () => <CoverageEligibilityHome />,
   "/coverage/:id" : ({id}: any) => <CoverageDetail id={id} />,
   "/claims": () => <Claims />,
-  "/claims/:request_id" : ({request_id}: any) => <ClaimDetails request_id={request_id} />,
+  "/claims/:id" : ({id}: any) => <ClaimDetails request_id={id} />,
   "/preauths": () => <PreAuths />,
-  "/preauths/:id" : ({id}: any) => <PreAuthDetails id={id} />,
+  "/preauths/:id" : ({id}: any) => <PreAuthDetails request_id={id} />,
 };
 
 export default function AppRouter() {

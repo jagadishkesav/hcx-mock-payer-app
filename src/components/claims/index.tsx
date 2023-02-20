@@ -24,8 +24,9 @@ export interface Item {
   };
 }
 
-type ClaimDetail = {
+export type ClaimDetail = {
   id: string;
+  request_id: string;
   request_no: string;
   name: string;
   items: Item[];
@@ -59,10 +60,11 @@ export function claimsMapper(claim: any) : ClaimDetail {
   const name = entry.find(resoureType("Patient"))?.resource.name[0].text;    
   const insurance_no = entry.find(resoureType("Coverage"))?.resource.subscriberId;
   const requested_amount = entry.find(resoureType("Claim"))?.resource.total;
-  const items = entry.filter(resoureType("ClaimResponse"))?.item;
+  const items = entry.find(resoureType("Claim"))?.resource.item;
 
   return {
     id: claim.request_id,
+    request_id: claim.request_id,
     request_no: identifier.value,
     name,
     items,
@@ -99,8 +101,8 @@ export default function Claims() {
           "expiry",
           "status",
         ]}
-        onRowClick={(id) =>
-          navigate(`/claims/${id}`)
+        onRowClick={(request_id) =>
+          navigate(`/claims/${request_id}`)
         }
         data={claims as any}
         primaryColumnIndex={1}

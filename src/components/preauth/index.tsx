@@ -24,10 +24,8 @@ export function preAuthMapper(preauth: any) : PreAuthDetail {
 
   const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
   const insurance_no = entry.find(resoureType("Coverage"))?.resource.subscriberId;
-  const items = entry.filter(resoureType("ClaimResponse"))?.item as Item[];
-  // const api_requested_amount = entry.find(resoureType("Claim"))?.resource.total 
-  // const requested_amount = entry.find(resoureType("Claim"))?.resource.total;
-  const requested_amount = items.map(i => i.unitPrice.value).reduce((a, b) => a + b);
+  const items = entry.find(resoureType("Claim"))?.resource.item as Item[];
+  const requested_amount = entry.find(resoureType("Claim"))?.resource.total ?? currencyObjToString({ currency: "INR", value: items.map(i => i.unitPrice.value).reduce((a, b) => a + b) });
 
   return {
     id: preauth.request_id,
@@ -35,14 +33,14 @@ export function preAuthMapper(preauth: any) : PreAuthDetail {
     name,
     items,
     insurance_no,
-    requested_amount: currencyObjToString({ currency: "INR", value: requested_amount }),
+    requested_amount,
     ...parseAdditionalInfo(preauth.additional_info),
     expiry: "2023-12-12",
     status: preauth.status,
   };  
 }
 
-async function getPreAuths(): Promise<PreAuthDetail[]> {
+export async function getPreAuths(): Promise<PreAuthDetail[]> {
   const res: any = await listRequest({ type: "preauth" });
   return res.preauth.map(preAuthMapper);
 }

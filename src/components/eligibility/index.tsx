@@ -14,8 +14,8 @@ function coverageEligibilityMapper(coverage: any) {
   const { entry, identifier } = coverage.payload;
 
   const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
-  const insurance_no = entry.find(resoureType("Coverage"))?.resource
-    .subscriberId;
+  const insurance_no = entry.find(resoureType("Coverage"))?.resource.subscriberId;
+  const servicedPeriod = entry.find(resoureType("CoverageEligibilityRequest"))?.resource.servicedPeriod;
 
   return {
     id: coverage.request_id,
@@ -25,6 +25,7 @@ function coverageEligibilityMapper(coverage: any) {
     insurance_no,
     expiry: "2023-12-31",
     status: coverage.status,
+    servicedPeriod,
   };
 }
 

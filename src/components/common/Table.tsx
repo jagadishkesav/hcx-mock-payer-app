@@ -7,6 +7,7 @@ function classNames(...classes: any[]) {
 
 export default function Table({
   title,
+  subtext,
   action,
   actionText,
   showRowActions,
@@ -17,6 +18,7 @@ export default function Table({
   primaryColumnIndex = 0,
 }: {
   title: string;
+  subtext?: string;
   action?: () => void;
   actionText?: string;
   showRowActions?: (id: string) => boolean;
@@ -31,7 +33,7 @@ export default function Table({
       <div className="sm:flex sm:items-center">
         <div className="sm:flex-auto">
           <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-          <p className="mt-2 text-sm text-gray-700">{"<subtext>"}</p>
+          <p className="mt-2 text-sm text-gray-700">{subtext}</p>
         </div>
         <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
           {action && (
@@ -48,7 +50,7 @@ export default function Table({
         <div className="-my-2 -mx-6 overflow-x-auto lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle">
             <table className="min-w-full divide-y divide-gray-300">
-              <thead>
+              <thead className="bg-gray-200">
                 <tr>
                   {headers.map((header, index) => (
                     <th

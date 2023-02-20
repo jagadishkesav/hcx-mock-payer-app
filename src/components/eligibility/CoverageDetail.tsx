@@ -4,6 +4,7 @@ import {
   rejectCoverageEligibilityRequest,
 } from "../../api/api";
 import { toast } from "react-toastify";
+import { formatDate, properText } from "../../utils/StringUtils";
 
 export default function CoverageDetail({ onAction, coverage }: any) {
   const handleReject = () => {
@@ -32,14 +33,38 @@ export default function CoverageDetail({ onAction, coverage }: any) {
 
         <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-            {Object.entries(coverage).map(([name, detail]: any) => {
-              return (
+            {Object.entries(coverage)
+              .filter(([name, _]) => name !== "servicedPeriod")
+              .map(([name, detail]: any) => {
+                return (
+                  <div className="sm:col-span-1">
+                    <dt className="text-sm font-medium text-gray-500">
+                      {properText(name)}
+                    </dt>
+                    <dd className="mt-1 text-sm text-gray-900">{detail}</dd>
+                  </div>
+                );
+              })}
+            {coverage.status !== "Rejected" && (
+              <>
                 <div className="sm:col-span-1">
-                  <dt className="text-sm font-medium text-gray-500">{name}</dt>
-                  <dd className="mt-1 text-sm text-gray-900">{detail}</dd>
+                  <dt className="text-sm font-medium text-gray-500">
+                    Serviced Period Start
+                  </dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {formatDate(coverage.servicedPeriod.start)}
+                  </dd>
                 </div>
-              );
-            })}
+                <div className="sm:col-span-1">
+                  <dt className="text-sm font-medium text-gray-500">
+                    Serviced Period End
+                  </dt>
+                  <dd className="mt-1 text-sm text-gray-900">
+                    {formatDate(coverage.servicedPeriod.end)}
+                  </dd>
+                </div>
+              </>
+            )}
           </dl>
         </div>
         {coverage.status === "Pending" && (
