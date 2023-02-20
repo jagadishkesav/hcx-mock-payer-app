@@ -9,7 +9,7 @@ export default function Dashboard() {
     <div className="h-3/4">
       <h1 className="text-4xl font-bold">Dashboard</h1>
       <h2 className="text-2xl font-bold">Welcome to HCX Payer App</h2>
-      <div className="flex flex-row items-center justify-center w-full h-full">
+      <div className="flex flex-col lg:flex-row items-center justify-center w-full h-full">
         {[
           {
             title: "Claims",
@@ -19,18 +19,22 @@ export default function Dashboard() {
             title: "Coverage Eligibility",
             href: "/coverage",
           },
-        ].map((item, index) => {
-          return (
-            <Link
-              href={item.href}
-              className="flex flex-col items-center justify-center w-3/4 md:w-1/2 lg:w-1/3 py-10 bg-slate-50 m-2 border-gray-800 border rounded-xl"
-            >
-              <h1 className="text-4xl font-bold">{item.title}</h1>
-              <h2 className="text-md">Navigate to {item.title}</h2>
-            </Link>
-          );
-        })}
+          {
+            title: "Pre Auth",
+            href: "/preauths",
+          }
+        ].map((item) => <DashboardTile key={item.href} {...item} />)}
       </div>
     </div>
   );
+}
+
+
+function DashboardTile({ title, href } : any) {
+  return <Link
+  href={href}
+  className="flex flex-col items-center text-center justify-center w-3/4 md:w-1/2 lg:w-1/3 py-10 bg-slate-50 m-2 border-gray-800 border rounded-xl hover:bg-slate-100"
+>
+  <h1 className="text-4xl font-bold">{title}</h1>
+</Link>
 }

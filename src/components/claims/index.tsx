@@ -1,46 +1,126 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
-import Modal from "../common/Modal";
-import ClaimDetails from "./ClaimDetails";
+import { listRequest } from "../../api/api";
+import { navigate } from "raviger";
+import { resoureType } from "../../utils/StringUtils";
+import Loading from "../common/Loading";
 
-type ClaimDetailProps = {
+export interface IAdditionalInfo {
+  status: "Pending" | "Approved" | "Rejected";
+  remarks?: string;
+  approved_amount?: number;
+}
+export interface Item {
+  unitPrice: {
+    currency: string;
+    value: number;
+  };
+  sequence: number;
+  productOrService: {
+    coding: {
+      system: string;
+      code: string;
+      display: string;
+    }[];
+  };
+}
+
+export interface DiagnosisCoding {
+  system: string;
+  code: string;
+  display: string;
+}
+
+export interface Diagnosis {
+  sequence: number;
+  type: { coding: DiagnosisCoding[] }[];
+  diagnosisCodeableConcept: {
+    coding: DiagnosisCoding[];
+    text: string;
+  };
+}
+
+export type ClaimDetail = {
   id: string;
-  details: {
-    request_no: string;
-    name: string;
-    insurance_no: string;
-    available_amount: string;
-    requested_amount: string;
-    expiry: string;
-  };
-  attachments: {
-    name: string;
-    url: string;
-  }[];
+  request_id: string;
+  request_no: string;
+  name: string;
+  items: Item[];
+  diagnosis: Diagnosis[];
+  insurance_no: string;
+  requested_amount: string;
+  approved_amount: string;
+  expiry: string;
+  status: string;
+  medical_info: IAdditionalInfo;
+  financial_info: IAdditionalInfo;
 };
 
-const createMockClaim = (id: string) => {
+export function currencyObjToString({
+  currency,
+  value,
+}: {
+  currency: string;
+  value: number;
+}) {
+  return currency + " " + value.toFixed(2);
+}
+
+export function parseAdditionalInfo(additional_info: any) {
+  const { medical, financial } = additional_info;
+  const approved_amount =
+    ((medical as IAdditionalInfo).approved_amount ?? 0) +
+    ((financial as IAdditionalInfo).approved_amount ?? 0);
+
   return {
-    id: id,
-    details: {
-      request_no: "claim-3431",
-      name: "John Doe",
-      insurance_no: "1234567890",
-      available_amount: "₹1000",
-      requested_amount: "₹500",
-      expiry: "2021-12-31",
-    },
-    attachments: [
-      {
-        name: "mri_report_p_13458.pdf",
-        url: "https://www.google.com",
-      },
-    ],
+    approved_amount: currencyObjToString({
+      currency: "INR",
+      value: approved_amount,
+    }),
+    medical_info: medical,
+    financial_info: financial,
   };
-};
+}
+
+export function claimsMapper(claim: any): ClaimDetail {
+  const { entry, identifier } = claim.payload;
+
+  const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
+  const insurance_no = entry.find(resoureType("Coverage"))?.resource
+    .subscriberId;
+  const { total, items, diagnosis } = entry.find(
+    resoureType("Claim")
+  )?.resource;
+
+  return {
+    id: claim.request_id,
+    request_id: claim.request_id,
+    request_no: identifier.value,
+    name,
+    items,
+    diagnosis: diagnosis,
+    insurance_no,
+    requested_amount: total && currencyObjToString(total),
+    ...parseAdditionalInfo(claim.additional_info),
+    expiry: "2023-12-12",
+    status: claim.status,
+  };
+}
+
+export async function getClaims(): Promise<ClaimDetail[]> {
+  const res: any = await listRequest({ type: "claim" });
+  return res.claim.map(claimsMapper);
+}
 
 export default function Claims() {
-  const [selectedRequest, setSelectedRequest] = useState<ClaimDetailProps>();
+  const [claims, setClaims] = useState<ClaimDetail[]>();
+
+  useEffect(() => {
+    getClaims().then(setClaims);
+  }, []);
+
+  if (!claims) return <Loading />;
+
   return (
     <>
       <Table
@@ -49,45 +129,15 @@ export default function Claims() {
           "request_no",
           "name",
           "insurance_no",
-          "available_amount",
           "requested_amount",
+          "approved_amount",
           "expiry",
           "status",
         ]}
-        onRowClick={(id) => setSelectedRequest(() => createMockClaim(id))}
-        data={[
-          {
-            id: "1",
-            request_no: "claim-3431",
-            name: "John Doe",
-            insurance_no: "1234567890",
-            available_amount: "₹1000",
-            requested_amount: "₹500",
-            expiry: "2021-12-31",
-            status: "Active",
-          },
-          {
-            id: "2",
-            request_no: "claim-3432",
-            name: "Jane Doe",
-            insurance_no: "1234567890",
-            available_amount: "₹1000",
-            requested_amount: "₹500",
-            expiry: "2021-12-31",
-            status: "Active",
-          },
-        ]}
+        onRowClick={(request_id) => navigate(`/claims/${request_id}`)}
+        data={claims as any}
+        primaryColumnIndex={1}
       />
-      {selectedRequest && (
-        <Modal
-          className="max-w-3xl w-full"
-          onClose={() => setSelectedRequest(undefined)}
-        >
-          <div className="max-w-6xl w-full bg-white rounded-xl">
-            <ClaimDetails claim={selectedRequest} />
-          </div>
-        </Modal>
-      )}
     </>
   );
 }
