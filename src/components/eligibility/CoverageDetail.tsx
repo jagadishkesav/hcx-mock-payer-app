@@ -5,6 +5,7 @@ import {
 } from "../../api/api";
 import { toast } from "react-toastify";
 import { formatDate, properText } from "../../utils/StringUtils";
+import StatusChip from "../common/StatusChip";
 
 export default function CoverageDetail({ onAction, coverage }: any) {
   const handleReject = () => {
@@ -41,11 +42,17 @@ export default function CoverageDetail({ onAction, coverage }: any) {
                     <dt className="text-sm font-medium text-gray-500">
                       {properText(name)}
                     </dt>
-                    <dd className="mt-1 text-sm text-gray-900">{detail}</dd>
+                    <dd className="mt-1 text-sm text-gray-900">
+                      {name === "status" ? (
+                        <StatusChip status={detail} />
+                      ) : (
+                        detail
+                      )}
+                    </dd>
                   </div>
                 );
               })}
-            {(coverage.servicedPeriod?.start && coverage.servicedPeriod.end) && (
+            {coverage.servicedPeriod?.start && coverage.servicedPeriod.end && (
               <>
                 <div className="sm:col-span-1">
                   <dt className="text-sm font-medium text-gray-500">

@@ -30,7 +30,7 @@ const handleApprove = ({ request_id, type, remarks, approved_amount }: any) => {
 
 export default function PreAuthDetails({ request_id }: { request_id: string }) {
   const [activeTab, setActiveTab] = React.useState("patient_details");
-  const [preauth, setPreauth] = React.useState<any>({});
+  const [preauth, setPreauth] = React.useState<any>(undefined);
 
   async function getPreAuths(): Promise<any> {
     const res: any = await listRequest({ type: "preauth" });
@@ -88,7 +88,7 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
             <div className="overflow-hidden bg-white shadow sm:rounded-lg text-left">
               <div className="px-4 py-5 sm:px-6 max-w-4xl w-full">
                 <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Claim Details
+                  Pre Auth Details
                 </h3>
                 <p className="mt-1 max-w-2xl text-sm text-gray-500">
                   {preauth.id}

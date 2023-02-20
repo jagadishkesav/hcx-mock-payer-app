@@ -4,6 +4,7 @@ import { listRequest } from "../../api/api";
 import { resoureType } from "../../utils/StringUtils";
 import { navigate } from "raviger";
 import { IAdditionalInfo, Item, parseAdditionalInfo, currencyObjToString } from "../claims";
+import Loading from "../common/Loading";
 
 type PreAuthDetail = {
   id: string;
@@ -46,11 +47,13 @@ export async function getPreAuths(): Promise<PreAuthDetail[]> {
 }
 
 export default function PreAuths() {
-  const [preauths, setPreauths] = useState<PreAuthDetail[]>([]);
+  const [preauths, setPreauths] = useState<PreAuthDetail[]>();
 
   useEffect(() => {
     getPreAuths().then(setPreauths);
   }, []);
+
+  if (!preauths) return <Loading />;
 
   return (
     <>

@@ -1,5 +1,6 @@
 import React from "react";
 import { properText } from "../../utils/StringUtils";
+import StatusChip from "./StatusChip";
 
 function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
@@ -24,7 +25,7 @@ export default function Table({
   showRowActions?: (id: string) => boolean;
   headers: string[];
   data: { [key: string]: string }[];
-  rowActions?: { [key: string]: (id: string) => void };
+  rowActions?: ((id: string) => React.ReactNode)[];
   onRowClick?: (id: string) => void;
   primaryColumnIndex?: number;
 }) {
@@ -98,31 +99,22 @@ export default function Table({
                           "whitespace-nowrap py-4 text-sm"
                         )}
                       >
-                        {item[header]}
+                        {header === "status" ? (
+                          <StatusChip status={item[header] as any} />
+                        ) : (
+                          item[header]
+                        )}
                       </td>
                     ))}
-                    {rowActions &&
-                      showRowActions &&
-                      showRowActions(item.id) ? (
-                        <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
-                          <div className="inline-flex space-x-2">
-                            {Object.entries(rowActions).map(
-                              ([key, action], index) => (
-                                <button
-                                  key={key}
-                                  className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    action(item.id);
-                                  }}
-                                >
-                                  {properText(key)}
-                                </button>
-                              )
-                            )}
-                          </div>
-                        </td>
-                      ) : <div className="w-full bg-white" />}
+                    {rowActions && showRowActions && showRowActions(item.id) ? (
+                      <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
+                        <div className="inline-flex space-x-2">
+                          {rowActions.map((action) => action(item.id))}
+                        </div>
+                      </td>
+                    ) : (
+                      <div className="w-full bg-white" />
+                    )}
                   </tr>
                 ))}
               </tbody>
