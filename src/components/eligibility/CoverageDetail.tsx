@@ -45,7 +45,7 @@ export default function CoverageDetail({ onAction, coverage }: any) {
                   </div>
                 );
               })}
-            {coverage.status !== "Rejected" && (
+            {(coverage.servicedPeriod?.start && coverage.servicedPeriod.end) && (
               <>
                 <div className="sm:col-span-1">
                   <dt className="text-sm font-medium text-gray-500">
