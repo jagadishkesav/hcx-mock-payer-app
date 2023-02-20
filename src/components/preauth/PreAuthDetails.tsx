@@ -4,8 +4,10 @@ import { approvePreauth, listRequest, rejectPreauth } from "../../api/api";
 import { toast } from "react-toastify";
 import { navigate } from "raviger";
 import { preAuthMapper } from ".";
-import { FinancialInfo, MedicalInfo, PatientDetails, Tabs } from "../claims/ClaimDetails";
+import { FinancialInfo, MedicalInfo, PatientDetails, Tabss } from "../claims/ClaimDetails";
 import Loading from "../common/Loading";
+import Heading from "../common/Heading";
+import Tabs from "../common/Tabs";
 
 const handleReject = ({ request_id, type }: any) => {
   rejectPreauth({ request_id, type });
@@ -77,29 +79,21 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
   if (!preauth) return <Loading />;
 
   return (
-      <div className="flex flex-col justify-start w-full space-y-4">
-        <div className="flex flex-row justify-start w-full">
-          <Tabs
-            tabs={tabList}
-            activeTab={activeTab}
-            setActiveTab={(next: any) => setActiveTab(next)}
-          />
-          <div className="flex flex-col justify-start w-3/4 space-y-4">
-            <div className="overflow-hidden bg-white shadow sm:rounded-lg text-left">
-              <div className="px-4 py-5 sm:px-6 max-w-4xl w-full">
-                <h3 className="text-lg font-medium leading-6 text-gray-900">
-                  Pre Auth Details
-                </h3>
-                <p className="mt-1 max-w-2xl text-sm text-gray-500">
-                  {preauth.id}
-                </p>
-              </div>
-              {tabList.find(
-                (tab: any) => tab.id === activeTab
-              )?.children}
-            </div>
-          </div>
+    <div>
+      <Heading
+        heading="Pre Auth Details"
+      />
+      <div className="flex gap-8">
+        <Tabs
+          tabs={tabList}
+          activeTab={activeTab}
+          setActiveTab={(next: any) => setActiveTab(next)}
+        />
+        <div>
+
         </div>
       </div>
-  );
+
+    </div>
+  )
 }

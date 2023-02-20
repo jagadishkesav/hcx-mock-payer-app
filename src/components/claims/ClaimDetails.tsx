@@ -7,18 +7,19 @@ import { ClaimDetail, claimsMapper } from ".";
 import Table from "../common/Table";
 import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
+import Heading from "../common/Heading";
+import Tabs from "../common/Tabs";
 
-export const Tabs = ({ tabs, activeTab, setActiveTab }: any) => {
+export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
   return (
     <div className="flex flex-col justify-start w-1/4 space-y-4 mt-8">
       {tabs.map((tab: any) => (
         <button
           key={tab.id}
-          className={`py-3 text-sm bg-white rounded-lg ${
-            activeTab === tab.id
-              ? "border-r-2 transform border-blue-500 font-bold"
-              : " transform -translate-x-2"
-          }`}
+          className={`py-3 text-sm bg-white rounded-lg ${activeTab === tab.id
+            ? "border-r-2 transform border-blue-500 font-bold"
+            : " transform -translate-x-2"
+            }`}
           onClick={(e) => {
             setActiveTab(tab.id);
           }}
@@ -47,7 +48,7 @@ export function FinancialInfo({
   const status = financial_info.status;
 
   return (
-    <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
+    <div className="px-4 py-5 sm:px-6">
       <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
         <div className="sm:col-span-1">
           <dt className="text-sm font-medium text-gray-500">
@@ -244,10 +245,10 @@ export function PatientDetails({ claim }: { claim: any }) {
           .map(([name, detail]: any) => {
             return (
               <div className="sm:col-span-1" key={name}>
-                <dt className="text-sm font-medium text-gray-500">
+                <dt className="text-sm italic text-gray-500">
                   {properText(name)}
                 </dt>
-                <dd className="mt-1 text-sm text-gray-900">
+                <dd className="text-sm text-black">
                   {name === "status" ? <StatusChip status={detail} /> : detail}
                 </dd>
               </div>
@@ -328,25 +329,24 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
   if (!claim) return <Loading />;
 
   return (
-    <div className="flex flex-col justify-start w-full space-y-4">
-      <div className="flex flex-row justify-start w-full">
+    <div>
+      <Heading
+        heading="Claim Details"
+      />
+      <p className="text-sm italic text-gray-500 mb-8">
+        Claim Id: {claim.id}
+      </p>
+      <div className="flex gap-8">
         <Tabs
           tabs={tabList}
           activeTab={activeTab}
           setActiveTab={(next: any) => setActiveTab(next)}
         />
-        <div className="flex flex-col justify-start w-3/4 space-y-4">
-          <div className="overflow-hidden bg-white shadow sm:rounded-lg text-left">
-            <div className="px-4 py-5 sm:px-6 max-w-4xl w-full">
-              <h3 className="text-lg font-medium leading-6 text-gray-900">
-                Claim Details
-              </h3>
-              <p className="mt-1 max-w-2xl text-sm text-gray-500">{claim.id}</p>
-            </div>
-            {tabList.find((tab: any) => tab.id === activeTab)?.children}
-          </div>
+        <div>
+
         </div>
       </div>
+
     </div>
-  );
+  )
 }
