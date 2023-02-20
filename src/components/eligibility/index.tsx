@@ -64,40 +64,32 @@ export default function CoverageEligibilityHome() {
         title="Coverage Eligibility"
         headers={["request_no", "name", "insurance_no", "expiry", "status"]}
         onRowClick={setSelectedRequest}
-        data={coverageEligibilityRequests}
-        rowActions={[
-          (request_id: any) => (
-            <button
-              className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                approveCoverageEligibilityRequest({ request_id });
-                toast("Coverage Eligibility Request Approved", {
-                  type: "success",
-                });
-                getCoverage().then(setCoverageEligibilityRequests);
-              }}
-            >
-              Approve
-            </button>
-          ),
-
-          (request_id: any) => (
-            <button
-              className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                rejectCoverageEligibilityRequest({ request_id });
-                toast("Coverage Eligibility Request Rejected", {
-                  type: "error",
-                });
-                getCoverage().then(setCoverageEligibilityRequests);
-              }}
-            >
-              Reject
-            </button>
-          ),
-        ]}
+        data={coverageEligibilityRequests.map((coverage) => ({
+          ...coverage,
+          id: coverage.request_id,
+        }))}
+        rowActions={{
+          approve: {
+            callback: (request_id: any) => {
+              approveCoverageEligibilityRequest({ request_id });
+              toast("Coverage Eligibility Request Approved", {
+                type: "success",
+              });
+              getCoverage().then(setCoverageEligibilityRequests);
+            },
+            actionType: "primary",
+          },
+          reject: {
+            callback: (request_id: any) => {
+              rejectCoverageEligibilityRequest({ request_id });
+              toast("Coverage Eligibility Request Rejected", {
+                type: "error",
+              });
+              getCoverage().then(setCoverageEligibilityRequests);
+            },
+            actionType: "danger",
+          },
+        }}
         showRowActions={(id) => {
           return (
             coverageEligibilityRequests.find(

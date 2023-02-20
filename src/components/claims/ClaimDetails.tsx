@@ -74,6 +74,7 @@ export function FinancialInfo({
             title=""
             headers={["display", "code", "value"]}
             data={claim.items.map((item: any) => ({
+              id: item.productOrService.coding[0].code,
               display: item.productOrService.coding[0].display,
               code: item.productOrService.coding[0].code,
               value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
@@ -162,6 +163,7 @@ export function MedicalInfo({
             title=""
             headers={["display", "code", "text"]}
             data={claim.diagnosis.map((item) => ({
+              id: item.diagnosisCodeableConcept.coding[0].code,
               display: item.type[0].coding[0].display,
               code: item.diagnosisCodeableConcept.coding[0].code,
               text: item.diagnosisCodeableConcept.text,

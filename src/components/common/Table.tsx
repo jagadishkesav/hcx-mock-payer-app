@@ -6,6 +6,13 @@ function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
 
+// Dictionary with ReactNodes as values and one required key "id" of type string and one optional key "status" of type string
+interface TableRowData {
+  id: string;
+  status?: string;
+  [key: string]: React.ReactNode;
+}
+
 export default function Table({
   title,
   subtext,
@@ -24,8 +31,13 @@ export default function Table({
   actionText?: string;
   showRowActions?: (id: string) => boolean;
   headers: string[];
-  data: { [key: string]: string }[];
-  rowActions?: ((id: string) => React.ReactNode)[];
+  data: TableRowData[];
+  rowActions?: {
+    [key: string]: {
+      callback: (id: string) => void;
+      actionType: "danger" | "primary" | "secondary";
+    };
+  };
   onRowClick?: (id: string) => void;
   primaryColumnIndex?: number;
 }) {
@@ -106,14 +118,30 @@ export default function Table({
                         )}
                       </td>
                     ))}
-                    {rowActions && showRowActions && showRowActions(item.id) ? (
+                    {rowActions && (
                       <td className="relative whitespace-nowrap py-4 pl-3 pr-6 text-right text-sm font-medium lg:pr-8">
                         <div className="inline-flex space-x-2">
-                          {rowActions.map((action) => action(item.id))}
+                          {Object.entries(rowActions).map(([name, action]) => (
+                            <button
+                              className={classNames(
+                                action.actionType === "primary" &&
+                                  "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
+                                action.actionType === "secondary" &&
+                                  "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
+                                action.actionType === "danger" &&
+                                  "bg-red-600 hover:bg-red-700 focus:ring-red-500",
+                                "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+                              )}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                                action.callback(item.id);
+                              }}
+                            >
+                              {properText(name)}
+                            </button>
+                          ))}
                         </div>
                       </td>
-                    ) : (
-                      <div className="w-full bg-white" />
                     )}
                   </tr>
                 ))}
