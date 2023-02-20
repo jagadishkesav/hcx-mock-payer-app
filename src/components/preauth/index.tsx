@@ -8,6 +8,7 @@ import Loading from "../common/Loading";
 
 type PreAuthDetail = {
   id: string;
+  request_id: string;
   request_no: string;
   name: string;
   items: Item[];
@@ -30,6 +31,7 @@ export function preAuthMapper(preauth: any) : PreAuthDetail {
 
   return {
     id: preauth.request_id,
+    request_id: preauth.request_id,
     request_no: identifier.value,
     name,
     items,
