@@ -1,4 +1,4 @@
-export const API_BASE_URL = process.env.NEXT_PUBLIC_API_BASE_URL;
+export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 const request = (options: any) => {
   const headers = new Headers({
@@ -38,6 +38,82 @@ export function clearAccessTokens() {
 export function login(data: { username: string; password: string }) {
   return request({
     url: API_BASE_URL + "/auth/login",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function claims(data: { username: string; password: string }) {
+  return request({
+    url: API_BASE_URL + "/claims?" + urlParams(data),
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function listRequest(data: { type: string }) {
+  return request({
+    url: API_BASE_URL + "/request/list",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function approveCoverageEligibilityRequest(data: {
+  request_id: string;
+}) {
+  return request({
+    url: API_BASE_URL + "/coverageeligibility/approve",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function rejectCoverageEligibilityRequest(data: { request_id: string }) {
+  return request({
+    url: API_BASE_URL + "/coverageeligibility/reject",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function approvePreauth(data: {
+  request_id: string;
+  type: string;
+  remarks: string;
+  approved_amount: number;
+}) {
+  return request({
+    url: API_BASE_URL + "/preauth/approve",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function rejectPreauth(data: { request_id: string; type: string }) {
+  return request({
+    url: API_BASE_URL + "/preauth/reject",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function approveClaim(data: {
+  request_id: string;
+  type: string;
+  remarks: string;
+  approved_amount: number;
+}) {
+  return request({
+    url: API_BASE_URL + "/claim/approve",
+    method: "POST",
+    body: JSON.stringify(data),
+  });
+}
+
+export function rejectClaim(data: { request_id: string; type: string }) {
+  return request({
+    url: API_BASE_URL + "/claim/reject",
     method: "POST",
     body: JSON.stringify(data),
   });

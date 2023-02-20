@@ -1,10 +1,12 @@
-import { Fragment, useState } from "react";
+import React, { Fragment, useState } from "react";
 import { Dialog, Transition } from "@headlessui/react";
 
 export default function Modal({
+  className,
   onClose,
   children,
 }: {
+  className?: string;
   onClose: () => void;
   children: React.ReactNode;
 }) {
@@ -39,7 +41,9 @@ export default function Modal({
               leaveFrom="opacity-100 translate-y-0 sm:scale-100"
               leaveTo="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
             >
-              <div onClick={(e) => e.stopPropagation()}>{children}</div>
+              <div className={className} onClick={(e) => e.stopPropagation()}>
+                {children}
+              </div>
             </Transition.Child>
           </div>
         </div>

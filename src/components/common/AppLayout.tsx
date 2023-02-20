@@ -14,19 +14,19 @@ import { Link } from "raviger";
 import { usePath } from "raviger";
 
 const navigation = [
-  { name: "Dashboard", href: "/", icon: HomeIcon, current: true },
-  { name: "Claims", href: "/claims", icon: CheckBadgeIcon, current: false },
+  { name: "Dashboard", href: "/", icon: HomeIcon },
+  { name: "Claims", href: "/claims", icon: CheckBadgeIcon},
   {
     name: "Coverage Eligibility",
     href: "/coverage",
     icon: ClipboardDocumentCheckIcon,
-    current: false,
   },
-  { name: "Reports", href: "/reports", icon: ChartBarIcon, current: false },
+  { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon},
+  { name: "Reports", href: "/reports", icon: ChartBarIcon },
 ];
 
 // Classes function that accepts a list of class names and returns a string
-function classNames(...classes: any[]) {
+export function classNames(...classes: any[]) {
   return classes.filter(Boolean).join(" ");
 }
 
@@ -136,7 +136,7 @@ export default function Layout({ children }: any) {
                   </nav>
                 </div>
                 <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-                  <a href="#" className="group block flex-shrink-0">
+                  <div className="group block flex-shrink-0">
                     <div className="flex items-center">
                       <div>
                         <img
@@ -154,7 +154,7 @@ export default function Layout({ children }: any) {
                         </p>
                       </div>
                     </div>
-                  </a>
+                  </div>
                 </div>
               </Dialog.Panel>
             </Transition.Child>
@@ -202,7 +202,7 @@ export default function Layout({ children }: any) {
             </nav>
           </div>
           <div className="flex flex-shrink-0 border-t border-gray-200 p-4">
-            <a href="#" className="group block w-full flex-shrink-0">
+            <div className="group block w-full flex-shrink-0">
               <div className="flex items-center">
                 <div>
                   <img
@@ -220,7 +220,7 @@ export default function Layout({ children }: any) {
                   </p>
                 </div>
               </div>
-            </a>
+            </div>
           </div>
         </div>
       </div>
@@ -236,7 +236,7 @@ export default function Layout({ children }: any) {
           </button>
           <img className="h-10" src={logo} alt="Swasth Alliance" />
         </div>
-        <main className="flex-1 py-6">
+        <main className="flex-1 py-6 bg-gray-100">
           <div className="h-full mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
             <div className="h-full py-4">{children}</div>
           </div>

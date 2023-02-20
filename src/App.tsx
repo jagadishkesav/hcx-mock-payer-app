@@ -21,7 +21,7 @@ function App() {
         pauseOnHover
         theme="dark"
       />
-      {auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />}
+      {true ? <AppRouter /> : <PublicRouter />}
     </div>
   );
 }

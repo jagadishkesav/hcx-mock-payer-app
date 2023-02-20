@@ -2,8 +2,6 @@ import { useAuthActions } from "../../recoil/actions/auth.actions";
 import logo from "../../swasth_logo.png";
 
 export default function Login() {
-  // 2 column layout with Text on left 1/3rd and Login Form on right 2/3rd
-  // TailwindCSS styling
 
   const { login } = useAuthActions();
   return (
