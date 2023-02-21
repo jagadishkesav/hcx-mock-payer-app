@@ -2,7 +2,6 @@ import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
-import { formatDate } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
 
@@ -112,8 +111,6 @@ export function claimsMapper(claim: any): ClaimDetail {
     }
   );
 
-
-
   return {
     id: claim.request_id,
     request_id: claim.request_id,
@@ -127,7 +124,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     insurance_no,
     requested_amount,
     ...parseAdditionalInfo(claim.additional_info),
-    ...(claim.status === "Pending" && {approved_amount: "-" }),
+    ...(claim.status === "Pending" && { approved_amount: "-" }),
     status: claim.status,
     resources,
   };
