@@ -1,15 +1,16 @@
 import React, { useEffect, useState } from "react";
-import { properText, resoureType } from "../../utils/StringUtils";
+import { properText } from "../../utils/StringUtils";
 import { approveClaim, listRequest, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
-import { navigate } from "raviger";
 import { ClaimDetail, claimsMapper } from ".";
 import Table from "../common/Table";
 import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
-import { ArrowTopRightOnSquareIcon, DocumentIcon, PaperClipIcon } from "@heroicons/react/24/outline";
+import {
+  PaperClipIcon,
+} from "@heroicons/react/24/outline";
 import Checklist, { ChecklistItem } from "../common/Checklist";
 
 export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
@@ -42,11 +43,18 @@ export function FinancialInfo({
   claim,
   ...props
 }: { claim: ClaimDetail } & RejectApproveHandlers) {
+  const medical_info = claim.medical_info;
   const financial_info = claim.financial_info;
   const [approvedAmount, setApprovedAmount] = React.useState(
-    financial_info.approved_amount ||
-    claim.medical_info.approved_amount ||
-    claim.requested_amount
+    parseFloat(
+      (
+        financial_info.approved_amount ||
+        claim.medical_info.approved_amount ||
+        claim.requested_amount
+      )
+        .toString()
+        .replace("INR ", "")
+    )
   );
   const [remarks, setRemarks] = React.useState(financial_info.remarks);
   const status = financial_info.status;
@@ -90,7 +98,7 @@ export function FinancialInfo({
           <dt className="text-sm font-medium text-gray-500">Approval Amount</dt>
           <dd className="mt-1 text-sm text-gray-900">
             <input
-              onChange={(e) => setApprovedAmount(parseInt(e.target.value))}
+              onChange={(e) => setApprovedAmount(e.target.valueAsNumber)}
               min={0}
               value={approvedAmount}
               disabled={status !== "Pending"}
@@ -112,34 +120,37 @@ export function FinancialInfo({
         </div>
       </dl>
 
-      {claim.financial_info.status === "Pending" && (
-        <div className="flex flex-row justify-end w-full space-x-4 p-5">
-          <button
-            onClick={() =>
-              props.handleReject({
-                request_id: claim.request_id,
-                type: "financial",
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Reject
-          </button>
-          <button
-            onClick={() =>
-              props.handleApprove({
-                request_id: claim.request_id,
-                type: "financial",
-                approved_amount: approvedAmount,
-                remarks,
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Approve
-          </button>
-        </div>
-      )}
+      {claim.financial_info.status === "Pending" &&
+        claim.status === "Pending" && (
+          <div className="flex flex-row justify-end w-full space-x-4 p-5">
+            <button
+              disabled={medical_info.status !== "Approved"}
+              onClick={() =>
+                props.handleReject({
+                  request_id: claim.request_id,
+                  type: "financial",
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Reject
+            </button>
+            <button
+              disabled={medical_info.status !== "Approved"}
+              onClick={() =>
+                props.handleApprove({
+                  request_id: claim.request_id,
+                  type: "financial",
+                  approved_amount: approvedAmount,
+                  remarks,
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Approve
+            </button>
+          </div>
+        )}
     </div>
   );
 }
@@ -149,7 +160,11 @@ export function MedicalInfo({
   ...props
 }: { claim: ClaimDetail } & RejectApproveHandlers) {
   const [approvedAmount, setApprovedAmount] = React.useState(
-    claim.medical_info.approved_amount || claim.requested_amount
+    parseFloat(
+      (claim.medical_info.approved_amount || claim.requested_amount)
+        .toString()
+        .replace("INR ", "")
+    )
   );
   const [remarks, setRemarks] = React.useState(claim.medical_info.remarks);
   const status = claim.medical_info.status;
@@ -200,34 +215,35 @@ export function MedicalInfo({
           </dd>
         </div>
       </dl>
-      {claim.medical_info.status === "Pending" && (
-        <div className="flex flex-row justify-end w-full space-x-4 p-5">
-          <button
-            onClick={() =>
-              props.handleReject({
-                request_id: claim.request_id,
-                type: "medical",
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Reject
-          </button>
-          <button
-            onClick={() =>
-              props.handleApprove({
-                request_id: claim.request_id,
-                type: "medical",
-                approved_amount: approvedAmount,
-                remarks,
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Approve
-          </button>
-        </div>
-      )}
+      {claim.medical_info.status === "Pending" &&
+        claim.status === "Pending" && (
+          <div className="flex flex-row justify-end w-full space-x-4 p-5">
+            <button
+              onClick={() =>
+                props.handleReject({
+                  request_id: claim.request_id,
+                  type: "medical",
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Reject
+            </button>
+            <button
+              onClick={() =>
+                props.handleApprove({
+                  request_id: claim.request_id,
+                  type: "medical",
+                  approved_amount: approvedAmount,
+                  remarks,
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Approve
+            </button>
+          </div>
+        )}
     </div>
   );
 }
@@ -241,7 +257,7 @@ export function PatientDetails({ claim }: { claim: any }) {
     "insurance_no",
     "gender",
     "status",
-    "address"
+    "address",
   ];
 
   const supportingFiles = claim.resources.claim.supportingInfo;
@@ -258,23 +274,24 @@ export function PatientDetails({ claim }: { claim: any }) {
                   {properText(name)}
                 </dt>
                 <dd className="text-sm text-black">
-                  {name === "status" ? <StatusChip status={detail} /> : (
-                    name === "address" ? (
-                      <div className="">
-                        {detail?.map((a: any, i: number) => {
-                          return (
-                            <div key={i}>
-                              {a.text},
-                              <br />
-                              {a.city}, {a.state}, {a.postalCode},
-                              <br />
-                              {a.country}
-                            </div>
-                          )
-                        }) || "--"}
-                      </div>
-                    ) :
-                      detail
+                  {name === "status" ? (
+                    <StatusChip status={detail} />
+                  ) : name === "address" ? (
+                    <div className="">
+                      {detail?.map((a: any, i: number) => {
+                        return (
+                          <div key={i}>
+                            {a.text},
+                            <br />
+                            {a.city}, {a.state}, {a.postalCode},
+                            <br />
+                            {a.country}
+                          </div>
+                        );
+                      }) || "--"}
+                    </div>
+                  ) : (
+                    detail
                   )}
                 </dd>
               </div>
@@ -282,55 +299,70 @@ export function PatientDetails({ claim }: { claim: any }) {
           })}
       </dl>
       <dl className="mt-8">
-        <dt className="font-semibold mb-4">
-          Supporting Files
-        </dt>
+        <dt className="font-semibold mb-4">Supporting Files</dt>
         <dd>
-          {supportingFiles ?
-            <ul role="list" className="divide-y divide-gray-200 rounded-md border border-gray-200">
+          {supportingFiles ? (
+            <ul
+              role="list"
+              className="divide-y divide-gray-200 rounded-md border border-gray-200"
+            >
               {supportingFiles.map((file: any) => {
-                console.log(file)
+                console.log(file);
                 return (
                   <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                     <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon className="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                      <a className="ml-2 w-0 flex-1 truncate hover:text-indigo-500" href={file.valueAttachment.url} target="_blank" >{file.valueAttachment.title || "File"}</a>
+                      <PaperClipIcon
+                        className="h-5 w-5 flex-shrink-0 text-gray-400"
+                        aria-hidden="true"
+                      />
+                      <a
+                        className="ml-2 w-0 flex-1 truncate hover:text-indigo-500"
+                        href={file.valueAttachment.url}
+                        target="_blank"
+                      >
+                        {file.valueAttachment.title || "File"}
+                      </a>
                     </div>
                     <div className="ml-4 flex-shrink-0">
-                      <a href={file.valueAttachment.url} download className="font-medium text-indigo-600 hover:text-indigo-500">
+                      <a
+                        href={file.valueAttachment.url}
+                        download
+                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                      >
                         Download
                       </a>
                     </div>
                   </li>
-                )
+                );
               })}
             </ul>
-            : <p className="text-gray-500 text-sm">No supporting files</p>}
+          ) : (
+            <p className="text-gray-500 text-sm">No supporting files</p>
+          )}
         </dd>
       </dl>
     </div>
   );
 }
 
-const handleReject = ({ request_id, type }: any) => {
-  rejectClaim({ request_id, type });
-  toast("Claim Rejected", {
-    type: "success",
-  });
-  navigate("/claims");
+const handleReject = async ({ request_id, type }: any) => {
+  await rejectClaim({ request_id, type });
+  toast("Claim Rejected", { type: "success" });
 };
 
-const handleApprove = ({ request_id, type, remarks, approved_amount }: any) => {
-  approveClaim({
+const handleApprove = async ({
+  request_id,
+  type,
+  remarks,
+  approved_amount,
+}: any) => {
+  await approveClaim({
     request_id,
     type,
     remarks,
     approved_amount,
   });
-  toast("Claim Approved", {
-    type: "success",
-  });
-  navigate("/claims");
+  toast("Claim Approved", { type: "success" });
 };
 
 export default function ClaimDetails({ request_id }: { request_id: string }) {
@@ -342,7 +374,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     const claim = res.claim.find(
       (claim: any) => claim.request_id === request_id
     );
-    return claimsMapper(claim);
+    setClaim(claimsMapper(claim));
   }
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
@@ -389,7 +421,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
 
 
   useEffect(() => {
-    getClaims().then(setClaim);
+    getClaims();
   }, [request_id]);
 
   const tabList = [
@@ -404,8 +436,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <MedicalInfo
           claim={claim}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getClaims();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getClaims();
+          }}
         />
       ),
     },
@@ -415,8 +453,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <FinancialInfo
           claim={claim}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getClaims();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getClaims();
+          }}
         />
       ),
     },
@@ -426,12 +470,8 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
 
   return (
     <div>
-      <Heading
-        heading="Claim Details"
-      />
-      <p className="text-sm italic text-gray-500 mb-8">
-        Claim Id: {claim.id}
-      </p>
+      <Heading heading="Claim Details" />
+      <p className="text-sm italic text-gray-500 mb-8">Claim Id: {claim.id}</p>
       <div className="flex gap-8">
         <Tabs
           tabs={tabList}
@@ -450,7 +490,6 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
           />
         )}
       </div>
-
     </div>
-  )
+  );
 }
