@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { properText, resoureType } from "../../utils/StringUtils";
+import { properText } from "../../utils/StringUtils";
 import { approveClaim, listRequest, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
-import { navigate } from "raviger";
 import { ClaimDetail, claimsMapper } from ".";
 import Table from "../common/Table";
 import Loading from "../common/Loading";

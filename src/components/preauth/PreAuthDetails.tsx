@@ -2,13 +2,11 @@ import React, { useEffect } from "react";
 
 import { approvePreauth, listRequest, rejectPreauth } from "../../api/api";
 import { toast } from "react-toastify";
-import { navigate } from "raviger";
 import { preAuthMapper } from ".";
 import {
   FinancialInfo,
   MedicalInfo,
   PatientDetails,
-  Tabss,
 } from "../claims/ClaimDetails";
 import Loading from "../common/Loading";
 import Heading from "../common/Heading";

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import { listRequest } from "../../api/api";
-import { resoureType } from "../../utils/StringUtils";
 import { navigate } from "raviger";
 import {
   IAdditionalInfo,
@@ -31,7 +30,7 @@ type PreAuthDetail = {
     coverage: object;
     claim: object;
   };
-  address: any
+  address: any;
 };
 
 export function preAuthMapper(preauth: any): PreAuthDetail {
@@ -63,7 +62,7 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     insurance_no: resources.coverage.subscriberId,
     requested_amount,
     ...parseAdditionalInfo(preauth.additional_info),
-    ...(preauth.status === "Pending" && {approved_amount: "-" }),
+    ...(preauth.status === "Pending" && { approved_amount: "-" }),
     status: preauth.status,
     resources,
   };
