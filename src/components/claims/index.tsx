@@ -48,6 +48,7 @@ export type ClaimDetail = {
   name: string;
   gender: string;
   provider: string;
+  address: string;
   items: Item[];
   diagnosis: Diagnosis[];
   insurance_no: string;
@@ -110,6 +111,8 @@ export function claimsMapper(claim: any): ClaimDetail {
 
   const provider = resources.claim.provider.name;
 
+
+
   return {
     id: claim.request_id,
     request_id: claim.request_id,
@@ -118,6 +121,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     gender,
     items,
     provider,
+    address: resources.patient.address,
     diagnosis: diagnosis,
     insurance_no,
     requested_amount: total && currencyObjToString(total),

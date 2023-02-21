@@ -32,6 +32,7 @@ type PreAuthDetail = {
     coverage: object;
     claim: object;
   };
+  address: any
 };
 
 export function preAuthMapper(preauth: any): PreAuthDetail {
@@ -58,6 +59,7 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     name: resources.patient.name[0].text,
     gender: resources.patient.gender,
     provider: resources.claim.provider.name,
+    address: resources.patient.address,
     items,
     insurance_no: resources.coverage.subscriberId,
     requested_amount,
