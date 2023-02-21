@@ -71,6 +71,9 @@ export function currencyObjToString({
   currency: string;
   value: number;
 }) {
+  if (typeof value === "string") {
+    value = parseFloat((value as any).split(' ')[1])
+  }
   return currency + " " + value.toFixed(2);
 }
 
@@ -98,7 +101,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     coverage: unbundleAs(claim.payload, "Coverage").resource,
     claim: unbundleAs(claim.payload, "Claim").resource,
   };
- 
+
   const name = resources.patient.name[0].text;
   const gender = resources.patient.gender;
 
