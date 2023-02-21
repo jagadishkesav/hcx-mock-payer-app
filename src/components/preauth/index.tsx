@@ -22,36 +22,39 @@ type PreAuthDetail = {
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
+  resources: {
+    patient: object;
+    coverage: object;
+    claim: object;
+  }
 };
 
 export function preAuthMapper(preauth: any) : PreAuthDetail {
   const { entry, identifier } = preauth.payload;
+  
+  const resources = {
+    patient: unbundleAs(preauth.payload, "Patient").resource,
+    coverage: unbundleAs(preauth.payload, "Coverage").resource,
+    claim: unbundleAs(preauth.payload, "Claim").resource,
+  };
 
-  const patientResourceType = entry.find(resoureType("Patient"))?.resource;
-
-  const name = patientResourceType.name[0].text;
-  const gender = patientResourceType.gender;
-
-  const insurance_no = entry.find(resoureType("Coverage"))?.resource.subscriberId;
-  const items = entry.find(resoureType("Claim"))?.resource.item as Item[];
+  const items = resources.claim.item as Item[];
   const requested_amount = entry.find(resoureType("Claim"))?.resource.total ?? currencyObjToString({ currency: "INR", value: items.map(i => i.unitPrice.value).reduce((a, b) => a + b) });
-
-  const unbundled = unbundleAs(preauth.payload, "Claim");
-  const provider = unbundled.resource.provider.name;
 
   return {
     id: preauth.request_id,
     request_id: preauth.request_id,
     request_no: identifier.value,
-    name,
-    gender,
-    provider,
+    name: resources.patient.name[0].text,
+    gender: resources.patient.gender,
+    provider: resources.claim.provider.name,
     items,
-    insurance_no,
+    insurance_no: resources.coverage.subscriberId,
     requested_amount,
     ...parseAdditionalInfo(preauth.additional_info),
     expiry: "2023-12-12",
     status: preauth.status,
+    resources,
   };  
 }
 

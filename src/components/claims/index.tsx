@@ -57,6 +57,11 @@ export type ClaimDetail = {
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
+  resources: {
+    patient: object;
+    coverage: object;
+    claim: object;
+  }
 };
 
 export function currencyObjToString({
@@ -86,21 +91,22 @@ export function parseAdditionalInfo(additional_info: any) {
 }
 
 export function claimsMapper(claim: any): ClaimDetail {
-  const { entry, identifier } = claim.payload;
+  const { identifier } = claim.payload;
 
-  const patientResourceType = entry.find(resoureType("Patient"))?.resource;
+  const resources = {
+    patient: unbundleAs(claim.payload, "Patient").resource,
+    coverage: unbundleAs(claim.payload, "Coverage").resource,
+    claim: unbundleAs(claim.payload, "Claim").resource,
+  };
+ 
+  const name = resources.patient.name[0].text;
+  const gender = resources.patient.gender;
 
-  const name = patientResourceType.name[0].text;
-  const gender = patientResourceType.gender;
+  const insurance_no = resources.coverage.subscriberId;
+  const { total, items, diagnosis } = resources.claim;
 
-  const insurance_no = entry.find(resoureType("Coverage"))?.resource
-    .subscriberId;
-  const { total, items, diagnosis } = entry.find(
-    resoureType("Claim")
-  )?.resource;
+  const provider = resources.claim.provider.name;
 
-  const unbundled = unbundleAs(claim.payload, "Claim");
-  const provider = unbundled.resource.provider.name;
   return {
     id: claim.request_id,
     request_id: claim.request_id,
@@ -115,6 +121,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     ...parseAdditionalInfo(claim.additional_info),
     expiry: "2023-12-12",
     status: claim.status,
+    resources
   };
 }
 
