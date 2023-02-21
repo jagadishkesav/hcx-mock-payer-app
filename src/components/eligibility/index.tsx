@@ -11,7 +11,7 @@ import { toast } from "react-toastify";
 import { resoureType } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
 
-const unbundleAs = (bundle: any, resourceType: string) => {
+export const unbundleAs = (bundle: any, resourceType: string) => {
   const baseEntry = bundle.entry.find((entry: any) => {
     return entry.resource.resourceType === resourceType;
   });

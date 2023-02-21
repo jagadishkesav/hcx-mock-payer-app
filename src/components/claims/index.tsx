@@ -4,6 +4,7 @@ import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
 import { resoureType } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
+import { unbundleAs } from "../eligibility";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -45,6 +46,8 @@ export type ClaimDetail = {
   request_id: string;
   request_no: string;
   name: string;
+  gender: string;
+  provider: string;
   items: Item[];
   diagnosis: Diagnosis[];
   insurance_no: string;
@@ -85,19 +88,27 @@ export function parseAdditionalInfo(additional_info: any) {
 export function claimsMapper(claim: any): ClaimDetail {
   const { entry, identifier } = claim.payload;
 
-  const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
+  const patientResourceType = entry.find(resoureType("Patient"))?.resource;
+
+  const name = patientResourceType.name[0].text;
+  const gender = patientResourceType.gender;
+
   const insurance_no = entry.find(resoureType("Coverage"))?.resource
     .subscriberId;
   const { total, items, diagnosis } = entry.find(
     resoureType("Claim")
   )?.resource;
 
+  const unbundled = unbundleAs(claim.payload, "Claim");
+  const provider = unbundled.resource.provider.name;
   return {
     id: claim.request_id,
     request_id: claim.request_id,
     request_no: identifier.value,
     name,
+    gender,
     items,
+    provider,
     diagnosis: diagnosis,
     insurance_no,
     requested_amount: total && currencyObjToString(total),
@@ -132,6 +143,7 @@ export default function Claims() {
           "requested_amount",
           "approved_amount",
           "expiry",
+          "provider",
           "status",
         ]}
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}

@@ -234,8 +234,10 @@ export function PatientDetails({ claim }: { claim: any }) {
   const includeFields = [
     "request_id",
     "request_no",
+    "provider",
     "name",
     "insurance_no",
+    "gender",
     "status",
   ];
 

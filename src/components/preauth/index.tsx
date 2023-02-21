@@ -5,12 +5,15 @@ import { resoureType } from "../../utils/StringUtils";
 import { navigate } from "raviger";
 import { IAdditionalInfo, Item, parseAdditionalInfo, currencyObjToString } from "../claims";
 import Loading from "../common/Loading";
+import { unbundleAs } from "../eligibility";
 
 type PreAuthDetail = {
   id: string;
   request_id: string;
   request_no: string;
   name: string;
+  gender: string;
+  provider: string;
   items: Item[];
   insurance_no: string;
   requested_amount: string;
@@ -24,16 +27,25 @@ type PreAuthDetail = {
 export function preAuthMapper(preauth: any) : PreAuthDetail {
   const { entry, identifier } = preauth.payload;
 
-  const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
+  const patientResourceType = entry.find(resoureType("Patient"))?.resource;
+
+  const name = patientResourceType.name[0].text;
+  const gender = patientResourceType.gender;
+
   const insurance_no = entry.find(resoureType("Coverage"))?.resource.subscriberId;
   const items = entry.find(resoureType("Claim"))?.resource.item as Item[];
   const requested_amount = entry.find(resoureType("Claim"))?.resource.total ?? currencyObjToString({ currency: "INR", value: items.map(i => i.unitPrice.value).reduce((a, b) => a + b) });
+
+  const unbundled = unbundleAs(preauth.payload, "Claim");
+  const provider = unbundled.resource.provider.name;
 
   return {
     id: preauth.request_id,
     request_id: preauth.request_id,
     request_no: identifier.value,
     name,
+    gender,
+    provider,
     items,
     insurance_no,
     requested_amount,
@@ -68,6 +80,7 @@ export default function PreAuths() {
           "approved_amount",
           "requested_amount",
           "expiry",
+          "provider",
           "status",
         ]}
         onRowClick={(id) => navigate(`/preauths/${id}`)}
