@@ -10,7 +10,7 @@ import {
   currencyObjToString,
 } from "../claims";
 import Loading from "../common/Loading";
-import unbundleAs from "../../utils/unbundleAs";
+import { unbundleAs } from "../../utils/fhirUtils";
 
 type PreAuthDetail = {
   id: string;
@@ -23,7 +23,6 @@ type PreAuthDetail = {
   insurance_no: string;
   requested_amount: string;
   approved_amount: string;
-  expiry: string;
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
@@ -62,7 +61,6 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     insurance_no: resources.coverage.subscriberId,
     requested_amount,
     ...parseAdditionalInfo(preauth.additional_info),
-    expiry: "2023-12-12",
     status: preauth.status,
     resources,
   };

@@ -10,7 +10,7 @@ import CoverageDetail from "./CoverageDetail";
 import { toast } from "react-toastify";
 import { formatDate } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
-import unbundleAs from "../../utils/unbundleAs";
+import { unbundleAs } from "../../utils/fhirUtils";
 
 function coverageEligibilityMapper(coverage: any) {
   const { resource } = unbundleAs(

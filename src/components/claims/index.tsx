@@ -2,9 +2,9 @@ import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
-import { resoureType } from "../../utils/StringUtils";
+import { formatDate } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
-import unbundleAs from "../../utils/unbundleAs";
+import { unbundleAs } from "../../utils/fhirUtils";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -53,7 +53,6 @@ export type ClaimDetail = {
   insurance_no: string;
   requested_amount: string;
   approved_amount: string;
-  expiry: string;
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
@@ -72,7 +71,7 @@ export function currencyObjToString({
   value: number;
 }) {
   if (typeof value === "string") {
-    value = parseFloat((value as any).split(' ')[1])
+    value = parseFloat((value as any).split(" ")[1]);
   }
   return currency + " " + value.toFixed(2);
 }
@@ -102,27 +101,21 @@ export function claimsMapper(claim: any): ClaimDetail {
     claim: unbundleAs(claim.payload, "Claim").resource,
   };
 
-  const name = resources.patient.name[0].text;
-  const gender = resources.patient.gender;
-
   const insurance_no = resources.coverage.subscriberId;
   const { total, items, diagnosis } = resources.claim;
-
-  const provider = resources.claim.provider.name;
 
   return {
     id: claim.request_id,
     request_id: claim.request_id,
     request_no: identifier.value,
-    name,
-    gender,
+    name: resources.patient.name[0].text,
+    gender: resources.patient.gender,
     items,
-    provider,
+    provider: resources.claim.provider.name,
     diagnosis: diagnosis,
     insurance_no,
     requested_amount: total && currencyObjToString(total),
     ...parseAdditionalInfo(claim.additional_info),
-    expiry: "2023-12-12",
     status: claim.status,
     resources,
   };
@@ -152,7 +145,6 @@ export default function Claims() {
           "insurance_no",
           "requested_amount",
           "approved_amount",
-          "expiry",
           "provider",
           "status",
         ]}
