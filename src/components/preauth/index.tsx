@@ -10,7 +10,7 @@ import {
   currencyObjToString,
 } from "../claims";
 import Loading from "../common/Loading";
-import unbundleAs from "../../utils/unbundleAs";
+import { unbundleAs } from "../../utils/fhirUtils";
 
 type PreAuthDetail = {
   id: string;
@@ -23,7 +23,6 @@ type PreAuthDetail = {
   insurance_no: string;
   requested_amount: string;
   approved_amount: string;
-  expiry: string;
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
@@ -36,7 +35,7 @@ type PreAuthDetail = {
 };
 
 export function preAuthMapper(preauth: any): PreAuthDetail {
-  const { entry, identifier } = preauth.payload;
+  const { identifier } = preauth.payload;
 
   const resources = {
     patient: unbundleAs(preauth.payload, "Patient").resource,
@@ -45,12 +44,12 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
   };
 
   const items = resources.claim.item as Item[];
-  const requested_amount =
-    entry.find(resoureType("Claim"))?.resource.total ??
-    currencyObjToString({
+  const requested_amount = currencyObjToString(
+    resources.claim.total ?? {
       currency: "INR",
       value: items.map((i) => i.unitPrice.value).reduce((a, b) => a + b),
-    });
+    }
+  );
 
   return {
     id: preauth.request_id,
@@ -64,7 +63,6 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     insurance_no: resources.coverage.subscriberId,
     requested_amount,
     ...parseAdditionalInfo(preauth.additional_info),
-    expiry: "2023-12-12",
     status: preauth.status,
     resources,
   };

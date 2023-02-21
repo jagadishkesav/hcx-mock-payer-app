@@ -1,4 +1,4 @@
-export default function unbundleAs(bundle: any, resourceType: string) {
+export const unbundleAs = (bundle: any, resourceType: string) => {
   const baseEntry = bundle.entry.find((entry: any) => {
     return entry.resource.resourceType === resourceType;
   });
@@ -23,4 +23,4 @@ export default function unbundleAs(bundle: any, resourceType: string) {
   };
 
   return replaceReferences(baseEntry);
-}
+};
