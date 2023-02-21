@@ -4,10 +4,16 @@ import { approvePreauth, listRequest, rejectPreauth } from "../../api/api";
 import { toast } from "react-toastify";
 import { navigate } from "raviger";
 import { preAuthMapper } from ".";
-import { FinancialInfo, MedicalInfo, PatientDetails, Tabss } from "../claims/ClaimDetails";
+import {
+  FinancialInfo,
+  MedicalInfo,
+  PatientDetails,
+} from "../claims/ClaimDetails";
 import Loading from "../common/Loading";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
+
+import { JsonViewer } from "@textea/json-viewer";
 
 const handleReject = ({ request_id, type }: any) => {
   rejectPreauth({ request_id, type });
@@ -80,20 +86,20 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
 
   return (
     <div>
-      <Heading
-        heading="Pre Auth Details"
-      />
-      <div className="flex gap-8">
+      <Heading heading="Pre Auth Details" />
+      <div className="flex flex-col gap-8">
         <Tabs
           tabs={tabList}
           activeTab={activeTab}
           setActiveTab={(next: any) => setActiveTab(next)}
         />
-        <div>
-
+        <div
+          className="whitespace-pre
+        "
+        >
+          <JsonViewer value={preauth.resources.claim} />
         </div>
       </div>
-
     </div>
-  )
+  );
 }

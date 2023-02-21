@@ -9,28 +9,12 @@ import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
-import { ArrowTopRightOnSquareIcon, DocumentIcon, PaperClipIcon } from "@heroicons/react/24/outline";
-
-export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
-  return (
-    <div className="flex flex-col justify-start w-1/4 space-y-4 mt-8">
-      {tabs.map((tab: any) => (
-        <button
-          key={tab.id}
-          className={`py-3 text-sm bg-white rounded-lg ${activeTab === tab.id
-            ? "border-r-2 transform border-blue-500 font-bold"
-            : " transform -translate-x-2"
-            }`}
-          onClick={(e) => {
-            setActiveTab(tab.id);
-          }}
-        >
-          {tab.name}
-        </button>
-      ))}
-    </div>
-  );
-};
+import {
+  ArrowTopRightOnSquareIcon,
+  DocumentIcon,
+  PaperClipIcon,
+} from "@heroicons/react/24/outline";
+import { JsonViewer } from "@textea/json-viewer";
 
 interface RejectApproveHandlers {
   handleReject: typeof handleReject;
@@ -44,8 +28,8 @@ export function FinancialInfo({
   const financial_info = claim.financial_info;
   const [approvedAmount, setApprovedAmount] = React.useState(
     financial_info.approved_amount ||
-    claim.medical_info.approved_amount ||
-    claim.requested_amount
+      claim.medical_info.approved_amount ||
+      claim.requested_amount
   );
   const [remarks, setRemarks] = React.useState(financial_info.remarks);
   const status = financial_info.status;
@@ -240,7 +224,7 @@ export function PatientDetails({ claim }: { claim: any }) {
     "insurance_no",
     "gender",
     "status",
-    "address"
+    "address",
   ];
 
   const supportingFiles = claim.resources.claim.supportingInfo;
@@ -257,23 +241,24 @@ export function PatientDetails({ claim }: { claim: any }) {
                   {properText(name)}
                 </dt>
                 <dd className="text-sm text-black">
-                  {name === "status" ? <StatusChip status={detail} /> : (
-                    name === "address" ? (
-                      <div className="">
-                        {detail?.map((a: any, i: number) => {
-                          return (
-                            <div key={i}>
-                              {a.text},
-                              <br />
-                              {a.city}, {a.state}, {a.postalCode},
-                              <br />
-                              {a.country}
-                            </div>
-                          )
-                        }) || "--"}
-                      </div>
-                    ) :
-                      detail
+                  {name === "status" ? (
+                    <StatusChip status={detail} />
+                  ) : name === "address" ? (
+                    <div className="">
+                      {detail?.map((a: any, i: number) => {
+                        return (
+                          <div key={i}>
+                            {a.text},
+                            <br />
+                            {a.city}, {a.state}, {a.postalCode},
+                            <br />
+                            {a.country}
+                          </div>
+                        );
+                      }) || "--"}
+                    </div>
+                  ) : (
+                    detail
                   )}
                 </dd>
               </div>
@@ -281,30 +266,46 @@ export function PatientDetails({ claim }: { claim: any }) {
           })}
       </dl>
       <dl className="mt-8">
-        <dt className="font-semibold mb-4">
-          Supporting Files
-        </dt>
+        <dt className="font-semibold mb-4">Supporting Files</dt>
         <dd>
-          {supportingFiles ?
-            <ul role="list" className="divide-y divide-gray-200 rounded-md border border-gray-200">
+          {supportingFiles ? (
+            <ul
+              role="list"
+              className="divide-y divide-gray-200 rounded-md border border-gray-200"
+            >
               {supportingFiles.map((file: any) => {
-                console.log(file)
+                console.log(file);
                 return (
                   <li className="flex items-center justify-between py-3 pl-3 pr-4 text-sm">
                     <div className="flex w-0 flex-1 items-center">
-                      <PaperClipIcon className="h-5 w-5 flex-shrink-0 text-gray-400" aria-hidden="true" />
-                      <a className="ml-2 w-0 flex-1 truncate hover:text-indigo-500" href={file.valueAttachment.url} target="_blank" >{file.valueAttachment.title || "File"}</a>
+                      <PaperClipIcon
+                        className="h-5 w-5 flex-shrink-0 text-gray-400"
+                        aria-hidden="true"
+                      />
+                      <a
+                        className="ml-2 w-0 flex-1 truncate hover:text-indigo-500"
+                        href={file.valueAttachment.url}
+                        target="_blank"
+                      >
+                        {file.valueAttachment.title || "File"}
+                      </a>
                     </div>
                     <div className="ml-4 flex-shrink-0">
-                      <a href={file.valueAttachment.url} download className="font-medium text-indigo-600 hover:text-indigo-500">
+                      <a
+                        href={file.valueAttachment.url}
+                        download
+                        className="font-medium text-indigo-600 hover:text-indigo-500"
+                      >
                         Download
                       </a>
                     </div>
                   </li>
-                )
+                );
               })}
             </ul>
-            : <p className="text-gray-500 text-sm">No supporting files</p>}
+          ) : (
+            <p className="text-gray-500 text-sm">No supporting files</p>
+          )}
         </dd>
       </dl>
     </div>
@@ -382,23 +383,18 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
 
   return (
     <div>
-      <Heading
-        heading="Claim Details"
-      />
-      <p className="text-sm italic text-gray-500 mb-8">
-        Claim Id: {claim.id}
-      </p>
-      <div className="flex gap-8">
+      <Heading heading="Claim Details" />
+      <p className="text-sm italic text-gray-500 mb-8">Claim Id: {claim.id}</p>
+      <div className="flex flex-col gap-8">
         <Tabs
           tabs={tabList}
           activeTab={activeTab}
           setActiveTab={(next: any) => setActiveTab(next)}
         />
         <div>
-
+          <JsonViewer value={claim.resources.claim} />
         </div>
       </div>
-
     </div>
-  )
+  );
 }
