@@ -62,17 +62,16 @@ export default function Table({
       <div className="mt-8 flow-root">
         <div className="-my-2 -mx-6 overflow-x-auto lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle">
-            <table className="min-w-full divide-y divide-gray-300">
+            <table className="min-w-full divide-y divide-gray-300 relative overflow-hidden rounded-lg">
               <thead className="bg-gray-200">
                 <tr>
                   {headers.map((header, index) => (
                     <th
                       scope="col"
                       className={classNames(
-                        `${
-                          index === 0
-                            ? "py-3.5 pl-6 pr-3 lg:pl-8"
-                            : "px-3 py-3.5"
+                        `${index === 0
+                          ? "py-3.5 pl-6 pr-3 lg:pl-8"
+                          : "px-3 py-3.5"
                         }`,
                         "text-left text-sm font-semibold text-gray-900"
                       )}
@@ -125,17 +124,17 @@ export default function Table({
                             <button
                               className={classNames(
                                 item.showActions !== false &&
-                                  action.actionType === "primary" &&
-                                  "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
+                                action.actionType === "primary" &&
+                                "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
                                 item.showActions !== false &&
-                                  action.actionType === "secondary" &&
-                                  "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
+                                action.actionType === "secondary" &&
+                                "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
                                 item.showActions !== false &&
-                                  action.actionType === "danger" &&
-                                  "bg-red-600 hover:bg-red-700 focus:ring-red-500",
+                                action.actionType === "danger" &&
+                                "bg-red-600 hover:bg-red-700 focus:ring-red-500",
                                 // showActions === false ? disabled
                                 item.showActions === false &&
-                                  "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
+                                "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
                                 "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
                               )}
                               onClick={(e) => {
