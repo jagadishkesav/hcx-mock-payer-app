@@ -16,7 +16,7 @@ export default function CoverageDetail({ onAction, coverage }: any) {
 
   const handleApprove = () => {
     approveCoverageEligibilityRequest({ request_id: coverage.request_id });
-    toast("Aproved Coverage Eligibility Request", { type: "success" });
+    toast("Approved Coverage Eligibility Request", { type: "success" });
     onAction();
   };
 
