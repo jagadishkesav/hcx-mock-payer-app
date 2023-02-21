@@ -63,6 +63,7 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     insurance_no: resources.coverage.subscriberId,
     requested_amount,
     ...parseAdditionalInfo(preauth.additional_info),
+    ...(preauth.status === "Pending" && {approved_amount: "-" }),
     status: preauth.status,
     resources,
   };

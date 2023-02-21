@@ -127,6 +127,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     insurance_no,
     requested_amount,
     ...parseAdditionalInfo(claim.additional_info),
+    ...(claim.status === "Pending" && {approved_amount: "-" }),
     status: claim.status,
     resources,
   };
