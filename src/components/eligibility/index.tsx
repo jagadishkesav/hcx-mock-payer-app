@@ -8,35 +8,9 @@ import {
 } from "../../api/api";
 import CoverageDetail from "./CoverageDetail";
 import { toast } from "react-toastify";
-import { formatDate, resoureType } from "../../utils/StringUtils";
+import { formatDate } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
-
-export const unbundleAs = (bundle: any, resourceType: string) => {
-  const baseEntry = bundle.entry.find((entry: any) => {
-    return entry.resource.resourceType === resourceType;
-  });
-
-  // Find all nested keys named "reference" and replace them with the actual resource
-  const replaceReferences = (obj: any) => {
-    if (obj === null || typeof obj !== "object") {
-      return obj;
-    } else if (obj.reference) {
-      const reference = obj.reference;
-      const resource = bundle.entry.find((entry: any) => {
-        return entry.fullUrl === reference;
-      })?.resource;
-
-      return resource;
-    } else {
-      Object.keys(obj).forEach((key) => {
-        obj[key] = replaceReferences(obj[key]);
-      });
-    }
-    return obj;
-  };
-
-  return replaceReferences(baseEntry);
-};
+import unbundleAs from "../../utils/unbundleAs";
 
 function coverageEligibilityMapper(coverage: any) {
   const { resource } = unbundleAs(

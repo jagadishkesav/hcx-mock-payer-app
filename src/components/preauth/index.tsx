@@ -3,9 +3,14 @@ import Table from "../common/Table";
 import { listRequest } from "../../api/api";
 import { resoureType } from "../../utils/StringUtils";
 import { navigate } from "raviger";
-import { IAdditionalInfo, Item, parseAdditionalInfo, currencyObjToString } from "../claims";
+import {
+  IAdditionalInfo,
+  Item,
+  parseAdditionalInfo,
+  currencyObjToString,
+} from "../claims";
 import Loading from "../common/Loading";
-import { unbundleAs } from "../eligibility";
+import unbundleAs from "../../utils/unbundleAs";
 
 type PreAuthDetail = {
   id: string;
@@ -26,12 +31,12 @@ type PreAuthDetail = {
     patient: object;
     coverage: object;
     claim: object;
-  }
+  };
 };
 
-export function preAuthMapper(preauth: any) : PreAuthDetail {
+export function preAuthMapper(preauth: any): PreAuthDetail {
   const { entry, identifier } = preauth.payload;
-  
+
   const resources = {
     patient: unbundleAs(preauth.payload, "Patient").resource,
     coverage: unbundleAs(preauth.payload, "Coverage").resource,
@@ -39,7 +44,12 @@ export function preAuthMapper(preauth: any) : PreAuthDetail {
   };
 
   const items = resources.claim.item as Item[];
-  const requested_amount = entry.find(resoureType("Claim"))?.resource.total ?? currencyObjToString({ currency: "INR", value: items.map(i => i.unitPrice.value).reduce((a, b) => a + b) });
+  const requested_amount =
+    entry.find(resoureType("Claim"))?.resource.total ??
+    currencyObjToString({
+      currency: "INR",
+      value: items.map((i) => i.unitPrice.value).reduce((a, b) => a + b),
+    });
 
   return {
     id: preauth.request_id,
@@ -55,7 +65,7 @@ export function preAuthMapper(preauth: any) : PreAuthDetail {
     expiry: "2023-12-12",
     status: preauth.status,
     resources,
-  };  
+  };
 }
 
 export async function getPreAuths(): Promise<PreAuthDetail[]> {
