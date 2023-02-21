@@ -8,7 +8,7 @@ import {
 } from "../../api/api";
 import CoverageDetail from "./CoverageDetail";
 import { toast } from "react-toastify";
-import { resoureType } from "../../utils/StringUtils";
+import { formatDate, resoureType } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
 
 export const unbundleAs = (bundle: any, resourceType: string) => {
@@ -39,24 +39,24 @@ export const unbundleAs = (bundle: any, resourceType: string) => {
 };
 
 function coverageEligibilityMapper(coverage: any) {
-  const { entry, identifier } = coverage.payload;
+  const { resource } = unbundleAs(
+    coverage.payload,
+    "CoverageEligibilityRequest"
+  );
 
-  const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
-  const insurance_no = entry.find(resoureType("Coverage"))?.resource
-    .subscriberId;
-  const servicedPeriod = entry.find(resoureType("CoverageEligibilityRequest"))
-    ?.resource.servicedPeriod;
-
-  console.log(unbundleAs(coverage.payload, "CoverageEligibilityRequest"), " ");
   return {
     id: coverage.request_id,
     request_id: coverage.request_id,
-    request_no: identifier.value,
-    name,
-    insurance_no,
-    expiry: "2023-12-31",
+    request_no: resource.id,
+    name: resource.patient?.name[0].text,
+    provider: resource.provider.name,
+    insurance_no: resource.insurance[0].coverage.subscriberId,
     status: coverage.status,
-    servicedPeriod,
+    servicedPeriod: resource.servicedPeriod,
+    expiry: resource.servicedPeriod?.end
+      ? formatDate(resource.servicedPeriod.end)
+      : "",
+    resource,
   };
 }
 
@@ -90,7 +90,14 @@ export default function CoverageEligibilityHome() {
     <>
       <Table
         title="Coverage Eligibility"
-        headers={["request_no", "name", "insurance_no", "expiry", "status"]}
+        headers={[
+          "request_no",
+          "name",
+          "provider",
+          "insurance_no",
+          "expiry",
+          "status",
+        ]}
         onRowClick={setSelectedRequest}
         data={coverageEligibilityRequests.map((coverage) => ({
           ...coverage,
