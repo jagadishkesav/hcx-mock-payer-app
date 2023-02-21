@@ -1,8 +1,7 @@
 import React, { useEffect } from "react";
-import { properText, resoureType } from "../../utils/StringUtils";
+import { properText } from "../../utils/StringUtils";
 import { approveClaim, listRequest, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
-import { navigate } from "raviger";
 import { ClaimDetail, claimsMapper } from ".";
 import Table from "../common/Table";
 import Loading from "../common/Loading";
@@ -16,6 +15,28 @@ import {
 } from "@heroicons/react/24/outline";
 import { JsonViewer } from "@textea/json-viewer";
 
+export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
+  return (
+    <div className="flex flex-col justify-start w-1/4 space-y-4 mt-8">
+      {tabs.map((tab: any) => (
+        <button
+          key={tab.id}
+          className={`py-3 text-sm bg-white rounded-lg ${
+            activeTab === tab.id
+              ? "border-r-2 transform border-blue-500 font-bold"
+              : " transform -translate-x-2"
+          }`}
+          onClick={(e) => {
+            setActiveTab(tab.id);
+          }}
+        >
+          {tab.name}
+        </button>
+      ))}
+    </div>
+  );
+};
+
 interface RejectApproveHandlers {
   handleReject: typeof handleReject;
   handleApprove: typeof handleApprove;
@@ -25,11 +46,18 @@ export function FinancialInfo({
   claim,
   ...props
 }: { claim: ClaimDetail } & RejectApproveHandlers) {
+  const medical_info = claim.medical_info;
   const financial_info = claim.financial_info;
   const [approvedAmount, setApprovedAmount] = React.useState(
-    financial_info.approved_amount ||
-      claim.medical_info.approved_amount ||
-      claim.requested_amount
+    parseFloat(
+      (
+        financial_info.approved_amount ||
+        claim.medical_info.approved_amount ||
+        claim.requested_amount
+      )
+        .toString()
+        .replace("INR ", "")
+    )
   );
   const [remarks, setRemarks] = React.useState(financial_info.remarks);
   const status = financial_info.status;
@@ -73,7 +101,7 @@ export function FinancialInfo({
           <dt className="text-sm font-medium text-gray-500">Approval Amount</dt>
           <dd className="mt-1 text-sm text-gray-900">
             <input
-              onChange={(e) => setApprovedAmount(parseInt(e.target.value))}
+              onChange={(e) => setApprovedAmount(e.target.valueAsNumber)}
               min={0}
               value={approvedAmount}
               disabled={status !== "Pending"}
@@ -95,34 +123,37 @@ export function FinancialInfo({
         </div>
       </dl>
 
-      {claim.financial_info.status === "Pending" && (
-        <div className="flex flex-row justify-end w-full space-x-4 p-5">
-          <button
-            onClick={() =>
-              props.handleReject({
-                request_id: claim.request_id,
-                type: "financial",
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Reject
-          </button>
-          <button
-            onClick={() =>
-              props.handleApprove({
-                request_id: claim.request_id,
-                type: "financial",
-                approved_amount: approvedAmount,
-                remarks,
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Approve
-          </button>
-        </div>
-      )}
+      {claim.financial_info.status === "Pending" &&
+        claim.status === "Pending" && (
+          <div className="flex flex-row justify-end w-full space-x-4 p-5">
+            <button
+              disabled={medical_info.status !== "Approved"}
+              onClick={() =>
+                props.handleReject({
+                  request_id: claim.request_id,
+                  type: "financial",
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Reject
+            </button>
+            <button
+              disabled={medical_info.status !== "Approved"}
+              onClick={() =>
+                props.handleApprove({
+                  request_id: claim.request_id,
+                  type: "financial",
+                  approved_amount: approvedAmount,
+                  remarks,
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Approve
+            </button>
+          </div>
+        )}
     </div>
   );
 }
@@ -132,7 +163,11 @@ export function MedicalInfo({
   ...props
 }: { claim: ClaimDetail } & RejectApproveHandlers) {
   const [approvedAmount, setApprovedAmount] = React.useState(
-    claim.medical_info.approved_amount || claim.requested_amount
+    parseFloat(
+      (claim.medical_info.approved_amount || claim.requested_amount)
+        .toString()
+        .replace("INR ", "")
+    )
   );
   const [remarks, setRemarks] = React.useState(claim.medical_info.remarks);
   const status = claim.medical_info.status;
@@ -183,34 +218,35 @@ export function MedicalInfo({
           </dd>
         </div>
       </dl>
-      {claim.medical_info.status === "Pending" && (
-        <div className="flex flex-row justify-end w-full space-x-4 p-5">
-          <button
-            onClick={() =>
-              props.handleReject({
-                request_id: claim.request_id,
-                type: "medical",
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Reject
-          </button>
-          <button
-            onClick={() =>
-              props.handleApprove({
-                request_id: claim.request_id,
-                type: "medical",
-                approved_amount: approvedAmount,
-                remarks,
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Approve
-          </button>
-        </div>
-      )}
+      {claim.medical_info.status === "Pending" &&
+        claim.status === "Pending" && (
+          <div className="flex flex-row justify-end w-full space-x-4 p-5">
+            <button
+              onClick={() =>
+                props.handleReject({
+                  request_id: claim.request_id,
+                  type: "medical",
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Reject
+            </button>
+            <button
+              onClick={() =>
+                props.handleApprove({
+                  request_id: claim.request_id,
+                  type: "medical",
+                  approved_amount: approvedAmount,
+                  remarks,
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Approve
+            </button>
+          </div>
+        )}
     </div>
   );
 }
@@ -312,25 +348,24 @@ export function PatientDetails({ claim }: { claim: any }) {
   );
 }
 
-const handleReject = ({ request_id, type }: any) => {
-  rejectClaim({ request_id, type });
-  toast("Claim Rejected", {
-    type: "success",
-  });
-  navigate("/claims");
+const handleReject = async ({ request_id, type }: any) => {
+  await rejectClaim({ request_id, type });
+  toast("Claim Rejected", { type: "success" });
 };
 
-const handleApprove = ({ request_id, type, remarks, approved_amount }: any) => {
-  approveClaim({
+const handleApprove = async ({
+  request_id,
+  type,
+  remarks,
+  approved_amount,
+}: any) => {
+  await approveClaim({
     request_id,
     type,
     remarks,
     approved_amount,
   });
-  toast("Claim Approved", {
-    type: "success",
-  });
-  navigate("/claims");
+  toast("Claim Approved", { type: "success" });
 };
 
 export default function ClaimDetails({ request_id }: { request_id: string }) {
@@ -342,11 +377,11 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     const claim = res.claim.find(
       (claim: any) => claim.request_id === request_id
     );
-    return claimsMapper(claim);
+    setClaim(claimsMapper(claim));
   }
 
   useEffect(() => {
-    getClaims().then(setClaim);
+    getClaims();
   }, [request_id]);
 
   const tabList = [
@@ -361,8 +396,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <MedicalInfo
           claim={claim}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getClaims();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getClaims();
+          }}
         />
       ),
     },
@@ -372,8 +413,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <FinancialInfo
           claim={claim}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getClaims();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getClaims();
+          }}
         />
       ),
     },
