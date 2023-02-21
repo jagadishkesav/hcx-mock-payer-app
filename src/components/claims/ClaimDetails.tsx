@@ -348,13 +348,18 @@ export function PatientDetails({ claim }: { claim: any }) {
   );
 }
 
-const handleReject = ({ request_id, type }: any) => {
-  rejectClaim({ request_id, type });
+const handleReject = async ({ request_id, type }: any) => {
+  await rejectClaim({ request_id, type });
   toast("Claim Rejected", { type: "success" });
 };
 
-const handleApprove = ({ request_id, type, remarks, approved_amount }: any) => {
-  approveClaim({
+const handleApprove = async ({
+  request_id,
+  type,
+  remarks,
+  approved_amount,
+}: any) => {
+  await approveClaim({
     request_id,
     type,
     remarks,
@@ -372,11 +377,11 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     const claim = res.claim.find(
       (claim: any) => claim.request_id === request_id
     );
-    return claimsMapper(claim);
+    setClaim(claimsMapper(claim));
   }
 
   useEffect(() => {
-    getClaims().then(setClaim);
+    getClaims();
   }, [request_id]);
 
   const tabList = [
@@ -391,8 +396,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <MedicalInfo
           claim={claim}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getClaims();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getClaims();
+          }}
         />
       ),
     },
@@ -402,8 +413,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <FinancialInfo
           claim={claim}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getClaims();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getClaims();
+          }}
         />
       ),
     },

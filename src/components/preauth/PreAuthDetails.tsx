@@ -4,7 +4,12 @@ import { approvePreauth, listRequest, rejectPreauth } from "../../api/api";
 import { toast } from "react-toastify";
 import { navigate } from "raviger";
 import { preAuthMapper } from ".";
-import { FinancialInfo, MedicalInfo, PatientDetails, Tabss } from "../claims/ClaimDetails";
+import {
+  FinancialInfo,
+  MedicalInfo,
+  PatientDetails,
+  Tabss,
+} from "../claims/ClaimDetails";
 import Loading from "../common/Loading";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
@@ -14,7 +19,6 @@ const handleReject = ({ request_id, type }: any) => {
   toast("Pre Auth Rejected", {
     type: "success",
   });
-  navigate("/preauths");
 };
 
 const handleApprove = ({ request_id, type, remarks, approved_amount }: any) => {
@@ -27,7 +31,6 @@ const handleApprove = ({ request_id, type, remarks, approved_amount }: any) => {
   toast("Pre Auth Approved", {
     type: "success",
   });
-  navigate("/preauths");
 };
 
 export default function PreAuthDetails({ request_id }: { request_id: string }) {
@@ -39,11 +42,11 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
     const preauth = res.preauth.find(
       (preauth: any) => preauth.request_id === request_id
     );
-    return preAuthMapper(preauth);
+    return setPreauth(preAuthMapper(preauth));
   }
 
   useEffect(() => {
-    getPreAuths().then(setPreauth);
+    getPreAuths();
   }, [request_id]);
 
   const tabList = [
@@ -58,8 +61,14 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
       children: (
         <MedicalInfo
           claim={preauth}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getPreAuths();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getPreAuths();
+          }}
         />
       ),
     },
@@ -69,8 +78,14 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
       children: (
         <FinancialInfo
           claim={preauth}
-          handleApprove={handleApprove}
-          handleReject={handleReject}
+          handleApprove={async (e) => {
+            await handleApprove(e);
+            getPreAuths();
+          }}
+          handleReject={async (e) => {
+            await handleReject(e);
+            getPreAuths();
+          }}
         />
       ),
     },
@@ -80,20 +95,15 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
 
   return (
     <div>
-      <Heading
-        heading="Pre Auth Details"
-      />
+      <Heading heading="Pre Auth Details" />
       <div className="flex gap-8">
         <Tabs
           tabs={tabList}
           activeTab={activeTab}
           setActiveTab={(next: any) => setActiveTab(next)}
         />
-        <div>
-
-        </div>
+        <div></div>
       </div>
-
     </div>
-  )
+  );
 }
