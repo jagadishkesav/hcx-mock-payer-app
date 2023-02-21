@@ -34,7 +34,7 @@ type PreAuthDetail = {
 };
 
 export function preAuthMapper(preauth: any): PreAuthDetail {
-  const { entry, identifier } = preauth.payload;
+  const { identifier } = preauth.payload;
 
   const resources = {
     patient: unbundleAs(preauth.payload, "Patient").resource,
@@ -43,12 +43,12 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
   };
 
   const items = resources.claim.item as Item[];
-  const requested_amount =
-    entry.find(resoureType("Claim"))?.resource.total ??
-    currencyObjToString({
+  const requested_amount = currencyObjToString(
+    resources.claim.total ?? {
       currency: "INR",
       value: items.map((i) => i.unitPrice.value).reduce((a, b) => a + b),
-    });
+    }
+  );
 
   return {
     id: preauth.request_id,

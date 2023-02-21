@@ -102,7 +102,14 @@ export function claimsMapper(claim: any): ClaimDetail {
   };
 
   const insurance_no = resources.coverage.subscriberId;
-  const { total, items, diagnosis } = resources.claim;
+  const diagnosis = resources.claim.diagnosis as Diagnosis[];
+  const items = resources.claim.item as Item[];
+  const requested_amount = currencyObjToString(
+    resources.claim.total ?? {
+      currency: "INR",
+      value: items.map((i) => i.unitPrice.value).reduce((a, b) => a + b),
+    }
+  );
 
   return {
     id: claim.request_id,
@@ -114,7 +121,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     provider: resources.claim.provider.name,
     diagnosis: diagnosis,
     insurance_no,
-    requested_amount: total && currencyObjToString(total),
+    requested_amount,
     ...parseAdditionalInfo(claim.additional_info),
     status: claim.status,
     resources,
