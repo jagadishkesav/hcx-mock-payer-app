@@ -4,7 +4,7 @@ import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
 import { resoureType } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
-import { unbundleAs } from "../eligibility";
+import unbundleAs from "../../utils/unbundleAs";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -61,7 +61,7 @@ export type ClaimDetail = {
     patient: object;
     coverage: object;
     claim: object;
-  }
+  };
 };
 
 export function currencyObjToString({
@@ -124,7 +124,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     ...parseAdditionalInfo(claim.additional_info),
     expiry: "2023-12-12",
     status: claim.status,
-    resources
+    resources,
   };
 }
 
