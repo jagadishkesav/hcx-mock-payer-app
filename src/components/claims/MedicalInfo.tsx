@@ -7,30 +7,41 @@ import SupportingFiles from "./SupportingFiles";
 export default function MedicalInfo({
   claim,
   ...props
-}: { claim: ClaimDetail }) {
+}: {
+  claim: ClaimDetail;
+}) {
   const status = claim.medical_info.status;
   const supportingFiles = (claim as any).resources.claim.supportingInfo;
   return (
     <>
       <div className="p-6 bg-white rounded-lg">
-        <h1 className="font-bold">
-          Diagnosis
-        </h1>
+        <h1 className="font-bold">Diagnosis</h1>
         {claim.diagnosis && claim.diagnosis.length > 0 && (
           <Table
             title=""
-            headers={["display", "code", "text"]}
-            data={claim.diagnosis.map((item) => ({
-              id: item.diagnosisCodeableConcept.coding[0].code,
-              display: item.type[0].coding[0].display,
-              code: item.diagnosisCodeableConcept.coding[0].code,
-              text: item.diagnosisCodeableConcept.text,
-            }))}
+            headers={["display", "code"]}
+            data={[
+              ...claim.diagnosis
+                .filter(
+                  (item: any) => item.diagnosisCodeableConcept !== undefined
+                )
+                .map((item) => ({
+                  id: item.diagnosisCodeableConcept.coding[0].code,
+                  display: item.type[0].coding[0].display,
+                  code: item.diagnosisCodeableConcept.coding[0].code,
+                  // text: item.diagnosisCodeableConcept.text,
+                })),
+              ...claim.diagnosis
+                .filter((item: any) => item.diagnosisReference !== undefined)
+                .map((item: any) => ({
+                  id: item.diagnosisReference.code.coding[0].code,
+                  display: item.diagnosisReference.code.coding[0].display,
+                  code: item.diagnosisReference.code.coding[0].code,
+                })),
+            ]}
           />
         )}
-        <h1 className="font-bold mt-6">
-          Procedures
-        </h1>
+        <h1 className="font-bold mt-6">Procedures</h1>
         {/* using bill items temporarily */}
         {claim.items && claim.items.length > 0 && (
           <Table

@@ -85,7 +85,16 @@ export default function ClaimDetails({
     });
   }, [claim]);
 
-  const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([]);
+  const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([
+    {
+      id: "1",
+      name: "Proof of Identity Attached",
+    },
+    {
+      id: "2",
+      name: "Policy Active",
+    },
+  ]);
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
     {
@@ -143,6 +152,7 @@ export default function ClaimDetails({
       name: "General Details",
       children: <PatientDetails claim={claim} />,
       checklist: detailsChecklist,
+      setChecklist: setDetailsChecklist,
     },
     {
       id: "medical",
@@ -152,18 +162,6 @@ export default function ClaimDetails({
       setChecklist: setChecklist,
       approval: medicineApproval,
       setApproval: setMedicineApproval,
-      handleApproval: () =>
-        handleApprove({
-          request_id: claim.request_id,
-          type: "medical",
-          approved_amount: medicineApproval.amount,
-          remarks: medicineApproval.remarks,
-        }),
-      handleReject: () =>
-        handleReject({
-          request_id: claim.request_id,
-          type: "medical",
-        }),
     },
     {
       id: "financial",
@@ -173,18 +171,6 @@ export default function ClaimDetails({
       setChecklist: setFinancialCheckList,
       approval: medicineApproval,
       setApproval: setMedicineApproval,
-      handleApproval: () =>
-        handleApprove({
-          request_id: claim.request_id,
-          type: "medical",
-          approved_amount: medicineApproval.amount,
-          remarks: medicineApproval.remarks,
-        }),
-      handleReject: () =>
-        handleReject({
-          request_id: claim.request_id,
-          type: "medical",
-        }),
     },
   ];
   const currentTab = tabList.find((tab) => tab.id === activeTab);
@@ -194,16 +180,19 @@ export default function ClaimDetails({
       <Heading
         heading={
           <div className="flex flex-row mb-2">
-            <div className="flex items-center gap-2 mr-4">Claim Details</div>
+            <div className="flex items-center gap-2 mr-4">
+              {properText(use)} Details
+            </div>
             <StatusChip status={claim.status as any} size={"md"} />
           </div>
         }
       />
       <p className="text-sm italic text-gray-500">
-        Claim ID : <span className="font-mono">{claim.id}</span>
+        {properText(use)} ID : <span className="font-mono">{claim.id}</span>
       </p>
       <p className="text-sm italic text-gray-500 mb-6">
-        Claim No. : <span className="font-mono">{claim.request_no}</span>
+        {properText(use)} No. :{" "}
+        <span className="font-mono">{claim.request_no}</span>
       </p>
       <div className="flex flex-col gap-8">
         <div className="flex gap-8">
@@ -223,6 +212,10 @@ export default function ClaimDetails({
             approval={currentTab?.approval}
             setApproval={currentTab?.setApproval as any}
             onApprove={async (e: any) => {
+              if (activeTab === "patient_details") {
+                setActiveTab("medical");
+                return;
+              }
               await handleApprove(e);
               getClaims();
             }}

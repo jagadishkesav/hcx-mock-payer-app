@@ -6,6 +6,7 @@ import {
   CheckBadgeIcon,
   ClipboardDocumentCheckIcon,
   HomeIcon,
+  ShieldCheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
@@ -18,7 +19,7 @@ const navigation = [
   {
     name: "Coverage Eligibility",
     href: "/coverage",
-    icon: ClipboardDocumentCheckIcon,
+    icon: ShieldCheckIcon,
   },
   { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon },
   { name: "Claims", href: "/claims", icon: CheckBadgeIcon },
