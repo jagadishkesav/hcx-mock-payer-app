@@ -58,7 +58,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
   const [showJSON, setShowJSON] = React.useState(false);
 
   async function getClaims(): Promise<any> {
-    const res: any = await listRequest({ type: "claim" }, true);
+    const res: any = await listRequest({ type: "claim" });
     const claim = res.claim.find(
       (claim: any) => claim.request_id === request_id
     );

@@ -44,7 +44,7 @@ export default function PatientDetails({ claim }: { claim: any }) {
   console.log(claim);
   return (
     <>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col lg:flex-row gap-4">
         <div className="flex-1">
           <div className="h-full w-full p-6 bg-white rounded-lg">
             <div className="text-gray-500 text-base font-bold pb-4">
