@@ -150,7 +150,7 @@ export default function Claims() {
         title="Claims"
         headers={[
           "request_no", // last 8 digits of request_id
-          "patiant_name", // actually name
+          "patient_name", // actually name
           "insurance_no",
           "requested_amount",
           "approved_amount",
@@ -162,7 +162,7 @@ export default function Claims() {
           claims.map((claim) => ({
             ...claim,
             request_no: claim.request_no.slice(-8),
-            patiant_name: claim.name,
+            patient_name: claim.name,
           })) as any
         }
         primaryColumnIndex={1}
