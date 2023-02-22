@@ -51,10 +51,10 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     amount: 0,
   });
 
-  const [financialApproval, setFinancialApproval] = useState<{ remarks: string | undefined, amount: number }>({
+  /*const [financialApproval, setFinancialApproval] = useState<{ remarks: string | undefined, amount: number }>({
     remarks: "",
     amount: 0,
-  });
+  });*/
   const [showJSON, setShowJSON] = React.useState(false);
 
   async function getClaims(): Promise<any> {
@@ -119,7 +119,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     {
       id: "6",
       name: "Needed supporting documents available?"
-    }
+    },
   ])
 
   useEffect(() => {
@@ -142,22 +142,24 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <MedicalInfo
           claim={claim}
-          handleApprove={async (e) => {
-            await handleApprove(e);
-            getClaims();
-          }}
-          handleReject={async (e) => {
-            await handleReject(e);
-            getClaims();
-          }}
         />
       ),
-      checklist:
-        claim?.medical_info.status === "Pending" ? checklist : undefined,
-      setChecklist:
-        claim?.medical_info.status === "Pending" ? setChecklist : undefined,
+      checklist: checklist,
+      setChecklist: setChecklist,
       approval: medicineApproval,
       setApproval: setMedicineApproval,
+      handleApproval: () =>
+        handleApprove({
+          request_id: claim.request_id,
+          type: "medical",
+          approved_amount: medicineApproval.amount,
+          remarks: medicineApproval.remarks
+        }),
+      handleReject: () =>
+        handleReject({
+          request_id: claim.request_id,
+          type: "medical",
+        }),
     },
     {
       id: "financial",
@@ -167,16 +169,22 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
           claim={claim}
         />
       ),
-      checklist:
-        claim?.medical_info.status === "Pending"
-          ? financialCheckList
-          : undefined,
-      setChecklist:
-        claim?.medical_info.status === "Pending"
-          ? setFinancialCheckList
-          : undefined,
-      approval: financialApproval,
-      setApproval: setFinancialApproval,
+      checklist: financialCheckList,
+      setChecklist: setFinancialCheckList,
+      approval: medicineApproval,
+      setApproval: setMedicineApproval,
+      handleApproval: () =>
+        handleApprove({
+          request_id: claim.request_id,
+          type: "medical",
+          approved_amount: medicineApproval.amount,
+          remarks: medicineApproval.remarks
+        }),
+      handleReject: () =>
+        handleReject({
+          request_id: claim.request_id,
+          type: "medical",
+        }),
     },
   ];
   const currentTab = tabList.find((tab) => tab.id === activeTab);
@@ -205,8 +213,6 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
             setActiveTab={(next: any) => setActiveTab(next)}
           />
           <Checklist
-            className={`${currentTab?.checklist ? "w-1/3 " : "w-0"
-              } transition-all overflow-hidden`}
             scores={{
               pass: currentTab?.checklist?.length || 0,
               fail: 1,
@@ -216,6 +222,16 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
             setItems={currentTab?.setChecklist as any}
             approval={currentTab?.approval}
             setApproval={currentTab?.setApproval as any}
+            onApprove={async (e: any) => {
+              await handleApprove(e);
+              getClaims();
+            }}
+            onReject={async (e: any) => {
+              await handleReject(e);
+              getClaims();
+            }}
+            claim={claim}
+            type={activeTab as any}
           />
         </div>
 

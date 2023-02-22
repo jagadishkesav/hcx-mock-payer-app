@@ -2,22 +2,20 @@ import { ClaimDetail } from ".";
 import StatusChip from "../common/StatusChip";
 import Table from "../common/Table";
 import { RejectApproveHandlers } from "./ClaimDetails";
+import SupportingFiles from "./SupportingFiles";
 
 export default function MedicalInfo({
   claim,
   ...props
-}: { claim: ClaimDetail } & RejectApproveHandlers) {
+}: { claim: ClaimDetail }) {
   const status = claim.medical_info.status;
-
+  const supportingFiles = (claim as any).resources.claim.supportingInfo;
   return (
-    <div className="px-4 py-5 sm:px-6">
-      <dl>
-        <div className="sm:col-span-1">
-          <dt className="text-sm font-medium text-gray-500">Status</dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            {<StatusChip status={status} />}
-          </dd>
-        </div>
+    <>
+      <div className="p-6 bg-white rounded-lg">
+        <h1 className="font-bold">
+          Diagnosis
+        </h1>
         {claim.diagnosis && claim.diagnosis.length > 0 && (
           <Table
             title=""
@@ -30,7 +28,29 @@ export default function MedicalInfo({
             }))}
           />
         )}
+        <h1 className="font-bold mt-6">
+          Procedures
+        </h1>
+        {/* using bill items temporarily */}
+        {claim.items && claim.items.length > 0 && (
+          <Table
+            title=""
+            headers={["display", "code", "value"]}
+            data={claim.items.map((item: any) => ({
+              id: item.productOrService.coding[0].code,
+              display: item.productOrService.coding[0].display,
+              code: item.productOrService.coding[0].code,
+              value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
+            }))}
+          />
+        )}
+      </div>
+      <dl className="mt-8 rounded-lg bg-white p-6">
+        <div className="text-gray-500 text-base font-bold pb-4">
+          Supporting Files
+        </div>
+        <SupportingFiles supportingFiles={supportingFiles} />
       </dl>
-    </div>
+    </>
   );
 }
