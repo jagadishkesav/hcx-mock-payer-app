@@ -7,3 +7,7 @@ export const formatDate = (date: string) => {
   // in YYYY-MM-DD format
   return d.toISOString().split("T")[0];
 }
+
+export const textOrDash = (text: string) => {
+  return text ? text : "-";
+}

@@ -1,5 +1,5 @@
 import React from "react";
-import { properText } from "../../utils/StringUtils";
+import { properText, textOrDash } from "../../utils/StringUtils";
 import StatusChip from "./StatusChip";
 
 function classNames(...classes: any[]) {
@@ -67,11 +67,13 @@ export default function Table({
                 <tr>
                   {headers.map((header, index) => (
                     <th
+                      key={index}
                       scope="col"
                       className={classNames(
-                        `${index === 0
-                          ? "py-3.5 pl-6 pr-3 lg:pl-8"
-                          : "px-3 py-3.5"
+                        `${
+                          index === 0
+                            ? "py-3.5 pl-6 pr-3 lg:pl-8"
+                            : "px-3 py-3.5"
                         }`,
                         "text-left text-sm font-semibold text-gray-900"
                       )}
@@ -95,13 +97,16 @@ export default function Table({
                     key={item.id}
                     className={
                       onRowClick
-                        ? `hover:bg-gray-50 hover:text-gray-900 cursor-pointer ${index % 2 === 0 ? "bg-white/80" : "bg-white"}`
+                        ? `hover:bg-gray-50 hover:text-gray-900 cursor-pointer ${
+                            index % 2 === 0 ? "bg-white/80" : "bg-white"
+                          }`
                         : "bg-white"
                     }
                     onClick={() => onRowClick && onRowClick(item.id)}
                   >
                     {headers.map((header, index) => (
                       <td
+                        key={index}
                         className={classNames(
                           index === 0
                             ? "pl-6 pr-3 text-gray-900 lg:pl-8"
@@ -122,19 +127,20 @@ export default function Table({
                         <div className="inline-flex space-x-2">
                           {Object.entries(rowActions).map(([name, action]) => (
                             <button
+                              key={name}
                               className={classNames(
                                 item.showActions !== false &&
-                                action.actionType === "primary" &&
-                                "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
+                                  action.actionType === "primary" &&
+                                  "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
                                 item.showActions !== false &&
-                                action.actionType === "secondary" &&
-                                "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
+                                  action.actionType === "secondary" &&
+                                  "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
                                 item.showActions !== false &&
-                                action.actionType === "danger" &&
-                                "bg-red-600 hover:bg-red-700 focus:ring-red-500",
+                                  action.actionType === "danger" &&
+                                  "bg-red-600 hover:bg-red-700 focus:ring-red-500",
                                 // showActions === false ? disabled
                                 item.showActions === false &&
-                                "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
+                                  "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
                                 "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
                               )}
                               onClick={(e) => {
