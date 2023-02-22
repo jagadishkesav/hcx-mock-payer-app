@@ -66,7 +66,7 @@ export default function CoverageEligibilityHome() {
         title="Coverage Eligibility"
         headers={[
           "request_no",
-          "name",
+          "patient_name",
           "provider",
           "insurance_no",
           "expiry",
@@ -77,6 +77,8 @@ export default function CoverageEligibilityHome() {
           ...coverage,
           id: coverage.request_id,
           showActions: coverage.status === "Pending",
+          patient_name: coverage.name,
+          request_no: coverage.request_no.slice(-8),
         }))}
         rowActions={{
           approve: {

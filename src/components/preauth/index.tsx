@@ -88,7 +88,7 @@ export default function PreAuths() {
         title="Pre Auth"
         headers={[
           "request_no",
-          "name",
+          "patient_name",
           "insurance_no",
           "approved_amount",
           "requested_amount",
@@ -97,7 +97,13 @@ export default function PreAuths() {
           "status",
         ]}
         onRowClick={(id) => navigate(`/preauths/${id}`)}
-        data={preauths as any}
+        data={
+          preauths.map((preauth) => ({
+            ...preauth,
+            request_no: preauth.request_no.slice(-8),
+            patient_name: preauth.name,
+          })) as any
+        }
         primaryColumnIndex={1}
       />
     </>

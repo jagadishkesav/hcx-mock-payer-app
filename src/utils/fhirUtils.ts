@@ -4,7 +4,7 @@ export const unbundleAs = (bundle: any, resourceType: string) => {
   });
 
   // Find all nested keys named "reference" and replace them with the actual resource
-  const replaceReferences = (obj: any) => {
+  const replaceReferences = (obj: any, depth: number = 0) => {
     if (obj === null || typeof obj !== "object") {
       return obj;
     } else if (obj.reference) {
@@ -14,9 +14,9 @@ export const unbundleAs = (bundle: any, resourceType: string) => {
       })?.resource;
 
       return resource;
-    } else {
+    } else if (depth < 5) {
       Object.keys(obj).forEach((key) => {
-        obj[key] = replaceReferences(obj[key]);
+        obj[key] = replaceReferences(obj[key], depth + 1);
       });
     }
     return obj;

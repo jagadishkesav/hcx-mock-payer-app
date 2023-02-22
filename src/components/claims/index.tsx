@@ -149,8 +149,8 @@ export default function Claims() {
       <Table
         title="Claims"
         headers={[
-          "request_no",
-          "name",
+          "request_no", // last 8 digits of request_id
+          "patient_name", // actually name
           "insurance_no",
           "requested_amount",
           "approved_amount",
@@ -158,7 +158,13 @@ export default function Claims() {
           "status",
         ]}
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}
-        data={claims as any}
+        data={
+          claims.map((claim) => ({
+            ...claim,
+            request_no: claim.request_no.slice(-8),
+            patient_name: claim.name,
+          })) as any
+        }
         primaryColumnIndex={1}
       />
     </>

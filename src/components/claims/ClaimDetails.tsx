@@ -8,10 +8,10 @@ import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
-import {
-  PaperClipIcon,
-} from "@heroicons/react/24/outline";
+import { PaperClipIcon } from "@heroicons/react/24/outline";
 import Checklist, { ChecklistItem } from "../common/Checklist";
+
+import { JsonViewer } from "@textea/json-viewer";
 
 export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
   return (
@@ -20,8 +20,8 @@ export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
         <button
           key={tab.id}
           className={`py-3 text-sm bg-white rounded-lg ${activeTab === tab.id
-            ? "border-r-2 transform border-blue-500 font-bold"
-            : " transform -translate-x-2"
+              ? "border-r-2 transform border-blue-500 font-bold"
+              : " transform -translate-x-2"
             }`}
           onClick={(e) => {
             setActiveTab(tab.id);
@@ -126,7 +126,6 @@ export function MedicalInfo({
             }))}
           />
         )}
-
       </dl>
     </div>
   );
@@ -265,11 +264,13 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
 
   useEffect(() => {
     if (!claim) return;
-    setApprovedAmount(parseFloat(
-      (claim.medical_info.approved_amount || claim.requested_amount)
-        .toString()
-        .replace("INR ", "")
-    ));
+    setApprovedAmount(
+      parseFloat(
+        (claim.medical_info.approved_amount || claim.requested_amount)
+          .toString()
+          .replace("INR ", "")
+      )
+    );
     setRemarks(claim.medical_info.remarks);
   }, [claim]);
 
@@ -315,7 +316,6 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     }
   ])
 
-
   useEffect(() => {
     getClaims();
   }, [request_id]);
@@ -342,60 +342,66 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
           }}
         />
       ),
-      checklist: claim?.medical_info.status === "Pending" ? checklist : undefined,
-      setChecklist: claim?.medical_info.status === "Pending" ? setChecklist : undefined,
-      checkListForm: <>
-        <div className="sm:col-span-2 mt-4">
-          <dt className="text-sm font-medium text-gray-500">Approval Amount</dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            <input
-              onChange={(e) => setApprovedAmount(parseInt(e.target.value))}
-              min={0}
-              value={approvedAmount}
-              disabled={claim?.status !== "Pending"}
-              type="number"
-              className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </dd>
-        </div>
-        <div className="sm:col-span-2 mt-4">
-          <dt className="text-sm font-medium text-gray-500">Remarks</dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            <textarea
-              onChange={(e) => setRemarks(e.target.value)}
-              value={remarks}
-              disabled={claim?.status !== "Pending"}
-              className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            ></textarea>
-          </dd>
-        </div>
-        <div className="flex flex-row justify-end w-full space-x-4 p-5">
-          <button
-            onClick={() =>
-              handleReject({
-                request_id: claim.request_id,
-                type: "medical",
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-          >
-            Reject
-          </button>
-          <button
-            onClick={() =>
-              handleApprove({
-                request_id: claim.request_id,
-                type: "medical",
-                approved_amount: approvedAmount,
-                remarks,
-              })
-            }
-            className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          >
-            Approve
-          </button>
-        </div>
-      </>
+      checklist:
+        claim?.medical_info.status === "Pending" ? checklist : undefined,
+      setChecklist:
+        claim?.medical_info.status === "Pending" ? setChecklist : undefined,
+      checkListForm: (
+        <>
+          <div className="sm:col-span-2 mt-4">
+            <dt className="text-sm font-medium text-gray-500">
+              Approval Amount
+            </dt>
+            <dd className="mt-1 text-sm text-gray-900">
+              <input
+                onChange={(e) => setApprovedAmount(parseInt(e.target.value))}
+                min={0}
+                value={approvedAmount}
+                disabled={claim?.status !== "Pending"}
+                type="number"
+                className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </dd>
+          </div>
+          <div className="sm:col-span-2 mt-4">
+            <dt className="text-sm font-medium text-gray-500">Remarks</dt>
+            <dd className="mt-1 text-sm text-gray-900">
+              <textarea
+                onChange={(e) => setRemarks(e.target.value)}
+                value={remarks}
+                disabled={claim?.status !== "Pending"}
+                className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              ></textarea>
+            </dd>
+          </div>
+          <div className="flex flex-row justify-end w-full space-x-4 p-5">
+            <button
+              onClick={() =>
+                handleReject({
+                  request_id: claim.request_id,
+                  type: "medical",
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+            >
+              Reject
+            </button>
+            <button
+              onClick={() =>
+                handleApprove({
+                  request_id: claim.request_id,
+                  type: "medical",
+                  approved_amount: approvedAmount,
+                  remarks,
+                })
+              }
+              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+            >
+              Approve
+            </button>
+          </div>
+        </>
+      ),
     },
     {
       id: "financial",
@@ -413,65 +419,75 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
           }}
         />
       ),
-      checklist: claim?.medical_info.status === "Pending" ? financialCheckList : undefined,
-      setChecklist: claim?.medical_info.status === "Pending" ? setFinancialCheckList : undefined,
-      checkListForm: <>
-        <div className="sm:col-span-2 mt-2">
-          <dt className="text-sm font-medium text-gray-500">Approval Amount</dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            <input
-              onChange={(e) => setApprovedAmount(e.target.valueAsNumber)}
-              min={0}
-              value={approvedAmount}
-              disabled={claim?.status !== "Pending"}
-              type="number"
-              className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            />
-          </dd>
-        </div>
-        <div className="sm:col-span-2">
-          <dt className="text-sm font-medium text-gray-500">Remarks</dt>
-          <dd className="mt-1 text-sm text-gray-900">
-            <textarea
-              onChange={(e) => setRemarks(e.target.value)}
-              value={remarks}
-              disabled={claim?.financial_info.status !== "Pending"}
-              className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-            ></textarea>
-          </dd>
-        </div>
-        {claim?.financial_info.status === "Pending" &&
-          claim.status === "Pending" && (
-            <div className="flex flex-row justify-end w-full space-x-4 p-5">
-              <button
-                disabled={claim?.medical_info.status !== "Approved"}
-                onClick={() =>
-                  handleReject({
-                    request_id: claim.request_id,
-                    type: "financial",
-                  })
-                }
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-              >
-                Reject
-              </button>
-              <button
-                disabled={claim?.medical_info.status !== "Approved"}
-                onClick={() =>
-                  handleApprove({
-                    request_id: claim.request_id,
-                    type: "financial",
-                    approved_amount: approvedAmount,
-                    remarks,
-                  })
-                }
-                className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-              >
-                Approve
-              </button>
-            </div>
-          )}
-      </>
+      checklist:
+        claim?.medical_info.status === "Pending"
+          ? financialCheckList
+          : undefined,
+      setChecklist:
+        claim?.medical_info.status === "Pending"
+          ? setFinancialCheckList
+          : undefined,
+      checkListForm: (
+        <>
+          <div className="sm:col-span-2 mt-2">
+            <dt className="text-sm font-medium text-gray-500">
+              Approval Amount
+            </dt>
+            <dd className="mt-1 text-sm text-gray-900">
+              <input
+                onChange={(e) => setApprovedAmount(e.target.valueAsNumber)}
+                min={0}
+                value={approvedAmount}
+                disabled={claim?.status !== "Pending"}
+                type="number"
+                className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              />
+            </dd>
+          </div>
+          <div className="sm:col-span-2">
+            <dt className="text-sm font-medium text-gray-500">Remarks</dt>
+            <dd className="mt-1 text-sm text-gray-900">
+              <textarea
+                onChange={(e) => setRemarks(e.target.value)}
+                value={remarks}
+                disabled={claim?.financial_info.status !== "Pending"}
+                className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
+              ></textarea>
+            </dd>
+          </div>
+          {claim?.financial_info.status === "Pending" &&
+            claim.status === "Pending" && (
+              <div className="flex flex-row justify-end w-full space-x-4 p-5">
+                <button
+                  disabled={claim?.medical_info.status !== "Approved"}
+                  onClick={() =>
+                    handleReject({
+                      request_id: claim.request_id,
+                      type: "financial",
+                    })
+                  }
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
+                >
+                  Reject
+                </button>
+                <button
+                  disabled={claim?.medical_info.status !== "Approved"}
+                  onClick={() =>
+                    handleApprove({
+                      request_id: claim.request_id,
+                      type: "financial",
+                      approved_amount: approvedAmount,
+                      remarks,
+                    })
+                  }
+                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                >
+                  Approve
+                </button>
+              </div>
+            )}
+        </>
+      ),
     },
   ];
 
@@ -490,23 +506,31 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
         }
       />
       <p className="text-sm italic text-gray-500 mb-8">Claim Id: {claim.id}</p>
-      <div className="flex gap-8">
-        <Tabs
-          tabs={tabList}
-          activeTab={activeTab}
-          setActiveTab={(next: any) => setActiveTab(next)}
-        />
-        <Checklist
-          className={`${currentTab?.checklist ? "w-1/3 " : "w-0"} transition-all overflow-hidden`}
-          scores={{
-            pass: currentTab?.checklist?.length || 0,
-            fail: 1,
-            na: 2
-          }}
-          items={currentTab?.checklist as any}
-          setItems={currentTab?.setChecklist as any}
-          formElement={currentTab?.checkListForm}
-        />
+      <div className="flex flex-col gap-8">
+        <div className="flex gap-8">
+          <Tabs
+            tabs={tabList}
+            activeTab={activeTab}
+            setActiveTab={(next: any) => setActiveTab(next)}
+          />
+          {(activeTab === "medical" || activeTab === "financial") && (
+            <Checklist
+              className={`${currentTab?.checklist ? "w-1/3 " : "w-0"
+                } transition-all overflow-hidden`}
+              scores={{
+                pass: currentTab?.checklist?.length || 0,
+                fail: 1,
+                na: 2,
+              }}
+              items={currentTab?.checklist as any}
+              setItems={currentTab?.setChecklist as any}
+              formElement={currentTab?.checkListForm}
+            />
+          )}
+        </div>
+        <div>
+          <JsonViewer value={claim.resources.claim} />
+        </div>
       </div>
     </div>
   );
