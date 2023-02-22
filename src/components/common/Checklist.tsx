@@ -1,5 +1,5 @@
 import { CheckIcon, MinusIcon, XMarkIcon } from "@heroicons/react/24/outline";
-import { useEffect, useState } from "react";
+import ApprovalForm, { ApprovalValueType } from "./ApprovalForm";
 
 export type ChecklistItem = {
     id: string,
@@ -16,9 +16,10 @@ export default function Checklist(props: {
     items: ChecklistItem[],
     setItems: (items: ChecklistItem[]) => void,
     className?: string,
-    formElement?: React.ReactNode
+    approval?: ApprovalValueType,
+    setApproval?: (approval: ApprovalValueType) => void,
 }) {
-    const { scores, items, setItems, className, formElement } = props;
+    const { scores, items, setItems, className, approval, setApproval } = props;
 
     const score = items?.filter(item => item.status === "pass").length || 0;
     const progressColor = score >= scores.pass ? "bg-green-500" : (score >= scores.na ? "bg-yellow-500" : "bg-red-500");
@@ -59,7 +60,9 @@ export default function Checklist(props: {
                 ))}
             </div>
             <div className="mt-8">
-                {formElement}
+                {approval && setApproval && (
+                    <ApprovalForm approval={approval} setApproval={setApproval} onApprove={() => { }} onReject={() => { }} />
+                )}
             </div>
         </div>
     )

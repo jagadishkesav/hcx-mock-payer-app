@@ -7,7 +7,7 @@ import { RejectApproveHandlers } from "./ClaimDetails";
 export default function FinancialInfo({
   claim,
   ...props
-}: { claim: ClaimDetail } & RejectApproveHandlers) {
+}: { claim: ClaimDetail }) {
   const medical_info = claim.medical_info;
   const financial_info = claim.financial_info;
   const [approvedAmount, setApprovedAmount] = useState(

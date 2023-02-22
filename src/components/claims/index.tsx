@@ -131,7 +131,7 @@ export function claimsMapper(claim: any): ClaimDetail {
 }
 
 export async function getClaims(): Promise<ClaimDetail[]> {
-  const res: any = await listRequest({ type: "claim" });
+  const res: any = await listRequest({ type: "claim" }, true);
   return res.claim.map(claimsMapper);
 }
 

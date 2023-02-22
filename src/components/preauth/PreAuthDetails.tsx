@@ -76,14 +76,6 @@ export default function PreAuthDetails({ request_id }: { request_id: string }) {
       children: (
         <FinancialInfo
           claim={preauth}
-          handleApprove={async (e) => {
-            await handleApprove(e);
-            getPreAuths();
-          }}
-          handleReject={async (e) => {
-            await handleReject(e);
-            getPreAuths();
-          }}
         />
       ),
     },

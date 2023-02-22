@@ -23,8 +23,8 @@ export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
         <button
           key={tab.id}
           className={`py-3 text-sm bg-white rounded-lg ${activeTab === tab.id
-              ? "border-r-2 transform border-blue-500 font-bold"
-              : " transform -translate-x-2"
+            ? "border-r-2 transform border-blue-500 font-bold"
+            : " transform -translate-x-2"
             }`}
           onClick={(e) => {
             setActiveTab(tab.id);
@@ -63,13 +63,22 @@ const handleApprove = async ({
 };
 
 export default function ClaimDetails({ request_id }: { request_id: string }) {
+
   const [activeTab, setActiveTab] = React.useState("patient_details");
-  const [claim, setClaim] = React.useState<any>(undefined);
-  const [approvedAmount, setApprovedAmount] = React.useState(0);
-  const [remarks, setRemarks] = React.useState("");
+  const [claim, setClaim] = React.useState<ClaimDetail | null>(null);
+
+  const [medicineApproval, setMedicineApproval] = useState<{ remarks: string | undefined, amount: number }>({
+    remarks: "",
+    amount: 0,
+  });
+
+  const [financialApproval, setFinancialApproval] = useState<{ remarks: string | undefined, amount: number }>({
+    remarks: "",
+    amount: 0,
+  });
 
   async function getClaims(): Promise<any> {
-    const res: any = await listRequest({ type: "claim" });
+    const res: any = await listRequest({ type: "claim" }, true);
     const claim = res.claim.find(
       (claim: any) => claim.request_id === request_id
     );
@@ -78,14 +87,14 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
 
   useEffect(() => {
     if (!claim) return;
-    setApprovedAmount(
-      parseFloat(
+    setMedicineApproval({
+      amount: parseFloat(
         (claim.medical_info.approved_amount || claim.requested_amount)
           .toString()
           .replace("INR ", "")
-      )
-    );
-    setRemarks(claim.medical_info.remarks);
+      ),
+      remarks: claim.medical_info.remarks,
+    });
   }, [claim]);
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
@@ -134,6 +143,9 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     getClaims();
   }, [request_id]);
 
+
+  if (!claim) return <Loading />;
+
   const tabList = [
     {
       id: "patient_details",
@@ -160,62 +172,8 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
         claim?.medical_info.status === "Pending" ? checklist : undefined,
       setChecklist:
         claim?.medical_info.status === "Pending" ? setChecklist : undefined,
-      checkListForm: (
-        <>
-          <div className="sm:col-span-2 mt-4">
-            <dt className="text-sm font-medium text-gray-500">
-              Approval Amount
-            </dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              <input
-                onChange={(e) => setApprovedAmount(parseInt(e.target.value))}
-                min={0}
-                value={approvedAmount}
-                disabled={claim?.status !== "Pending"}
-                type="number"
-                className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </dd>
-          </div>
-          <div className="sm:col-span-2 mt-4">
-            <dt className="text-sm font-medium text-gray-500">Remarks</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              <textarea
-                onChange={(e) => setRemarks(e.target.value)}
-                value={remarks}
-                disabled={claim?.status !== "Pending"}
-                className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              ></textarea>
-            </dd>
-          </div>
-          <div className="flex flex-row justify-end w-full space-x-4 p-5">
-            <button
-              onClick={() =>
-                handleReject({
-                  request_id: claim.request_id,
-                  type: "medical",
-                })
-              }
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-            >
-              Reject
-            </button>
-            <button
-              onClick={() =>
-                handleApprove({
-                  request_id: claim.request_id,
-                  type: "medical",
-                  approved_amount: approvedAmount,
-                  remarks,
-                })
-              }
-              className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            >
-              Approve
-            </button>
-          </div>
-        </>
-      ),
+      approval: medicineApproval,
+      setApproval: setMedicineApproval,
     },
     {
       id: "financial",
@@ -223,14 +181,6 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       children: (
         <FinancialInfo
           claim={claim}
-          handleApprove={async (e) => {
-            await handleApprove(e);
-            getClaims();
-          }}
-          handleReject={async (e) => {
-            await handleReject(e);
-            getClaims();
-          }}
         />
       ),
       checklist:
@@ -241,72 +191,10 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
         claim?.medical_info.status === "Pending"
           ? setFinancialCheckList
           : undefined,
-      checkListForm: (
-        <>
-          <div className="sm:col-span-2 mt-2">
-            <dt className="text-sm font-medium text-gray-500">
-              Approval Amount
-            </dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              <input
-                onChange={(e) => setApprovedAmount(e.target.valueAsNumber)}
-                min={0}
-                value={approvedAmount}
-                disabled={claim?.status !== "Pending"}
-                type="number"
-                className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              />
-            </dd>
-          </div>
-          <div className="sm:col-span-2">
-            <dt className="text-sm font-medium text-gray-500">Remarks</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              <textarea
-                onChange={(e) => setRemarks(e.target.value)}
-                value={remarks}
-                disabled={claim?.financial_info.status !== "Pending"}
-                className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-              ></textarea>
-            </dd>
-          </div>
-          {claim?.financial_info.status === "Pending" &&
-            claim.status === "Pending" && (
-              <div className="flex flex-row justify-end w-full space-x-4 p-5">
-                <button
-                  disabled={claim?.medical_info.status !== "Approved"}
-                  onClick={() =>
-                    handleReject({
-                      request_id: claim.request_id,
-                      type: "financial",
-                    })
-                  }
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"
-                >
-                  Reject
-                </button>
-                <button
-                  disabled={claim?.medical_info.status !== "Approved"}
-                  onClick={() =>
-                    handleApprove({
-                      request_id: claim.request_id,
-                      type: "financial",
-                      approved_amount: approvedAmount,
-                      remarks,
-                    })
-                  }
-                  className="inline-flex justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                >
-                  Approve
-                </button>
-              </div>
-            )}
-        </>
-      ),
+      approval: financialApproval,
+      setApproval: setFinancialApproval,
     },
   ];
-
-  if (!claim) return <Loading />;
-
   const currentTab = tabList.find((tab) => tab.id === activeTab);
 
   return (
@@ -315,7 +203,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
         heading={
           <div className="flex items-center gap-2">
             Claim Details
-            <StatusChip status={claim.status} size={"md"} />
+            <StatusChip status={claim.status as any} size={"md"} />
           </div>
         }
       />
@@ -338,7 +226,8 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
               }}
               items={currentTab?.checklist as any}
               setItems={currentTab?.setChecklist as any}
-              formElement={currentTab?.checkListForm}
+              approval={currentTab?.approval}
+              setApproval={currentTab?.setApproval as any}
             />
           )}
         </div>
