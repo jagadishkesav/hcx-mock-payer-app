@@ -196,36 +196,47 @@ export default function ClaimDetails({
       </p>
       <div className="flex flex-col gap-8">
         <div className="flex gap-8">
-          <Tabs
-            tabs={tabList}
-            activeTab={activeTab}
-            setActiveTab={(next: any) => setActiveTab(next)}
-          />
-          <Checklist
-            scores={{
-              pass: currentTab?.checklist?.length || 0,
-              fail: 1,
-              na: 2,
-            }}
-            items={currentTab?.checklist as any}
-            setItems={currentTab?.setChecklist as any}
-            approval={currentTab?.approval}
-            setApproval={currentTab?.setApproval as any}
-            onApprove={async (e: any) => {
-              if (activeTab === "patient_details") {
-                setActiveTab("medical");
-                return;
+          <div className="flex-1 w-4/5">
+            <Tabs
+              tabs={tabList}
+              activeTab={activeTab}
+              setActiveTab={(next: any) => setActiveTab(next)}
+            />
+          </div>{" "}
+          <div className="flex-1 w-1/5 max-w-md">
+            <Checklist
+              scores={{
+                pass: currentTab?.checklist?.length || 0,
+                fail: 1,
+                na: 2,
+              }}
+              items={currentTab?.checklist as any}
+              setItems={currentTab?.setChecklist as any}
+              approval={currentTab?.approval}
+              setApproval={currentTab?.setApproval as any}
+              onApprove={async (e: any) => {
+                await handleApprove(e);
+                getClaims();
+              }}
+              nextTab={
+                activeTab === "financial"
+                  ? undefined
+                  : () => {
+                      if (activeTab === "patient_details") {
+                        setActiveTab("medical");
+                      } else if (activeTab === "medical") {
+                        setActiveTab("financial");
+                      }
+                    }
               }
-              await handleApprove(e);
-              getClaims();
-            }}
-            onReject={async (e: any) => {
-              await handleReject(e);
-              getClaims();
-            }}
-            claim={claim}
-            type={activeTab as any}
-          />
+              onReject={async (e: any) => {
+                await handleReject(e);
+                getClaims();
+              }}
+              claim={claim}
+              type={activeTab as any}
+            />
+          </div>
         </div>
 
         <div className="relative">
@@ -236,7 +247,7 @@ export default function ClaimDetails({
             {showJSON ? "Hide" : "Show"} Additional Info
           </button>
           <div
-            className={`mt-3 bg-white rounded-lg shadow-lg px-4 py-2 ${
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 ${
               !showJSON && "hidden"
             }`}
           >

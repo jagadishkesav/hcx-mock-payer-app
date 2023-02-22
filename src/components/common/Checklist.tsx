@@ -22,6 +22,7 @@ export default function Checklist(props: {
   setApproval?: (approval: ApprovalValueType) => void;
   onApprove: any;
   onReject: any;
+  nextTab?: () => void;
   claim: ClaimDetail;
   type: "medical" | "financial";
 }) {
@@ -34,6 +35,7 @@ export default function Checklist(props: {
     setApproval,
     onApprove,
     onReject,
+    nextTab,
     claim,
     type,
   } = props;
@@ -71,17 +73,19 @@ export default function Checklist(props: {
   }, [, claim]);
 
   return (
-    <div className={`w-1/3 relative ${className ?? ""}`} id="checklist">
+    <div className={`mt-24 relative ${className ?? ""}`} id="checklist">
       <div
-        className={`z-10 w-full p-1 ${
+        className={`rounded-lg p-4 bg-white z-10 w-full max-w-md ${
           sticky
-            ? "fixed top-0 bottom-8 overflow-auto"
-            : "absolute -translate-y-[20px]"
+            ? "fixed top-5 overflow-auto min-w-fit"
+            : "absolute -translate-y-[20px] min-w-fit"
         }`}
       >
-        {!settled ? (
+        {!settled && (
           <>
-            <h1 className="font-bold text-lg mt-[20px]">Checklist</h1>
+            <div className="text-gray-800 text-lg mt-[20px] text-center font-bold pb-4">
+              Checklist
+            </div>
             <div className="my-2 text-sm text-gray-600">
               <div className="mb-1 text-right">
                 Score {score} / {scores.pass}
@@ -145,12 +149,10 @@ export default function Checklist(props: {
                 ))}
             </div>
           </>
-        ) : (
-          <div></div>
         )}
 
-        <div className="mt-8">
-          {approval && setApproval ? (
+        <div className={`${!settled && "mt-8"}`}>
+          {approval && setApproval && (
             <ApprovalForm
               approval={approval}
               setApproval={setApproval}
@@ -168,18 +170,19 @@ export default function Checklist(props: {
                   type,
                 })
               }
-              disabled={score < scores.pass}
+              disabled={score < scores.pass || settled}
             />
-          ) : (
-            <button
-              onClick={onApprove}
-              className="inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
-            >
-              <CheckIcon className="h-5" />
-              Next
-            </button>
           )}
         </div>
+        {settled && nextTab && (
+          <button
+            onClick={nextTab}
+            className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            <CheckIcon className="h-5" />
+            Next
+          </button>
+        )}
       </div>
     </div>
   );

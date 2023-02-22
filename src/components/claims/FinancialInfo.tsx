@@ -44,12 +44,15 @@ export default function FinancialInfo({
           <div className="w-24">{<StatusChip status={status} />}</div>
         </div>
       </div>
-      <div className=" mt-8 p-6 bg-white rounded-lg">
-        <h1 className="font-bold mt-2 mb-2">Bill</h1>
+      <div className="mt-8 p-6 bg-white rounded-lg">
+      <div className="text-gray-500 text-base font-bold">
+          Bill
+        </div>
         {claim.items && claim.items.length > 0 ? (
           <Table
             title=""
             headers={["display", "code", "value"]}
+            showBorder={true}
             data={claim.items.map((item: any) => ({
               id: item.productOrService.coding[0].code,
               display: item.productOrService.coding[0].display,

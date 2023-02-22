@@ -15,10 +15,11 @@ export default function MedicalInfo({
   return (
     <>
       <div className="p-6 bg-white rounded-lg">
-        <h1 className="font-bold">Diagnosis</h1>
+        <div className="text-gray-500 text-base font-bold">Diagnosis</div>
         {claim.diagnosis && claim.diagnosis.length > 0 && (
           <Table
             title=""
+            showBorder={true}
             headers={["display", "code"]}
             data={[
               ...claim.diagnosis
@@ -40,12 +41,15 @@ export default function MedicalInfo({
                 })),
             ]}
           />
-        )}
-        <h1 className="font-bold mt-6">Procedures</h1>
+        )}</div><div className="p-6 bg-white rounded-lg mt-6">
+        <div className="text-gray-500 text-base font-bold">
+          Procedures
+        </div>
         {/* using bill items temporarily */}
         {claim.items && claim.items.length > 0 && (
           <Table
             title=""
+            showBorder={true}
             headers={["display", "code", "value"]}
             data={claim.items.map((item: any) => ({
               id: item.productOrService.coding[0].code,
