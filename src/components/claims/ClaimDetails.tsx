@@ -291,7 +291,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
   const [financialCheckList, setFinancialCheckList] = useState<ChecklistItem[]>([
     {
       id: "1",
-      name: "Amount within wallest range",
+      name: "Amount within wallet range?",
     },
     {
       id: "2",
