@@ -89,13 +89,13 @@ export default function Table({
                   )}
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200 bg-white">
-                {data.map((item) => (
+              <tbody className="bg-gray-300">
+                {data.map((item, index) => (
                   <tr
                     key={item.id}
                     className={
                       onRowClick
-                        ? "hover:bg-gray-50 hover:text-gray-900 cursor-pointer bg-white"
+                        ? `hover:bg-gray-50 hover:text-gray-900 cursor-pointer ${index % 2 === 0 ? "bg-white/80" : "bg-white"}`
                         : "bg-white"
                     }
                     onClick={() => onRowClick && onRowClick(item.id)}

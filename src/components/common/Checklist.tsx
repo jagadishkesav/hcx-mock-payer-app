@@ -14,15 +14,17 @@ export default function Checklist(props: {
         na: number
     },
     items: ChecklistItem[],
-    setItems: (items: ChecklistItem[]) => void
+    setItems: (items: ChecklistItem[]) => void,
+    className?: string,
+    formElement?: React.ReactNode
 }) {
-    const { scores, items, setItems } = props;
+    const { scores, items, setItems, className, formElement } = props;
 
     const score = items?.filter(item => item.status === "pass").length || 0;
     const progressColor = score >= scores.pass ? "bg-green-500" : (score >= scores.na ? "bg-yellow-500" : "bg-red-500");
 
     return (
-        <div className="w-[250px]">
+        <div className={className}>
             <h1 className="font-bold text-lg">Checklist</h1>
             <div className="my-2 text-sm text-gray-600">
                 <div className="mb-1 text-right">Score {score} / {scores.pass}</div>
@@ -39,22 +41,25 @@ export default function Checklist(props: {
                             {item.name}
                         </div>
                         <div className="shrink-0">
-                            <div className="flex items-center gap-1">
+                            <div className="flex items-center gap-1 bg-white border border-gray-200 rounded overflow-hidden p-1">
                                 {[{ status: "pass", color: "green", icon: CheckIcon }, { status: "na", color: "yellow", icon: MinusIcon }, { status: "fail", color: "red", icon: XMarkIcon }].map((status, index) => (
                                     <button
                                         key={index}
                                         onClick={() => setItems(items.map((it) => {
                                             return item.id === it.id ? { ...it, status: status.status as any } : it
                                         }))}
-                                        className={`p-1 rounded-full hover:bg-gray-200 transition ${item.status === status.status ? `bg-${status.color}-500` : "bg-gray-300"}`}
+                                        className={`p-1 rounded ${item.status === status.status ? `bg-${status.color}-500 text-white` : "hover:bg-gray-100"}`}
                                     >
-                                        <status.icon className={`h-4 w-4 text-${status.color}-500`} />
+                                        <status.icon className={`h-4 w-4 ${item.status === status.status ? "text-white" : `text-${status.color}-500`}`} />
                                     </button>
                                 ))}
                             </div>
                         </div>
                     </div>
                 ))}
+            </div>
+            <div className="mt-8">
+                {formElement}
             </div>
         </div>
     )
