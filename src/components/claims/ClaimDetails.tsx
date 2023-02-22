@@ -16,27 +16,6 @@ import FinancialInfo from "./FinancialInfo";
 import PatientDetails from "./PatientDetails";
 import MedicalInfo from "./MedicalInfo";
 
-export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
-  return (
-    <div className="flex flex-col justify-start w-1/4 space-y-4 mt-8">
-      {tabs.map((tab: any) => (
-        <button
-          key={tab.id}
-          className={`py-3 text-sm bg-white rounded-lg ${activeTab === tab.id
-            ? "border-r-2 transform border-blue-500 font-bold"
-            : " transform -translate-x-2"
-            }`}
-          onClick={(e) => {
-            setActiveTab(tab.id);
-          }}
-        >
-          {tab.name}
-        </button>
-      ))}
-    </div>
-  );
-};
-
 export interface RejectApproveHandlers {
   handleReject: typeof handleReject;
   handleApprove: typeof handleApprove;
@@ -76,6 +55,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     remarks: "",
     amount: 0,
   });
+  const [showJSON, setShowJSON] = React.useState(false);
 
   async function getClaims(): Promise<any> {
     const res: any = await listRequest({ type: "claim" }, true);
@@ -96,6 +76,9 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       remarks: claim.medical_info.remarks,
     });
   }, [claim]);
+
+  const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([
+  ]);
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
     {
@@ -149,8 +132,9 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
   const tabList = [
     {
       id: "patient_details",
-      name: "Patient Details",
+      name: "General Details",
       children: <PatientDetails claim={claim} />,
+      checklist: detailsChecklist
     },
     {
       id: "medical",
@@ -201,13 +185,18 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     <div>
       <Heading
         heading={
-          <div className="flex items-center gap-2">
-            Claim Details
+          <div className="flex flex-row mb-2">
+            <div className="flex items-center gap-2 mr-4">Claim Details</div>
             <StatusChip status={claim.status as any} size={"md"} />
           </div>
         }
       />
-      <p className="text-sm italic text-gray-500 mb-8">Claim Id: {claim.id}</p>
+      <p className="text-sm italic text-gray-500">
+        Claim ID : <span className="font-mono">{claim.id}</span>
+      </p>
+      <p className="text-sm italic text-gray-500 mb-6">
+        Claim No. : <span className="font-mono">{claim.request_no}</span>
+      </p>
       <div className="flex flex-col gap-8">
         <div className="flex gap-8">
           <Tabs
@@ -215,24 +204,34 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
             activeTab={activeTab}
             setActiveTab={(next: any) => setActiveTab(next)}
           />
-          {(activeTab === "medical" || activeTab === "financial") && (
-            <Checklist
-              className={`${currentTab?.checklist ? "w-1/3 " : "w-0"
-                } transition-all overflow-hidden`}
-              scores={{
-                pass: currentTab?.checklist?.length || 0,
-                fail: 1,
-                na: 2,
-              }}
-              items={currentTab?.checklist as any}
-              setItems={currentTab?.setChecklist as any}
-              approval={currentTab?.approval}
-              setApproval={currentTab?.setApproval as any}
-            />
-          )}
+          <Checklist
+            className={`${currentTab?.checklist ? "w-1/3 " : "w-0"
+              } transition-all overflow-hidden`}
+            scores={{
+              pass: currentTab?.checklist?.length || 0,
+              fail: 1,
+              na: 2,
+            }}
+            items={currentTab?.checklist as any}
+            setItems={currentTab?.setChecklist as any}
+            approval={currentTab?.approval}
+            setApproval={currentTab?.setApproval as any}
+          />
         </div>
-        <div>
-          <JsonViewer value={claim.resources.claim} />
+
+        <div className="relative">
+          <button
+            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
+            onClick={() => setShowJSON(!showJSON)}
+          >
+            {showJSON ? "Hide" : "Show"} Additional Info
+          </button>
+          <div
+            className={`mt-3 bg-white rounded-lg shadow-lg px-4 py-2 ${!showJSON && "hidden"
+              }`}
+          >
+            <JsonViewer value={claim.resources.claim} />
+          </div>
         </div>
       </div>
     </div>
