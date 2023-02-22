@@ -43,10 +43,11 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
   };
 
   const items = resources.claim.item as Item[];
+  console.log(items);
   const requested_amount = currencyObjToString(
     resources.claim.total ?? {
       currency: "INR",
-      value: items.map((i) => i.unitPrice.value).reduce((a, b) => a + b),
+      value: items?.map((i) => i.unitPrice.value).reduce((a, b) => a + b) || 0,
     }
   );
 

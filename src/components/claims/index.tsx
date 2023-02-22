@@ -107,7 +107,7 @@ export function claimsMapper(claim: any): ClaimDetail {
   const requested_amount = currencyObjToString(
     resources.claim.total ?? {
       currency: "INR",
-      value: items.map((i) => i.unitPrice.value).reduce((a, b) => a + b),
+      value: items?.map((i) => i.unitPrice.value).reduce((a, b) => a + b) ?? 0,
     }
   );
 

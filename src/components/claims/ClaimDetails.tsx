@@ -41,12 +41,20 @@ const handleApprove = async ({
   toast("Claim Approved", { type: "success" });
 };
 
-export default function ClaimDetails({ request_id }: { request_id: string }) {
-
+export default function ClaimDetails({
+  request_id,
+  use,
+}: {
+  request_id: string;
+  use: "preauth" | "claim";
+}) {
   const [activeTab, setActiveTab] = React.useState("patient_details");
   const [claim, setClaim] = React.useState<ClaimDetail | null>(null);
 
-  const [medicineApproval, setMedicineApproval] = useState<{ remarks: string | undefined, amount: number }>({
+  const [medicineApproval, setMedicineApproval] = useState<{
+    remarks: string | undefined;
+    amount: number;
+  }>({
     remarks: "",
     amount: 0,
   });
@@ -58,8 +66,8 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
   const [showJSON, setShowJSON] = React.useState(false);
 
   async function getClaims(): Promise<any> {
-    const res: any = await listRequest({ type: "claim" });
-    const claim = res.claim.find(
+    const res: any = await listRequest({ type: use });
+    const claim = res[`${use}`].find(
       (claim: any) => claim.request_id === request_id
     );
     setClaim(claimsMapper(claim));
@@ -77,8 +85,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     });
   }, [claim]);
 
-  const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([
-  ]);
+  const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([]);
 
   const [checklist, setChecklist] = useState<ChecklistItem[]>([
     {
@@ -93,39 +100,40 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       id: "3",
       name: "Discharge summary in line with treatment",
     },
-  ])
+  ]);
 
-  const [financialCheckList, setFinancialCheckList] = useState<ChecklistItem[]>([
-    {
-      id: "1",
-      name: "Amount within wallet range?",
-    },
-    {
-      id: "2",
-      name: "Procedures not in exclusion list? "
-    },
-    {
-      id: "3",
-      name: "Procedures as per approved plan?"
-    },
-    {
-      id: "4",
-      name: "Waiting period observed? "
-    },
-    {
-      id: "5",
-      name: "Policy In force force for the treatment period?"
-    },
-    {
-      id: "6",
-      name: "Needed supporting documents available?"
-    },
-  ])
+  const [financialCheckList, setFinancialCheckList] = useState<ChecklistItem[]>(
+    [
+      {
+        id: "1",
+        name: "Amount within wallet range?",
+      },
+      {
+        id: "2",
+        name: "Procedures not in exclusion list? ",
+      },
+      {
+        id: "3",
+        name: "Procedures as per approved plan?",
+      },
+      {
+        id: "4",
+        name: "Waiting period observed? ",
+      },
+      {
+        id: "5",
+        name: "Policy In force force for the treatment period?",
+      },
+      {
+        id: "6",
+        name: "Needed supporting documents available?",
+      },
+    ]
+  );
 
   useEffect(() => {
     getClaims();
   }, [request_id]);
-
 
   if (!claim) return <Loading />;
 
@@ -134,16 +142,12 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       id: "patient_details",
       name: "General Details",
       children: <PatientDetails claim={claim} />,
-      checklist: detailsChecklist
+      checklist: detailsChecklist,
     },
     {
       id: "medical",
       name: "Medical Info",
-      children: (
-        <MedicalInfo
-          claim={claim}
-        />
-      ),
+      children: <MedicalInfo claim={claim} />,
       checklist: checklist,
       setChecklist: setChecklist,
       approval: medicineApproval,
@@ -153,7 +157,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
           request_id: claim.request_id,
           type: "medical",
           approved_amount: medicineApproval.amount,
-          remarks: medicineApproval.remarks
+          remarks: medicineApproval.remarks,
         }),
       handleReject: () =>
         handleReject({
@@ -164,11 +168,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     {
       id: "financial",
       name: "Financial Info",
-      children: (
-        <FinancialInfo
-          claim={claim}
-        />
-      ),
+      children: <FinancialInfo claim={claim} />,
       checklist: financialCheckList,
       setChecklist: setFinancialCheckList,
       approval: medicineApproval,
@@ -178,7 +178,7 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
           request_id: claim.request_id,
           type: "medical",
           approved_amount: medicineApproval.amount,
-          remarks: medicineApproval.remarks
+          remarks: medicineApproval.remarks,
         }),
       handleReject: () =>
         handleReject({
@@ -243,8 +243,9 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
             {showJSON ? "Hide" : "Show"} Additional Info
           </button>
           <div
-            className={`mt-3 bg-white rounded-lg shadow-lg px-4 py-2 ${!showJSON && "hidden"
-              }`}
+            className={`mt-3 bg-white rounded-lg shadow-lg px-4 py-2 ${
+              !showJSON && "hidden"
+            }`}
           >
             <JsonViewer value={claim.resources.claim} />
           </div>
