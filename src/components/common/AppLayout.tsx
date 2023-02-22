@@ -15,13 +15,13 @@ import { usePath } from "raviger";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
-  { name: "Claims", href: "/claims", icon: CheckBadgeIcon},
   {
     name: "Coverage Eligibility",
     href: "/coverage",
     icon: ClipboardDocumentCheckIcon,
   },
-  { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon},
+  { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon },
+  { name: "Claims", href: "/claims", icon: CheckBadgeIcon },
   { name: "Reports", href: "/reports", icon: ChartBarIcon },
 ];
 

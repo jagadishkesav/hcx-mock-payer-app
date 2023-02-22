@@ -453,12 +453,12 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
               <textarea
                 onChange={(e) => setRemarks(e.target.value)}
                 value={remarks}
-                disabled={claim.financial_info.status !== "Pending"}
+                disabled={claim?.financial_info.status !== "Pending"}
                 className="w-full h-32 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
               ></textarea>
             </dd>
           </div>
-          {claim.financial_info.status === "Pending" &&
+          {claim?.financial_info.status === "Pending" &&
             claim.status === "Pending" && (
               <div className="flex flex-row justify-end w-full space-x-4 p-5">
                 <button
