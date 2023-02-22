@@ -3,11 +3,9 @@ import React, { useEffect } from "react";
 import { approvePreauth, listRequest, rejectPreauth } from "../../api/api";
 import { toast } from "react-toastify";
 import { preAuthMapper } from ".";
-import {
-  FinancialInfo,
-  MedicalInfo,
-  PatientDetails,
-} from "../claims/ClaimDetails";
+import FinancialInfo from "../claims/FinancialInfo";
+import MedicalInfo from "../claims/MedicalInfo";
+import PatientDetails from "../claims/PatientDetails";
 import Loading from "../common/Loading";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
