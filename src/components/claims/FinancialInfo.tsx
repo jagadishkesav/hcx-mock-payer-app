@@ -1,5 +1,7 @@
 import { useState } from "react";
 import { ClaimDetail } from ".";
+import { textOrDash } from "../../utils/StringUtils";
+import Heading from "../common/Heading";
 import StatusChip from "../common/StatusChip";
 import Table from "../common/Table";
 import { RejectApproveHandlers } from "./ClaimDetails";
@@ -8,7 +10,9 @@ import SupportingFiles from "./SupportingFiles";
 export default function FinancialInfo({
   claim,
   ...props
-}: { claim: ClaimDetail }) {
+}: {
+  claim: ClaimDetail;
+}) {
   const medical_info = claim.medical_info;
   const financial_info = claim.financial_info;
   const [approvedAmount, setApprovedAmount] = useState(
@@ -28,32 +32,21 @@ export default function FinancialInfo({
   return (
     <>
       <div className="p-6 bg-white rounded-lg">
-        <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">
-              Requested Amount
-            </dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {claim.requested_amount || "-"}
-            </dd>
-          </div>
-          <div className="sm:col-span-1">
-            <dt className="text-sm font-medium text-gray-500">Approved Amount</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {financial_info.approved_amount || "-"}
-            </dd>
-          </div>
-          <div className="sm:col-span-2">
-            <dt className="text-sm font-medium text-gray-500">Status</dt>
-            <dd className="mt-1 text-sm text-gray-900">
-              {<StatusChip status={status} />}
-            </dd>
-          </div>
-        </dl>
-        <h1 className="font-bold mt-6">
-          Bill
-        </h1>
-        {claim.items && claim.items.length > 0 && (
+        <div className="text-gray-500 text-base font-bold pb-4">
+          Financial Details
+        </div>
+        <div className="grid grid-cols-2 gap-3">
+          <div className="font-semibold col-span-1">Requested Amount</div>
+          {textOrDash(claim.requested_amount)}
+          <div className="font-semibold col-span-1">Approved Amount</div>
+          {textOrDash(claim.approved_amount)}
+          <div className="font-semibold col-span-1">Status</div>
+          <div className="w-24">{<StatusChip status={status} />}</div>
+        </div>
+      </div>
+      <div className=" mt-8 p-6 bg-white rounded-lg">
+        <h1 className="font-bold mt-2 mb-2">Bill</h1>
+        {claim.items && claim.items.length > 0 ? (
           <Table
             title=""
             headers={["display", "code", "value"]}
@@ -64,6 +57,8 @@ export default function FinancialInfo({
               value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
             }))}
           />
+        ) : (
+          "-"
         )}
       </div>
       <dl className="mt-8 rounded-lg bg-white p-6">

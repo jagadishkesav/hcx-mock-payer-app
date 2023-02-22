@@ -45,7 +45,7 @@ export default function PatientDetails({ claim }: { claim: any }) {
   const supportingFiles = claim.resources.claim.supportingInfo;
   return (
     <>
-      <div className="flex flex-col lg:flex-row gap-4">
+      <div className="flex flex-col gap-4">
         <div className="flex-1">
           <div className="h-full w-full p-6 bg-white rounded-lg">
             <div className="text-gray-500 text-base font-bold pb-4">
@@ -61,7 +61,9 @@ export default function PatientDetails({ claim }: { claim: any }) {
                         {properText(name)}
                       </div>
                       <div>
-                        {componentMap[name] ? componentMap[name](detail) as any : detail}
+                        {componentMap[name]
+                          ? (componentMap[name](detail) as any)
+                          : detail}
                       </div>
                     </React.Fragment>
                   );
@@ -75,8 +77,6 @@ export default function PatientDetails({ claim }: { claim: any }) {
               Claim Details
             </div>
             <div className="grid grid-cols-2 gap-3">
-              <div className="font-semibold col-span-1">Billable Period</div>
-              2023-01-01 - 2023-12-31
               <div className="font-semibold col-span-1">Resource Created</div>
               {claim.resources.claim.created
                 ? formatDate(claim.resources.claim.created)
@@ -86,9 +86,7 @@ export default function PatientDetails({ claim }: { claim: any }) {
               <div className="font-semibold col-span-1">Provider</div>
               {textOrDash(claim.provider)}
               <div className="font-semibold col-span-1">Total Claim Cost</div>
-              {claim.resources.claim.created
-                ? formatDate(claim.resources.claim.created)
-                : "--"}
+              {textOrDash(claim.requested_amount)}
               <div className="font-semibold col-span-1">Priority</div>
               <div className="w-24">
                 <PriorityChip
