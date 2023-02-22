@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { properText } from "../../utils/StringUtils";
 import { approveClaim, listRequest, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
@@ -8,11 +8,9 @@ import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
-import {
-  ArrowTopRightOnSquareIcon,
-  DocumentIcon,
-  PaperClipIcon,
-} from "@heroicons/react/24/outline";
+import { PaperClipIcon } from "@heroicons/react/24/outline";
+import Checklist, { ChecklistItem } from "../common/Checklist";
+
 import { JsonViewer } from "@textea/json-viewer";
 
 export const Tabss = ({ tabs, activeTab, setActiveTab }: any) => {
@@ -380,6 +378,50 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
     setClaim(claimsMapper(claim));
   }
 
+  const [checklist, setChecklist] = useState<ChecklistItem[]>([
+    {
+      id: "1",
+      name: "Treatment in line with diagnosis",
+    },
+    {
+      id: "2",
+      name: "Discharge summary available",
+    },
+    {
+      id: "3",
+      name: "Discharge summary in line with treatment",
+    },
+  ]);
+
+  const [financialCheckList, setFinancialCheckList] = useState<ChecklistItem[]>(
+    [
+      {
+        id: "1",
+        name: "Amount within wallest range",
+      },
+      {
+        id: "2",
+        name: "Procedures not in exclusion list? ",
+      },
+      {
+        id: "3",
+        name: "Procedures as per approved plan?",
+      },
+      {
+        id: "4",
+        name: "Waiting period observed? ",
+      },
+      {
+        id: "5",
+        name: "Policy In force force for the treatment period?",
+      },
+      {
+        id: "6",
+        name: "Needed supporting documents available?",
+      },
+    ]
+  );
+
   useEffect(() => {
     getClaims();
   }, [request_id]);
@@ -433,11 +475,29 @@ export default function ClaimDetails({ request_id }: { request_id: string }) {
       <Heading heading="Claim Details" />
       <p className="text-sm italic text-gray-500 mb-8">Claim Id: {claim.id}</p>
       <div className="flex flex-col gap-8">
-        <Tabs
-          tabs={tabList}
-          activeTab={activeTab}
-          setActiveTab={(next: any) => setActiveTab(next)}
-        />
+        <div className="flex gap-8">
+          <Tabs
+            tabs={tabList}
+            activeTab={activeTab}
+            setActiveTab={(next: any) => setActiveTab(next)}
+          />
+          {(activeTab === "medical" || activeTab === "financial") && (
+            <Checklist
+              scores={{
+                pass:
+                  activeTab === "medical"
+                    ? checklist.length
+                    : financialCheckList.length,
+                fail: 1,
+                na: 2,
+              }}
+              items={activeTab === "medical" ? checklist : financialCheckList}
+              setItems={
+                activeTab === "medical" ? setChecklist : setFinancialCheckList
+              }
+            />
+          )}
+        </div>
         <div>
           <JsonViewer value={claim.resources.claim} />
         </div>
