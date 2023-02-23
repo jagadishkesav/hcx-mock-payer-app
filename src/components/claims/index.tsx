@@ -162,14 +162,14 @@ export default function Claims() {
         headers={
           claims
             ? [
-                "request_no", // last 8 digits of request_id
-                "patient_name", // actually name
-                "insurance_no",
-                "requested_amount",
-                "approved_amount",
-                "provider",
-                "status",
-              ]
+              "request_no", // last 8 digits of request_id
+              "patient_name", // actually name
+              "insurance_no",
+              "requested_amount",
+              "approved_amount",
+              "provider",
+              "status",
+            ]
             : []
         }
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}
