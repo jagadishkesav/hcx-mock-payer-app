@@ -1,5 +1,6 @@
 import React from "react";
 import { properText, textOrDash } from "../../utils/StringUtils";
+import Heading from "./Heading";
 import StatusChip from "./StatusChip";
 
 function classNames(...classes: any[]) {
@@ -45,13 +46,10 @@ export default function Table({
 }) {
   return (
     <div className="px-6 lg:px-8">
-      <div className="sm:flex sm:items-center">
-        <div className="sm:flex-auto">
-          <h1 className="text-xl font-semibold text-gray-900">{title}</h1>
-          <p className="mt-2 text-sm text-gray-700">{subtext}</p>
-        </div>
-        <div className="mt-4 sm:mt-0 sm:ml-16 sm:flex-none">
-          {action && (
+      <div className="">
+        <Heading
+          heading={title}
+          actions={action && (
             <button
               type="button"
               className="flex items-center gap-2 justify-center rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
@@ -61,7 +59,8 @@ export default function Table({
               {actionText}
             </button>
           )}
-        </div>
+        />
+        <p className="mt-2 text-sm text-gray-700">{subtext}</p>
       </div>
       <div className="mt-4 flow-root">
         <div className="-my-2 -mx-6 overflow-x-auto lg:-mx-8">
@@ -75,10 +74,9 @@ export default function Table({
                         key={index}
                         scope="col"
                         className={classNames(
-                          `${
-                            index === 0
-                              ? "py-3.5 pl-6 pr-3 lg:pl-8"
-                              : "px-3 py-3.5"
+                          `${index === 0
+                            ? "py-3.5 pl-6 pr-3 lg:pl-8"
+                            : "px-3 py-3.5"
                           }`,
                           "text-left text-sm font-semibold text-gray-900"
                         )}
@@ -103,9 +101,8 @@ export default function Table({
                     key={index}
                     className={
                       onRowClick
-                        ? `hover:bg-gray-50 hover:text-gray-900 cursor-pointer ${
-                            index % 2 === 0 ? "bg-white/80" : "bg-white"
-                          }`
+                        ? `hover:bg-gray-50 hover:text-gray-900 cursor-pointer ${index % 2 === 0 ? "bg-white/80" : "bg-white"
+                        }`
                         : "bg-white"
                     }
                     onClick={() => onRowClick && onRowClick(item.id)}
@@ -138,17 +135,17 @@ export default function Table({
                                 key={index}
                                 className={classNames(
                                   item.showActions !== false &&
-                                    action.actionType === "primary" &&
-                                    "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
+                                  action.actionType === "primary" &&
+                                  "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
                                   item.showActions !== false &&
-                                    action.actionType === "secondary" &&
-                                    "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
+                                  action.actionType === "secondary" &&
+                                  "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
                                   item.showActions !== false &&
-                                    action.actionType === "danger" &&
-                                    "bg-red-600 hover:bg-red-700 focus:ring-red-500",
+                                  action.actionType === "danger" &&
+                                  "bg-red-600 hover:bg-red-700 focus:ring-red-500",
                                   // showActions === false ? disabled
                                   item.showActions === false &&
-                                    "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
+                                  "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
                                   "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
                                 )}
                                 onClick={(e) => {
