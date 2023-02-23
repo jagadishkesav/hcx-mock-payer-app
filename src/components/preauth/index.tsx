@@ -10,6 +10,8 @@ import {
 } from "../claims";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { classNames } from "../common/AppLayout";
 
 type PreAuthDetail = {
   id: string;
@@ -69,37 +71,50 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
   };
 }
 
-export async function getPreAuths(): Promise<PreAuthDetail[]> {
-  const res: any = await listRequest({ type: "preauth" });
-  return res.preauth.map(preAuthMapper);
-}
-
 export default function PreAuths() {
   const [preauths, setPreauths] = useState<PreAuthDetail[]>();
 
-  useEffect(() => {
-    getPreAuths().then(setPreauths);
-  }, []);
+  async function getPreAuths() {
+    setPreauths(undefined);
+    const res: any = await listRequest({ type: "preauth" });
+    setPreauths(res.preauth.map(preAuthMapper));
+  }
 
-  if (!preauths) return <Loading />;
+  useEffect(() => {
+    getPreAuths();
+  }, []);
 
   return (
     <>
       <Table
         title="Pre Auth"
-        headers={[
-          "request_no",
-          "patient_name",
-          "insurance_no",
-          "approved_amount",
-          "requested_amount",
-          "expiry",
-          "provider",
-          "status",
-        ]}
+        action={getPreAuths}
+        actionIcon={
+          <ArrowPathIcon
+            className={classNames(
+              "h-5 w-5 flex-shrink-0 text-white",
+              !preauths && "animate-spin"
+            )}
+            aria-hidden="true"
+          />
+        }
+        headers={
+          preauths
+            ? [
+                "request_no",
+                "patient_name",
+                "insurance_no",
+                "approved_amount",
+                "requested_amount",
+                "expiry",
+                "provider",
+                "status",
+              ]
+            : []
+        }
         onRowClick={(id) => navigate(`/preauths/${id}`)}
         data={
-          preauths.map((preauth) => ({
+          (preauths || []).map((preauth) => ({
             ...preauth,
             request_no: preauth.request_no.slice(-8),
             patient_name: preauth.name,
@@ -107,6 +122,7 @@ export default function PreAuths() {
         }
         primaryColumnIndex={1}
       />
+      {!preauths && <Loading type="skeleton" length={5} />}
     </>
   );
 }

@@ -18,7 +18,7 @@ export default function Table({
   subtext,
   action,
   actionText,
-  showRowActions,
+  actionIcon,
   headers,
   data,
   rowActions,
@@ -29,8 +29,8 @@ export default function Table({
   title: string;
   subtext?: string;
   action?: () => void;
+  actionIcon?: React.ReactNode;
   actionText?: string;
-  showRowActions?: (id: string) => boolean;
   headers: string[];
   data: TableRowData[];
   rowActions?: {
@@ -54,8 +54,10 @@ export default function Table({
           {action && (
             <button
               type="button"
-              className="block rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              className="flex items-center gap-2 justify-center rounded-md bg-indigo-600 py-1.5 px-3 text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+              onClick={action}
             >
+              {actionIcon}
               {actionText}
             </button>
           )}
@@ -65,34 +67,36 @@ export default function Table({
         <div className="-my-2 -mx-6 overflow-x-auto lg:-mx-8">
           <div className="inline-block min-w-full py-2 align-middle">
             <table className="min-w-full divide-y divide-gray-300 relative overflow-hidden rounded-lg">
-              <thead className="bg-gray-200">
-                <tr>
-                  {headers.map((header, index) => (
-                    <th
-                      key={index}
-                      scope="col"
-                      className={classNames(
-                        `${
-                          index === 0
-                            ? "py-3.5 pl-6 pr-3 lg:pl-8"
-                            : "px-3 py-3.5"
-                        }`,
-                        "text-left text-sm font-semibold text-gray-900"
-                      )}
-                    >
-                      {properText(header)}
-                    </th>
-                  ))}
-                  {rowActions && (
-                    <th
-                      scope="col"
-                      className="relative py-3.5 pl-3 pr-6 lg:pr-8"
-                    >
-                      <span className="sr-only">Actions</span>
-                    </th>
-                  )}
-                </tr>
-              </thead>
+              {headers.length > 0 && (
+                <thead className="bg-gray-200">
+                  <tr>
+                    {headers.map((header, index) => (
+                      <th
+                        key={index}
+                        scope="col"
+                        className={classNames(
+                          `${
+                            index === 0
+                              ? "py-3.5 pl-6 pr-3 lg:pl-8"
+                              : "px-3 py-3.5"
+                          }`,
+                          "text-left text-sm font-semibold text-gray-900"
+                        )}
+                      >
+                        {properText(header)}
+                      </th>
+                    ))}
+                    {rowActions && (
+                      <th
+                        scope="col"
+                        className="relative py-3.5 pl-3 pr-6 lg:pr-8"
+                      >
+                        <span className="sr-only">Actions</span>
+                      </th>
+                    )}
+                  </tr>
+                </thead>
+              )}
               <tbody className="bg-gray-300">
                 {data.map((item, index) => (
                   <tr

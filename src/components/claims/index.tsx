@@ -4,6 +4,8 @@ import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
+import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { classNames } from "../common/AppLayout";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -130,36 +132,49 @@ export function claimsMapper(claim: any): ClaimDetail {
   };
 }
 
-export async function getClaims(): Promise<ClaimDetail[]> {
-  const res: any = await listRequest({ type: "claim" });
-  return res.claim.map(claimsMapper);
-}
-
 export default function Claims() {
   const [claims, setClaims] = useState<ClaimDetail[]>();
 
-  useEffect(() => {
-    getClaims().then(setClaims);
-  }, []);
+  async function getClaims() {
+    setClaims(undefined);
+    const res: any = await listRequest({ type: "claim" });
+    setClaims(res.claim.map(claimsMapper));
+  }
 
-  if (!claims) return <Loading />;
+  useEffect(() => {
+    getClaims();
+  }, []);
 
   return (
     <>
       <Table
         title="Claims"
-        headers={[
-          "request_no", // last 8 digits of request_id
-          "patient_name", // actually name
-          "insurance_no",
-          "requested_amount",
-          "approved_amount",
-          "provider",
-          "status",
-        ]}
+        action={getClaims}
+        actionIcon={
+          <ArrowPathIcon
+            className={classNames(
+              "h-5 w-5 flex-shrink-0 text-white",
+              !claims && "animate-spin"
+            )}
+            aria-hidden="true"
+          />
+        }
+        headers={
+          claims
+            ? [
+                "request_no", // last 8 digits of request_id
+                "patient_name", // actually name
+                "insurance_no",
+                "requested_amount",
+                "approved_amount",
+                "provider",
+                "status",
+              ]
+            : []
+        }
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}
         data={
-          claims.map((claim) => ({
+          (claims || []).map((claim) => ({
             ...claim,
             request_no: claim.request_no.slice(-8),
             patient_name: claim.name,
@@ -167,6 +182,7 @@ export default function Claims() {
         }
         primaryColumnIndex={1}
       />
+      {!claims && <Loading type="skeleton" length={5} />}
     </>
   );
 }
