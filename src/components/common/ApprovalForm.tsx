@@ -12,9 +12,10 @@ export default function ApprovalForm(props: {
     onApprove: any,
     onReject: any,
     disabled?: boolean,
+    settled?: boolean
 }) {
 
-    const { approval, setApproval, onApprove, onReject, disabled } = props;
+    const { approval, setApproval, onApprove, onReject, disabled, settled } = props;
 
     return (
         <div>
@@ -47,7 +48,7 @@ export default function ApprovalForm(props: {
                     />
                 </dd>
             </div>
-            {!disabled && <div className="flex items-center justify-end gap-2 mt-2">
+            {settled || <div className="flex items-center justify-end gap-2 mt-2">
                 <button
                     onClick={onReject}
                     className="inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-red-600 bg-red-100 hover:bg-red-200 border-red-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500"

@@ -46,16 +46,16 @@ export default function Checklist(props: {
     claim.status === "Approved" || claim.status === "Rejected"
       ? claim.status
       : type === "medical"
-      ? claim.medical_info.status
-      : claim.financial_info.status;
+        ? claim.medical_info.status
+        : claim.financial_info.status;
   const settled = settledValue === "Approved" || settledValue === "Rejected";
   const score = items?.filter((item) => item.status === "pass").length || 0;
   const progressColor =
     score >= scores.pass
       ? "bg-green-500"
       : score >= scores.na
-      ? "bg-yellow-500"
-      : "bg-red-500";
+        ? "bg-yellow-500"
+        : "bg-red-500";
 
   useEffect(() => {
     const handleScroll = () => {
@@ -75,11 +75,10 @@ export default function Checklist(props: {
   return (
     <div className={`mt-24 relative ${className ?? ""}`} id="checklist">
       <div
-        className={`rounded-lg p-4 bg-white z-10 w-full max-w-md ${
-          sticky
+        className={`rounded-lg p-4 bg-white z-10 w-full max-w-md ${sticky
             ? "fixed top-5 overflow-auto min-w-fit"
             : "absolute -translate-y-[20px] min-w-fit"
-        }`}
+          }`}
       >
         {!settled && (
           <>
@@ -96,11 +95,9 @@ export default function Checklist(props: {
                   .map((_, index) => (
                     <div
                       key={index}
-                      className={`flex-1 ${
-                        index === 0 ? "rounded-l-full" : ""
-                      } ${index === scores.pass - 1 ? "rounded-r-full" : ""} ${
-                        score > index ? progressColor : "bg-gray-300"
-                      }`}
+                      className={`flex-1 ${index === 0 ? "rounded-l-full" : ""
+                        } ${index === scores.pass - 1 ? "rounded-r-full" : ""} ${score > index ? progressColor : "bg-gray-300"
+                        }`}
                     />
                   ))}
               </div>
@@ -128,18 +125,16 @@ export default function Checklist(props: {
                                 })
                               )
                             }
-                            className={`p-1 rounded ${
-                              item.status === status.status
+                            className={`p-1 rounded ${item.status === status.status
                                 ? `bg-${status.color}-500 text-white`
                                 : "hover:bg-gray-100"
-                            }`}
+                              }`}
                           >
                             <status.icon
-                              className={`h-4 w-4 ${
-                                item.status === status.status
+                              className={`h-4 w-4 ${item.status === status.status
                                   ? "text-white"
                                   : `text-${status.color}-500`
-                              }`}
+                                }`}
                             />
                           </button>
                         ))}
@@ -171,6 +166,7 @@ export default function Checklist(props: {
                 })
               }
               disabled={score < scores.pass || settled}
+              settled={settled}
             />
           )}
         </div>
