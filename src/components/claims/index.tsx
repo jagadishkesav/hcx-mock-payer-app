@@ -4,8 +4,9 @@ import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "../common/AppLayout";
+import SetTokenModal from "../common/SetTokenModal";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -134,6 +135,7 @@ export function claimsMapper(claim: any): ClaimDetail {
 
 export default function Claims() {
   const [claims, setClaims] = useState<ClaimDetail[]>();
+  const [showFilter, setShowFilter] = useState<boolean>(false);
 
   async function getClaims() {
     setClaims(undefined);
@@ -147,29 +149,63 @@ export default function Claims() {
 
   return (
     <>
+      {showFilter && (
+        <SetTokenModal
+          onClose={() => {
+            setShowFilter(false);
+            getClaims();
+          }}
+        />
+      )}
       <Table
         title="Claims"
-        action={getClaims}
-        actionIcon={
-          <ArrowPathIcon
-            className={classNames(
-              "h-5 w-5 flex-shrink-0 text-white",
-              !claims && "animate-spin"
-            )}
-            aria-hidden="true"
-          />
-        }
+        actions={[
+          {
+            element: (
+              <>
+                <FunnelIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white hover:text-gray-200"
+                  )}
+                  aria-hidden="true"
+                />
+                Filter
+              </>
+            ),
+            action: () => {
+              setShowFilter(true);
+            },
+          },
+          {
+            element: (
+              <>
+                {" "}
+                <ArrowPathIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white",
+                    !claims && "animate-spin"
+                  )}
+                  aria-hidden="true"
+                />
+                Refresh
+              </>
+            ),
+            action: () => {
+              getClaims();
+            },
+          },
+        ]}
         headers={
           claims
             ? [
-              "request_no", // last 8 digits of request_id
-              "patient_name", // actually name
-              "insurance_no",
-              "requested_amount",
-              "approved_amount",
-              "provider",
-              "status",
-            ]
+                "request_no", // last 8 digits of request_id
+                "patient_name", // actually name
+                "insurance_no",
+                "requested_amount",
+                "approved_amount",
+                "provider",
+                "status",
+              ]
             : []
         }
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}

@@ -11,8 +11,9 @@ import { toast } from "react-toastify";
 import { formatDate } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "../common/AppLayout";
+import SetTokenModal from "../common/SetTokenModal";
 
 function coverageEligibilityMapper(coverage: any) {
   const { resource } = unbundleAs(
@@ -38,6 +39,7 @@ function coverageEligibilityMapper(coverage: any) {
 
 export default function CoverageEligibilityHome() {
   const [selectedRequest, setSelectedRequest] = useState<string>("");
+  const [showFilter, setShowFilter] = useState<boolean>(false);
   const [coverageEligibilityRequests, setCoverageEligibilityRequests] =
     useState<
       {
@@ -64,18 +66,52 @@ export default function CoverageEligibilityHome() {
 
   return (
     <>
+      {showFilter && (
+        <SetTokenModal
+          onClose={() => {
+            setShowFilter(false);
+            getCoverages();
+          }}
+        />
+      )}
       <Table
         title="Coverage Eligibility"
-        action={getCoverages}
-        actionIcon={
-          <ArrowPathIcon
-            className={classNames(
-              "h-5 w-5 flex-shrink-0 text-white",
-              !coverageEligibilityRequests && "animate-spin"
-            )}
-            aria-hidden="true"
-          />
-        }
+        actions={[
+          {
+            element: (
+              <>
+                <FunnelIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white hover:text-gray-200"
+                  )}
+                  aria-hidden="true"
+                />
+                Filter
+              </>
+            ),
+            action: () => {
+              setShowFilter(true);
+            },
+          },
+          {
+            element: (
+              <>
+                {" "}
+                <ArrowPathIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white",
+                    !coverageEligibilityRequests && "animate-spin"
+                  )}
+                  aria-hidden="true"
+                />
+                Refresh
+              </>
+            ),
+            action: () => {
+              getCoverages();
+            },
+          },
+        ]}
         headers={
           coverageEligibilityRequests
             ? [

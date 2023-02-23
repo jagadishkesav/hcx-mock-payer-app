@@ -10,8 +10,9 @@ import {
 } from "../claims";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
-import { ArrowPathIcon } from "@heroicons/react/24/outline";
+import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "../common/AppLayout";
+import SetTokenModal from "../common/SetTokenModal";
 
 type PreAuthDetail = {
   id: string;
@@ -73,7 +74,7 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
 
 export default function PreAuths() {
   const [preauths, setPreauths] = useState<PreAuthDetail[]>();
-
+  const [showFilter, setShowFilter] = useState<boolean>(false);
   async function getPreAuths() {
     setPreauths(undefined);
     const res: any = await listRequest({ type: "preauth" });
@@ -86,18 +87,52 @@ export default function PreAuths() {
 
   return (
     <>
+      {showFilter && (
+        <SetTokenModal
+          onClose={() => {
+            setShowFilter(false);
+            getPreAuths();
+          }}
+        />
+      )}
       <Table
         title="Pre Auth"
-        action={getPreAuths}
-        actionIcon={
-          <ArrowPathIcon
-            className={classNames(
-              "h-5 w-5 flex-shrink-0 text-white",
-              !preauths && "animate-spin"
-            )}
-            aria-hidden="true"
-          />
-        }
+        actions={[
+          {
+            element: (
+              <>
+                <FunnelIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white hover:text-gray-200"
+                  )}
+                  aria-hidden="true"
+                />
+                Filter
+              </>
+            ),
+            action: () => {
+              setShowFilter(true);
+            },
+          },
+          {
+            element: (
+              <>
+                {" "}
+                <ArrowPathIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white",
+                    !preauths && "animate-spin"
+                  )}
+                  aria-hidden="true"
+                />
+                Refresh
+              </>
+            ),
+            action: () => {
+              getPreAuths();
+            },
+          },
+        ]}
         headers={
           preauths
             ? [

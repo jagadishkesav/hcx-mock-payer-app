@@ -1,4 +1,4 @@
-import dummyClaims from "../dummydata/claims.json";
+import { SenderCode } from "./token";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 
 
@@ -53,12 +53,15 @@ export function claims(data: { username: string; password: string }) {
   });
 }
 
-export function listRequest(data: { type: string }, dummy: boolean = false) {
-  return !dummy ? request({
+export function listRequest(data: { type: string }) {
+  return request({
     url: API_BASE_URL + "/request/list",
     method: "POST",
-    body: JSON.stringify(data),
-  }) : Promise.resolve(dummyClaims);
+    body: JSON.stringify({
+      type: data.type,
+      sender_code: SenderCode.getSenderCode(),
+    }),
+  });
 }
 
 export function approveCoverageEligibilityRequest(data: {
