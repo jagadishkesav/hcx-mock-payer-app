@@ -1,4 +1,5 @@
 import { ClaimDetail } from ".";
+import EmptyState from "../common/EmptyState";
 import StatusChip from "../common/StatusChip";
 import Table from "../common/Table";
 import { RejectApproveHandlers } from "./ClaimDetails";
@@ -16,7 +17,7 @@ export default function MedicalInfo({
     <>
       <div className="p-6 bg-white rounded-lg">
         <div className="text-gray-500 text-base font-bold">Diagnosis</div>
-        {claim.diagnosis && claim.diagnosis.length > 0 && (
+        {false && claim.diagnosis && claim.diagnosis.length > 0 ? (
           <Table
             title=""
             showBorder={true}
@@ -41,12 +42,17 @@ export default function MedicalInfo({
                 })),
             ]}
           />
-        )}</div><div className="p-6 bg-white rounded-lg mt-6">
-        <div className="text-gray-500 text-base font-bold">
-          Procedures
-        </div>
+        ):(
+          <EmptyState
+          title="No Diagnosis found"
+          description="No Diagnosis have been added to this claim."
+        />
+        )}
+      </div>
+      <div className="p-6 bg-white rounded-lg mt-6">
+        <div className="text-gray-500 text-base font-bold">Procedures</div>
         {/* using bill items temporarily */}
-        {claim.items && claim.items.length > 0 && (
+        {false && claim.items && claim.items.length > 0 ? (
           <Table
             title=""
             showBorder={true}
@@ -57,6 +63,11 @@ export default function MedicalInfo({
               code: item.productOrService.coding[0].code,
               value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
             }))}
+          />
+        ) : (
+          <EmptyState
+            title="No Procedures found"
+            description="No Procedures have been added to this claim."
           />
         )}
       </div>

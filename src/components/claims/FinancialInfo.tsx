@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { ClaimDetail } from ".";
 import { textOrDash } from "../../utils/StringUtils";
+import EmptyState from "../common/EmptyState";
 import Heading from "../common/Heading";
 import StatusChip from "../common/StatusChip";
 import Table from "../common/Table";
@@ -45,9 +46,7 @@ export default function FinancialInfo({
         </div>
       </div>
       <div className="mt-8 p-6 bg-white rounded-lg">
-      <div className="text-gray-500 text-base font-bold">
-          Bill
-        </div>
+        <div className="text-gray-500 text-base font-bold">Bill</div>
         {claim.items && claim.items.length > 0 ? (
           <Table
             title=""
@@ -61,7 +60,10 @@ export default function FinancialInfo({
             }))}
           />
         ) : (
-          "-"
+          <EmptyState
+            title="No Bills found"
+            description="No Bills have been added to this claim."
+          />
         )}
       </div>
       <dl className="mt-8 rounded-lg bg-white p-6">
