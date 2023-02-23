@@ -219,7 +219,9 @@ export default function ClaimDetails({
               setApproval={currentTab?.setApproval as any}
               onApprove={async (e: any) => {
                 await handleApprove(e);
-                getClaims();
+                setTimeout(() => {
+                  getClaims()
+                }, 1000);
               }}
               nextTab={
                 activeTab === "financial"
@@ -234,7 +236,9 @@ export default function ClaimDetails({
               }
               onReject={async (e: any) => {
                 await handleReject(e);
-                getClaims();
+                setTimeout(() => {
+                  getClaims()
+                }, 1000);
               }}
               claim={claim}
               type={activeTab as any}

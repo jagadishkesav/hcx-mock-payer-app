@@ -103,7 +103,9 @@ export default function CoverageEligibilityHome() {
               toast("Coverage Eligibility Request Approved", {
                 type: "success",
               });
-              getCoverages();
+              setTimeout(() => {
+                getCoverages();
+              }, 1000);
             },
             actionType: "primary",
           },
@@ -113,7 +115,9 @@ export default function CoverageEligibilityHome() {
               toast("Coverage Eligibility Request Rejected", {
                 type: "error",
               });
-              getCoverages();
+              setTimeout(() => {
+                getCoverages();
+              }, 1000);
             },
             actionType: "danger",
           },
@@ -128,7 +132,9 @@ export default function CoverageEligibilityHome() {
           <CoverageDetail
             onAction={() => {
               setSelectedRequest("");
-              getCoverages();
+              setTimeout(() => {
+                getCoverages();
+              }, 1000);
             }}
             coverage={(coverageEligibilityRequests || []).find(
               (request) => request.request_id === selectedRequest
