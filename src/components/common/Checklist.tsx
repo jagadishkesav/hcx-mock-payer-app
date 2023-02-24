@@ -177,7 +177,7 @@ export default function Checklist(props: {
             />
           )}
         </div>
-        {(settled || (!approval && score >= scores.pass)) && nextTab && (
+        {(settled || !approval) && nextTab && (
           <button
             onClick={nextTab}
             className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
