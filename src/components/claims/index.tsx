@@ -81,9 +81,7 @@ export function currencyObjToString({
 
 export function parseAdditionalInfo(additional_info: any) {
   const { medical, financial } = additional_info;
-  const approved_amount =
-    ((medical as IAdditionalInfo).approved_amount ?? 0) +
-    ((financial as IAdditionalInfo).approved_amount ?? 0);
+  const approved_amount = (financial as IAdditionalInfo).approved_amount ?? 0;
 
   return {
     approved_amount: currencyObjToString({
