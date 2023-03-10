@@ -54,10 +54,12 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     }
   );
 
+  console.log("mapping preauth", preauth);
+
   return {
     id: preauth.request_id,
     request_id: preauth.request_id,
-    request_no: identifier.value,
+    request_no: identifier?.value,
     name: resources.patient.name[0].text,
     gender: resources.patient.gender,
     provider: resources.claim.provider.name,
@@ -151,7 +153,7 @@ export default function PreAuths() {
         data={
           (preauths || []).map((preauth) => ({
             ...preauth,
-            request_no: preauth.request_no.slice(-8),
+            request_no: preauth.request_no?.slice(-8),
             patient_name: preauth.name,
           })) as any
         }

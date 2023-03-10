@@ -115,7 +115,7 @@ export function claimsMapper(claim: any): ClaimDetail {
   return {
     id: claim.request_id,
     request_id: claim.request_id,
-    request_no: identifier.value,
+    request_no: identifier?.value,
     name: resources.patient.name[0].text,
     gender: resources.patient.gender,
     items,
@@ -210,7 +210,7 @@ export default function Claims() {
         data={
           (claims || []).map((claim) => ({
             ...claim,
-            request_no: claim.request_no.slice(-8),
+            request_no: claim.request_no?.slice(-8),
             patient_name: claim.name,
           })) as any
         }
