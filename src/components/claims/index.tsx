@@ -2,8 +2,11 @@ import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
 import { listRequest } from "../../api/api";
 import { navigate } from "raviger";
-import { resoureType } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
+import { unbundleAs } from "../../utils/fhirUtils";
+import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { classNames } from "../common/AppLayout";
+import SetTokenModal from "../common/SetTokenModal";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -45,15 +48,22 @@ export type ClaimDetail = {
   request_id: string;
   request_no: string;
   name: string;
+  gender: string;
+  provider: string;
+  address: string;
   items: Item[];
   diagnosis: Diagnosis[];
   insurance_no: string;
   requested_amount: string;
   approved_amount: string;
-  expiry: string;
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
+  resources: {
+    patient: object;
+    coverage: object;
+    claim: object;
+  };
 };
 
 export function currencyObjToString({
@@ -63,14 +73,15 @@ export function currencyObjToString({
   currency: string;
   value: number;
 }) {
+  if (typeof value === "string") {
+    value = parseFloat((value as any).split(" ")[1]);
+  }
   return currency + " " + value.toFixed(2);
 }
 
 export function parseAdditionalInfo(additional_info: any) {
   const { medical, financial } = additional_info;
-  const approved_amount =
-    ((medical as IAdditionalInfo).approved_amount ?? 0) +
-    ((financial as IAdditionalInfo).approved_amount ?? 0);
+  const approved_amount = (financial as IAdditionalInfo).approved_amount ?? 0;
 
   return {
     approved_amount: currencyObjToString({
@@ -83,61 +94,129 @@ export function parseAdditionalInfo(additional_info: any) {
 }
 
 export function claimsMapper(claim: any): ClaimDetail {
-  const { entry, identifier } = claim.payload;
+  const { identifier } = claim.payload;
 
-  const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
-  const insurance_no = entry.find(resoureType("Coverage"))?.resource
-    .subscriberId;
-  const { total, items, diagnosis } = entry.find(
-    resoureType("Claim")
-  )?.resource;
+  const resources = {
+    patient: unbundleAs(claim.payload, "Patient").resource,
+    coverage: unbundleAs(claim.payload, "Coverage").resource,
+    claim: unbundleAs(claim.payload, "Claim").resource,
+  };
+
+  const insurance_no = resources.coverage.subscriberId;
+  const diagnosis = resources.claim.diagnosis as Diagnosis[];
+  const items = resources.claim.item as Item[];
+  const requested_amount = currencyObjToString(
+    resources.claim.total ?? {
+      currency: "INR",
+      value: items?.map((i) => i.unitPrice.value).reduce((a, b) => a + b) ?? 0,
+    }
+  );
 
   return {
     id: claim.request_id,
     request_id: claim.request_id,
-    request_no: identifier.value,
-    name,
+    request_no: identifier?.value,
+    name: resources.patient.name[0].text,
+    gender: resources.patient.gender,
     items,
+    address: resources.patient.address,
+    provider: resources.claim.provider.name,
     diagnosis: diagnosis,
     insurance_no,
-    requested_amount: total && currencyObjToString(total),
+    requested_amount,
     ...parseAdditionalInfo(claim.additional_info),
-    expiry: "2023-12-12",
+    ...(claim.status === "Pending" && { approved_amount: "-" }),
     status: claim.status,
+    resources,
   };
-}
-
-export async function getClaims(): Promise<ClaimDetail[]> {
-  const res: any = await listRequest({ type: "claim" });
-  return res.claim.map(claimsMapper);
 }
 
 export default function Claims() {
   const [claims, setClaims] = useState<ClaimDetail[]>();
+  const [showFilter, setShowFilter] = useState<boolean>(false);
+
+  async function getClaims() {
+    setClaims(undefined);
+    const res: any = await listRequest({ type: "claim" });
+    setClaims(res.claim.map(claimsMapper));
+  }
 
   useEffect(() => {
-    getClaims().then(setClaims);
+    getClaims();
   }, []);
-
-  if (!claims) return <Loading />;
 
   return (
     <>
+      {showFilter && (
+        <SetTokenModal
+          onClose={() => {
+            setShowFilter(false);
+            getClaims();
+          }}
+        />
+      )}
       <Table
         title="Claims"
-        headers={[
-          "request_no",
-          "name",
-          "insurance_no",
-          "requested_amount",
-          "approved_amount",
-          "expiry",
-          "status",
+        actions={[
+          {
+            element: (
+              <>
+                <FunnelIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white hover:text-gray-200"
+                  )}
+                  aria-hidden="true"
+                />
+                Filter
+              </>
+            ),
+            action: () => {
+              setShowFilter(true);
+            },
+          },
+          {
+            element: (
+              <>
+                {" "}
+                <ArrowPathIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white",
+                    !claims && "animate-spin"
+                  )}
+                  aria-hidden="true"
+                />
+                Refresh
+              </>
+            ),
+            action: () => {
+              getClaims();
+            },
+          },
         ]}
+        headers={
+          claims
+            ? [
+                "request_no", // last 8 digits of request_id
+                "patient_name", // actually name
+                "insurance_no",
+                "requested_amount",
+                "approved_amount",
+                "provider",
+                "status",
+              ]
+            : []
+        }
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}
-        data={claims as any}
+        data={
+          (claims || []).map((claim) => ({
+            ...claim,
+            request_no: claim.request_no?.slice(-8),
+            patient_name: claim.name,
+          })) as any
+        }
         primaryColumnIndex={1}
       />
+      {!claims && <Loading type="skeleton" length={5} />}
     </>
   );
 }

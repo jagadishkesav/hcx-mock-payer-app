@@ -6,6 +6,7 @@ import {
   CheckBadgeIcon,
   ClipboardDocumentCheckIcon,
   HomeIcon,
+  ShieldCheckIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
@@ -15,13 +16,13 @@ import { usePath } from "raviger";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
-  { name: "Claims", href: "/claims", icon: CheckBadgeIcon},
   {
     name: "Coverage Eligibility",
     href: "/coverage",
-    icon: ClipboardDocumentCheckIcon,
+    icon: ShieldCheckIcon,
   },
-  { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon},
+  { name: "Pre Auth", href: "/preauths", icon: ClipboardDocumentCheckIcon },
+  { name: "Claims", href: "/claims", icon: CheckBadgeIcon },
   { name: "Reports", href: "/reports", icon: ChartBarIcon },
 ];
 
@@ -237,7 +238,7 @@ export default function Layout({ children }: any) {
           <img className="h-10" src={logo} alt="Swasth Alliance" />
         </div>
         <main className="flex-1 py-6 bg-gray-100">
-          <div className="h-full mx-auto max-w-7xl px-4 sm:px-6 md:px-8">
+          <div className="h-full mx-auto px-4 sm:px-6 md:px-12 lg:px-24">
             <div className="h-full py-4">{children}</div>
           </div>
         </main>

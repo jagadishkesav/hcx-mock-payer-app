@@ -6,16 +6,19 @@ import Dashboard from "../components/dashboard";
 import CoverageEligibilityHome from "../components/eligibility";
 import CoverageDetail from "../components/eligibility/CoverageDetail";
 import ClaimDetails from "../components/claims/ClaimDetails";
-import PreAuthDetails from "../components/preauth/PreAuthDetails";
 
 const routes = {
   "/": () => <Dashboard />,
   "/coverage": () => <CoverageEligibilityHome />,
-  "/coverage/:id" : ({id}: any) => <CoverageDetail id={id} />,
+  "/coverage/:id": ({ id }: any) => <CoverageDetail id={id} />,
   "/claims": () => <Claims />,
-  "/claims/:id" : ({id}: any) => <ClaimDetails request_id={id} />,
+  "/claims/:id": ({ id }: any) => (
+    <ClaimDetails request_id={id} use={"claim"} />
+  ),
   "/preauths": () => <PreAuths />,
-  "/preauths/:id" : ({id}: any) => <PreAuthDetails request_id={id} />,
+  "/preauths/:id": ({ id }: any) => (
+    <ClaimDetails request_id={id} use={"preauth"} />
+  ),
 };
 
 export default function AppRouter() {

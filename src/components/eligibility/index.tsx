@@ -8,32 +8,38 @@ import {
 } from "../../api/api";
 import CoverageDetail from "./CoverageDetail";
 import { toast } from "react-toastify";
-import { resoureType } from "../../utils/StringUtils";
+import { formatDate } from "../../utils/StringUtils";
 import Loading from "../common/Loading";
+import { unbundleAs } from "../../utils/fhirUtils";
+import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
+import { classNames } from "../common/AppLayout";
+import SetTokenModal from "../common/SetTokenModal";
 
 function coverageEligibilityMapper(coverage: any) {
-  const { entry, identifier } = coverage.payload;
-
-  const name = entry.find(resoureType("Patient"))?.resource.name[0].text;
-  const insurance_no = entry.find(resoureType("Coverage"))?.resource
-    .subscriberId;
-  const servicedPeriod = entry.find(resoureType("CoverageEligibilityRequest"))
-    ?.resource.servicedPeriod;
+  const { resource } = unbundleAs(
+    coverage.payload,
+    "CoverageEligibilityRequest"
+  );
 
   return {
     id: coverage.request_id,
     request_id: coverage.request_id,
-    request_no: identifier.value,
-    name,
-    insurance_no,
-    expiry: "2023-12-31",
+    request_no: resource.id,
+    name: resource.patient?.name[0].text,
+    provider: resource.provider.name,
+    insurance_no: resource.insurance[0].coverage.subscriberId,
     status: coverage.status,
-    servicedPeriod,
+    servicedPeriod: resource.servicedPeriod,
+    expiry: resource.servicedPeriod?.end
+      ? formatDate(resource.servicedPeriod.end)
+      : "",
+    resource,
   };
 }
 
 export default function CoverageEligibilityHome() {
   const [selectedRequest, setSelectedRequest] = useState<string>("");
+  const [showFilter, setShowFilter] = useState<boolean>(false);
   const [coverageEligibilityRequests, setCoverageEligibilityRequests] =
     useState<
       {
@@ -46,64 +52,111 @@ export default function CoverageEligibilityHome() {
       }[]
     >();
 
-  async function getCoverage() {
+  async function getCoverages() {
     setCoverageEligibilityRequests(undefined);
     const res: any = await listRequest({ type: "coverageeligibility" });
-    return res.coverageeligibility.map(coverageEligibilityMapper);
+    setCoverageEligibilityRequests(
+      res.coverageeligibility.map(coverageEligibilityMapper)
+    );
   }
 
   useEffect(() => {
-    getCoverage().then(setCoverageEligibilityRequests);
+    getCoverages();
   }, []);
-
-  if (!coverageEligibilityRequests) return <Loading />;
 
   return (
     <>
+      {showFilter && (
+        <SetTokenModal
+          onClose={() => {
+            setShowFilter(false);
+            getCoverages();
+          }}
+        />
+      )}
       <Table
         title="Coverage Eligibility"
-        headers={["request_no", "name", "insurance_no", "expiry", "status"]}
-        onRowClick={setSelectedRequest}
-        data={coverageEligibilityRequests}
-        rowActions={[
-          (request_id: any) => (
-            <button
-              className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                approveCoverageEligibilityRequest({ request_id });
-                toast("Coverage Eligibility Request Approved", {
-                  type: "success",
-                });
-                getCoverage().then(setCoverageEligibilityRequests);
-              }}
-            >
-              Approve
-            </button>
-          ),
-
-          (request_id: any) => (
-            <button
-              className="inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white bg-red-600 hover:bg-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500"
-              onClick={(e) => {
-                e.stopPropagation();
-                rejectCoverageEligibilityRequest({ request_id });
-                toast("Coverage Eligibility Request Rejected", {
-                  type: "error",
-                });
-                getCoverage().then(setCoverageEligibilityRequests);
-              }}
-            >
-              Reject
-            </button>
-          ),
+        actions={[
+          {
+            element: (
+              <>
+                <FunnelIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white hover:text-gray-200"
+                  )}
+                  aria-hidden="true"
+                />
+                Filter
+              </>
+            ),
+            action: () => {
+              setShowFilter(true);
+            },
+          },
+          {
+            element: (
+              <>
+                {" "}
+                <ArrowPathIcon
+                  className={classNames(
+                    "h-5 w-5 flex-shrink-0 text-white",
+                    !coverageEligibilityRequests && "animate-spin"
+                  )}
+                  aria-hidden="true"
+                />
+                Refresh
+              </>
+            ),
+            action: () => {
+              getCoverages();
+            },
+          },
         ]}
-        showRowActions={(id) => {
-          return (
-            coverageEligibilityRequests.find(
-              (request) => request.request_id === id
-            )?.status === "Pending"
-          );
+        headers={
+          coverageEligibilityRequests
+            ? [
+                "request_no",
+                "patient_name",
+                "provider",
+                "insurance_no",
+                "expiry",
+                "status",
+              ]
+            : []
+        }
+        onRowClick={setSelectedRequest}
+        data={(coverageEligibilityRequests || []).map((coverage) => ({
+          ...coverage,
+          id: coverage.request_id,
+          showActions: coverage.status === "Pending",
+          patient_name: coverage.name,
+          request_no: coverage.request_no.slice(-8),
+        }))}
+        rowActions={{
+          approve: {
+            callback: (request_id: any) => {
+              approveCoverageEligibilityRequest({ request_id });
+              toast("Coverage Eligibility Request Approved", {
+                type: "success",
+              });
+              setTimeout(() => {
+                getCoverages();
+              }, 1000);
+            },
+            actionType: "primary",
+          },
+          reject: {
+            callback: (request_id: any) => {
+              rejectCoverageEligibilityRequest({ request_id });
+              toast("Coverage Eligibility Request Rejected", {
+                type: "error",
+              });
+              setTimeout(() => {
+                getCoverages();
+              }, 1000);
+            },
+            actionType: "danger",
+          },
         }}
         primaryColumnIndex={1}
       />
@@ -115,14 +168,17 @@ export default function CoverageEligibilityHome() {
           <CoverageDetail
             onAction={() => {
               setSelectedRequest("");
-              getCoverage().then(setCoverageEligibilityRequests);
+              setTimeout(() => {
+                getCoverages();
+              }, 1000);
             }}
-            coverage={coverageEligibilityRequests.find(
+            coverage={(coverageEligibilityRequests || []).find(
               (request) => request.request_id === selectedRequest
             )}
           />
         </Modal>
       )}
+      {!coverageEligibilityRequests && <Loading type="skeleton" length={5} />}
     </>
   );
 }

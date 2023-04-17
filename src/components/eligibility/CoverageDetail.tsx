@@ -16,7 +16,7 @@ export default function CoverageDetail({ onAction, coverage }: any) {
 
   const handleApprove = () => {
     approveCoverageEligibilityRequest({ request_id: coverage.request_id });
-    toast("Aproved Coverage Eligibility Request", { type: "success" });
+    toast("Approved Coverage Eligibility Request", { type: "success" });
     onAction();
   };
 
@@ -35,7 +35,10 @@ export default function CoverageDetail({ onAction, coverage }: any) {
         <div className="border-t border-gray-200 px-4 py-5 sm:px-6">
           <dl className="grid grid-cols-1 gap-x-4 gap-y-8 sm:grid-cols-2">
             {Object.entries(coverage)
-              .filter(([name, _]) => name !== "servicedPeriod")
+              .filter(
+                ([name, _]) =>
+                  !["servicedPeriod", "expiry", "resource"].includes(name)
+              )
               .map(([name, detail]: any) => {
                 return (
                   <div className="sm:col-span-1">

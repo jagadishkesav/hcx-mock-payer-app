@@ -1,4 +1,6 @@
+import { SenderCode } from "./token";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+
 
 const request = (options: any) => {
   const headers = new Headers({
@@ -55,7 +57,10 @@ export function listRequest(data: { type: string }) {
   return request({
     url: API_BASE_URL + "/request/list",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify({
+      type: data.type,
+      sender_code: SenderCode.getSenderCode(),
+    }),
   });
 }
 
