@@ -7,6 +7,8 @@ import { unbundleAs } from "../../utils/fhirUtils";
 import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "../common/AppLayout";
 import SetTokenModal from "../common/SetTokenModal";
+import Modal from "../common/Modal";
+import { JsonViewer } from "@textea/json-viewer";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -134,11 +136,21 @@ export function claimsMapper(claim: any): ClaimDetail {
 export default function Claims() {
   const [claims, setClaims] = useState<ClaimDetail[]>();
   const [showFilter, setShowFilter] = useState<boolean>(false);
+  const [showJSON, setShowJSON] = React.useState(false);
+  const [claim, setClaim] = React.useState<{}>();
 
   async function getClaims() {
     setClaims(undefined);
     const res: any = await listRequest({ type: "claim" });
     setClaims(res.claim.map(claimsMapper));
+  }
+
+  async function getClaim(id: any): Promise<any> {
+    const obj = claims?.find(
+      (claim: any) => claim.request_id === id
+    )
+    setClaim(obj?.resources.claim);
+    console.log('claim', claim)
   }
 
   useEffect(() => {
@@ -214,9 +226,33 @@ export default function Claims() {
             patient_name: claim.name,
           })) as any
         }
+        rowActions={{
+          "view payload" : {
+            callback: (id) => {
+              getClaim(id)
+              setShowJSON(true)
+            },
+            actionType: "primary",
+          },
+        }}
         primaryColumnIndex={1}
       />
       {!claims && <Loading type="skeleton" length={5} />}
+
+      {showJSON && (
+        <Modal
+          onClose={() => setShowJSON(false)}
+          className="max-w-3xl w-full"
+        >
+          <div
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${
+              !showJSON && "hidden"
+            }`}
+          >
+            <JsonViewer value={claim} />
+          </div>
+        </Modal>
+      )}
     </>
   );
 }

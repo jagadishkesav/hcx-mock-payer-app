@@ -3,15 +3,12 @@ import { properText } from "../../utils/StringUtils";
 import { approveClaim, listRequest, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
 import { ClaimDetail, claimsMapper } from ".";
-import Table from "../common/Table";
 import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
 import Heading from "../common/Heading";
 import Tabs from "../common/Tabs";
-import { PaperClipIcon } from "@heroicons/react/24/outline";
 import Checklist, { ChecklistItem } from "../common/Checklist";
 
-import { JsonViewer } from "@textea/json-viewer";
 import FinancialInfo from "./FinancialInfo";
 import PatientDetails from "./PatientDetails";
 import MedicalInfo from "./MedicalInfo";
@@ -63,7 +60,6 @@ export default function ClaimDetails({
     remarks: "",
     amount: 0,
   });*/
-  const [showJSON, setShowJSON] = React.useState(false);
 
   async function getClaims(): Promise<any> {
     const res: any = await listRequest({ type: use });
@@ -243,22 +239,6 @@ export default function ClaimDetails({
               claim={claim}
               type={activeTab as any}
             />
-          </div>
-        </div>
-
-        <div className="relative">
-          <button
-            className="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600 focus:outline-none"
-            onClick={() => setShowJSON(!showJSON)}
-          >
-            {showJSON ? "Hide" : "Show"} Additional Info
-          </button>
-          <div
-            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 ${
-              !showJSON && "hidden"
-            }`}
-          >
-            <JsonViewer value={claim.resources.claim} />
           </div>
         </div>
       </div>

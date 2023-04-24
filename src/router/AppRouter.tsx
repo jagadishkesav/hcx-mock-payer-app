@@ -6,6 +6,7 @@ import Dashboard from "../components/dashboard";
 import CoverageEligibilityHome from "../components/eligibility";
 import CoverageDetail from "../components/eligibility/CoverageDetail";
 import ClaimDetails from "../components/claims/ClaimDetails";
+import Login from "../components/auth/Login";
 
 const routes = {
   "/": () => <Dashboard />,

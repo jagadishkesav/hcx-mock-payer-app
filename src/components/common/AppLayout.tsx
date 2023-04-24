@@ -13,6 +13,8 @@ import {
 import logo from "../../swasth_logo.png";
 import { Link } from "raviger";
 import { usePath } from "raviger";
+import { useAuthActions } from "../../recoil/actions/auth.actions";
+import { Participant } from "../../api/token";
 
 const navigation = [
   { name: "Dashboard", href: "/", icon: HomeIcon },
@@ -35,6 +37,7 @@ export default function Layout({ children }: any) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
 
   const currentPath = usePath();
+  const { logout } = useAuthActions();
 
   const isActive = (href: string) => {
     return currentPath === href;
@@ -142,17 +145,20 @@ export default function Layout({ children }: any) {
                       <div>
                         <img
                           className="inline-block h-10 w-10 rounded-full"
-                          src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                          src="user_icon.png"
                           alt=""
                         />
                       </div>
                       <div className="ml-3">
                         <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                          {"Username"}
+                          {Participant.getParticipantName()}
                         </p>
-                        <p className="text-sm font-medium text-gray-500 group-hover:text-gray-700">
-                          Logout
-                        </p>
+                        <button
+                          type="button"
+                          className="text-sm font-medium text-gray-700 group-hover:text-gray-900"
+                          onClick={() => logout()}
+                        >Logout</button>
+
                       </div>
                     </div>
                   </div>
@@ -207,18 +213,23 @@ export default function Layout({ children }: any) {
               <div className="flex items-center">
                 <div>
                   <img
-                    className="inline-block h-9 w-9 rounded-full"
-                    src="https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=facearea&facepad=2&w=256&h=256&q=80"
+                    className="inline-block h-10 w-10 rounded-full"
+                    src="user_icon.png"
                     alt=""
                   />
                 </div>
                 <div className="ml-3">
                   <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                    {"Username"}
+                  {Participant.getParticipantName()}
                   </p>
-                  <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
+                  {/* <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
                     Logout
-                  </p>
+                  </p> */}
+                  <button
+                    type="button"
+                    className="text-sm font-medium text-gray-700 group-hover:text-gray-900"
+                    onClick={() => logout()}
+                  >Logout</button>
                 </div>
               </div>
             </div>

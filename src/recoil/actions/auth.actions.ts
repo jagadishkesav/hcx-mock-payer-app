@@ -5,13 +5,15 @@ import { authAtom } from "../state/auth";
 import * as Api from "../../api/api";
 import { navigate } from "raviger";
 import { toast } from "react-toastify";
+import { Participant, SenderCode } from "../../api/token";
+import * as _ from 'lodash';
 
 export function useAuthActions() {
   const [auth, setAuth] = useRecoilState(authAtom);
 
   return {
-    login: temp_login,
-    loginApi: _login,
+    login: login,
+    loginApi: temp_login,
     logout,
     currentUser,
   };
@@ -25,31 +27,30 @@ export function useAuthActions() {
     toast("Logged in successfully", { type: "success" });
   }
 
-  function _login({
-    username,
-    password,
-  }: {
-    username: string;
-    password: string;
-  }) {
-    return Api.login({ username, password }).then((res: any) => {
+  function login(username: string, password: string) {
+    return Api.login({ username, password }).then(async(res: any) => {
       // store user details and jwt token in local storage to keep user logged in between page refreshes
       localStorage.setItem("ACCESS_TOKEN", res.access_token);
       setAuth({
-        username: res.username,
+        username: username,
         token: res.access_token,
         isAuthenticated: "true",
       });
+      Api.participantDetails({primaryEmail: username}).then((resp) => {
+        const participant = _.get(resp, 'participants')[0] || {}
+        Participant.setParticipant(JSON.stringify(participant));
+      })
+      navigate("/")
     });
   }
 
   function logout() {
-    // remove user from local storage, set auth state to null and redirect to login page
-    localStorage.removeItem("user");
+    localStorage.clear()
     setAuth(() => ({
       isAuthenticated: "false",
       token: null,
     }));
+
     navigate("/");
   }
 

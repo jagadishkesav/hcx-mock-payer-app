@@ -19,7 +19,7 @@ export default function Login() {
               e.preventDefault();
               const email = e.target.email.value;
               const password = e.target.password.value;
-              login(email, password);
+              login(email,  password);
             }}
           >
             <img className="h-16 mb-12 block lg:hidden" src={logo} alt="logo" />

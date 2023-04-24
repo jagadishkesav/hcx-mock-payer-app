@@ -1,9 +1,11 @@
-import { SenderCode } from "./token";
+import { Participant, SenderCode } from "./token";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
+export const HCX_BASE_URL = process.env.REACT_APP_HCX_BASE_URL;
 
 
 const request = (options: any) => {
   const headers = new Headers({
+    ...options.headers,
     "Content-Type": "application/json",
   });
 
@@ -19,6 +21,34 @@ const request = (options: any) => {
     })
   );
 };
+
+
+const formRequest = (options: any) => {
+
+  const headers = {
+    'Content-Type': 'application/x-www-form-urlencoded'
+  };
+
+  const defaults = { headers: headers };
+  options = Object.assign({}, defaults, options);
+
+  return fetch(options.url, options).then((response) =>
+    response.text().then((text) => {
+      if (!response.ok) {
+        const error = {
+          status: response.status,
+          statusText: response.statusText,
+          message: text
+        };
+        return Promise.reject(error);
+      }
+      const data = text ? JSON.parse(text) : {};
+      return data;
+    })
+  );
+};
+
+
 
 const urlParams = (params: any) => {
   console.log("Parameterizing", Object.entries(params));
@@ -38,10 +68,17 @@ export function clearAccessTokens() {
 }
 
 export function login(data: { username: string; password: string }) {
-  return request({
-    url: API_BASE_URL + "/auth/login",
+
+const formData = new URLSearchParams();
+  formData.append('client_id', 'registry-frontend');
+  formData.append('username', data.username);
+  formData.append('password', data.password);
+  formData.append('grant_type', 'password');
+
+  return formRequest({
+    url: HCX_BASE_URL + "/auth/realms/swasth-health-claim-exchange/protocol/openid-connect/token",
     method: "POST",
-    body: JSON.stringify(data),
+    body: formData,
   });
 }
 
@@ -53,13 +90,27 @@ export function claims(data: { username: string; password: string }) {
   });
 }
 
+export async function participantDetails(data: { primaryEmail: string }) {
+  const reqBody = { filters: { primary_email: { 'eq': data.primaryEmail}}};
+  return request({
+    url: HCX_BASE_URL + "/api/v0.7/participant/search",
+    method: "POST",
+    body: JSON.stringify(reqBody),
+    headers:{
+      "Authorization": "Bearer " + localStorage.getItem("ACCESS_TOKEN"),
+      "Content-Type": "application/json"
+    }
+  });
+}
+
 export function listRequest(data: { type: string }) {
   return request({
     url: API_BASE_URL + "/request/list",
     method: "POST",
     body: JSON.stringify({
       type: data.type,
-      sender_code: SenderCode.getSenderCode(),
+      recipient_code: Participant.getParticipant().get('participant_code'),
+      days: 120
     }),
   });
 }
