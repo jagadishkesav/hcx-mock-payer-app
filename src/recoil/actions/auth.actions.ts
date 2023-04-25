@@ -5,7 +5,7 @@ import { authAtom } from "../state/auth";
 import * as Api from "../../api/api";
 import { navigate } from "raviger";
 import { toast } from "react-toastify";
-import { Participant, SenderCode } from "../../api/token";
+import { Participant } from "../../api/token";
 import * as _ from 'lodash';
 
 export function useAuthActions() {
