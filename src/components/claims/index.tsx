@@ -78,7 +78,7 @@ export function currencyObjToString({
   if (typeof value === "string") {
     value = parseFloat((value as any).split(" ")[1]);
   }
-  return currency + " " + value.toFixed(2);
+  return currency + " " + value;
 }
 
 export function parseAdditionalInfo(additional_info: any) {

@@ -1,3 +1,5 @@
+import _ from "lodash";
+import { store } from "../store";
 import { Participant } from "./token";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const HCX_BASE_URL = process.env.REACT_APP_HCX_BASE_URL;
@@ -97,7 +99,7 @@ export async function participantDetails(data: { primaryEmail: string }) {
     method: "POST",
     body: JSON.stringify(reqBody),
     headers:{
-      "Authorization": "Bearer " + localStorage.getItem("ACCESS_TOKEN"),
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
       "Content-Type": "application/json"
     }
   });
@@ -109,27 +111,47 @@ export function listRequest(data: { type: string }) {
     method: "POST",
     body: JSON.stringify({
       type: data.type,
-      recipient_code: Participant.getParticipant().get('participant_code'),
-      days: 120
+      recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+      limit: 120
     }),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }
 
 export function approveCoverageEligibilityRequest(data: {
   request_id: string;
 }) {
+  const newData = {
+    ...data,
+    recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+  };
   return request({
     url: API_BASE_URL + "/coverageeligibility/approve",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }
 
 export function rejectCoverageEligibilityRequest(data: { request_id: string }) {
+  const newData = {
+    ...data,
+    recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+  };
   return request({
     url: API_BASE_URL + "/coverageeligibility/reject",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }
 
@@ -139,18 +161,34 @@ export function approvePreauth(data: {
   remarks: string;
   approved_amount: number;
 }) {
+  const newData = {
+    ...data,
+    recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+  };
   return request({
     url: API_BASE_URL + "/preauth/approve",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }
 
 export function rejectPreauth(data: { request_id: string; type: string }) {
+  const newData = {
+    ...data,
+    recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+  };
   return request({
     url: API_BASE_URL + "/preauth/reject",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }
 
@@ -160,17 +198,33 @@ export function approveClaim(data: {
   remarks: string;
   approved_amount: number;
 }) {
+  const newData = {
+    ...data,
+    recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+  };
   return request({
     url: API_BASE_URL + "/claim/approve",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }
 
 export function rejectClaim(data: { request_id: string; type: string }) {
+  const newData = {
+    ...data,
+    recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
+  };
   return request({
     url: API_BASE_URL + "/claim/reject",
     method: "POST",
-    body: JSON.stringify(data),
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
   });
 }

@@ -7,16 +7,20 @@ import {
   ClipboardDocumentCheckIcon,
   HomeIcon,
   ShieldCheckIcon,
+  UsersIcon,
   XMarkIcon,
 } from "@heroicons/react/24/outline";
 
 import logo from "../../swasth_logo.png";
-import { Link } from "raviger";
+import { Link, navigate } from "raviger";
 import { usePath } from "raviger";
 import { useAuthActions } from "../../recoil/actions/auth.actions";
-import { Participant } from "../../api/token";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import _ from 'lodash';
 
 const navigation = [
+  // { name: "Profile", href: "/profile", icon: UsersIcon },
   { name: "Dashboard", href: "/", icon: HomeIcon },
   {
     name: "Coverage Eligibility",
@@ -35,6 +39,7 @@ export function classNames(...classes: any[]) {
 
 export default function Layout({ children }: any) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const participantDetails: Object = useSelector((state: RootState) => state.participantDetailsReducer.participantDetails);
 
   const currentPath = usePath();
   const { logout } = useAuthActions();
@@ -42,6 +47,10 @@ export default function Layout({ children }: any) {
   const isActive = (href: string) => {
     return currentPath === href;
   };
+
+  const showProfile = () => {
+    navigate("/profile");
+  }
 
   return (
     <div className="h-screen bg-gray-100">
@@ -147,11 +156,12 @@ export default function Layout({ children }: any) {
                           className="inline-block h-10 w-10 rounded-full"
                           src="user_icon.png"
                           alt=""
+                          onClick={e=>showProfile()}
                         />
                       </div>
                       <div className="ml-3">
                         <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
-                          {Participant.getParticipantName()}
+                          {_.get(participantDetails,"participant_name")}
                         </p>
                         <button
                           type="button"
@@ -216,15 +226,13 @@ export default function Layout({ children }: any) {
                     className="inline-block h-10 w-10 rounded-full"
                     src="user_icon.png"
                     alt=""
+                    onClick={e=>showProfile()}
                   />
                 </div>
                 <div className="ml-3">
-                  <p className="text-sm font-medium text-gray-700 group-hover:text-gray-900">
-                  {Participant.getParticipantName()}
+                  <p className="text-base font-medium text-gray-700 group-hover:text-gray-900">
+                    {_.get(participantDetails, "participant_name")}
                   </p>
-                  {/* <p className="text-xs font-medium text-gray-500 group-hover:text-gray-700">
-                    Logout
-                  </p> */}
                   <button
                     type="button"
                     className="text-sm font-medium text-gray-700 group-hover:text-gray-900"
@@ -257,3 +265,13 @@ export default function Layout({ children }: any) {
     </div>
   );
 }
+
+
+
+
+
+
+
+
+
+

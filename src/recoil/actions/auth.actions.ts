@@ -5,11 +5,14 @@ import { authAtom } from "../state/auth";
 import * as Api from "../../api/api";
 import { navigate } from "raviger";
 import { toast } from "react-toastify";
-import { Participant } from "../../api/token";
 import * as _ from 'lodash';
+import { useDispatch } from 'react-redux'
+import { addParticipantToken } from "../../reducers/token_reducer";
+import { addParticipantDetails } from "../../reducers/participant_details_reducer";
 
 export function useAuthActions() {
   const [auth, setAuth] = useRecoilState(authAtom);
+  const dispatch = useDispatch();
 
   return {
     login: login,
@@ -30,15 +33,17 @@ export function useAuthActions() {
   function login(username: string, password: string) {
     return Api.login({ username, password }).then(async(res: any) => {
       // store user details and jwt token in local storage to keep user logged in between page refreshes
-      localStorage.setItem("ACCESS_TOKEN", res.access_token);
+      console.log("keycloak response", res);
+      dispatch(addParticipantToken(res.access_token));
       setAuth({
         username: username,
         token: res.access_token,
         isAuthenticated: "true",
       });
       Api.participantDetails({primaryEmail: username}).then((resp) => {
+        console.log("participant search response", resp);
         const participant = _.get(resp, 'participants')[0] || {}
-        Participant.setParticipant(JSON.stringify(participant));
+        dispatch(addParticipantDetails(participant));
       })
       navigate("/")
     });

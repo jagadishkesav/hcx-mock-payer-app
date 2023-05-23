@@ -1,7 +1,18 @@
 import { useAuthActions } from "../../recoil/actions/auth.actions";
 import logo from "../../swasth_logo.png";
+import queryString from 'query-string';
+import { useEffect } from "react";
+import * as _ from 'lodash';
 
 export default function Login() {
+
+  useEffect(() => {
+    const queryParams = queryString.parse(window.location.search);
+    console.log('query params', queryParams)
+    if(queryParams['email'] != null && queryParams['password']){
+      login(String(queryParams['email']), String(queryParams['password']));
+    }
+  }, []);
 
   const { login } = useAuthActions();
   return (
@@ -19,7 +30,7 @@ export default function Login() {
               e.preventDefault();
               const email = e.target.email.value;
               const password = e.target.password.value;
-              login(email,  password);
+              login(email, password);
             }}
           >
             <img className="h-16 mb-12 block lg:hidden" src={logo} alt="logo" />
