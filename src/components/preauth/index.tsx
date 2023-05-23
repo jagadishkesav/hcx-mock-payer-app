@@ -13,6 +13,8 @@ import { unbundleAs } from "../../utils/fhirUtils";
 import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "../common/AppLayout";
 import SetTokenModal from "../common/SetTokenModal";
+import Modal from "../common/Modal";
+import { JsonViewer } from "@textea/json-viewer";
 
 type PreAuthDetail = {
   id: string;
@@ -77,10 +79,21 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
 export default function PreAuths() {
   const [preauths, setPreauths] = useState<PreAuthDetail[]>();
   const [showFilter, setShowFilter] = useState<boolean>(false);
+  const [showJSON, setShowJSON] = React.useState(false);
+  const [preauth, setPreauth] = React.useState<{}>();
+  
   async function getPreAuths() {
     setPreauths(undefined);
     const res: any = await listRequest({ type: "preauth" });
     setPreauths(res.preauth.map(preAuthMapper));
+  }
+
+  async function getPreauth(id: any): Promise<any> {
+    const obj = preauths?.find(
+      (preauth: any) => preauth.request_id === id
+    )
+    setPreauth(obj?.resources.claim);
+    console.log('preauth', preauth)
   }
 
   useEffect(() => {
@@ -145,7 +158,7 @@ export default function PreAuths() {
                 "requested_amount",
                 "expiry",
                 "provider",
-                "status",
+                "status"
               ]
             : []
         }
@@ -157,9 +170,34 @@ export default function PreAuths() {
             patient_name: preauth.name,
           })) as any
         }
+        rowActions={{
+          "view payload" : {
+            callback: (id) => {
+              getPreauth(id)
+              setShowJSON(true)
+            },
+            actionType: "primary",
+          },
+        }}
         primaryColumnIndex={1}
       />
       {!preauths && <Loading type="skeleton" length={5} />}
+      
+      {showJSON && (
+        <Modal
+          onClose={() => setShowJSON(false)}
+          className="max-w-3xl w-full"
+        >
+          <div
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${
+              !showJSON && "hidden"
+            }`}
+          >
+            <JsonViewer value={preauth} />
+          </div>
+        </Modal>
+      )}
     </>
   );
 }
+

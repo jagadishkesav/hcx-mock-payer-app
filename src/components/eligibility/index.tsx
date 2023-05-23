@@ -14,6 +14,7 @@ import { unbundleAs } from "../../utils/fhirUtils";
 import { ArrowPathIcon, FunnelIcon } from "@heroicons/react/24/outline";
 import { classNames } from "../common/AppLayout";
 import SetTokenModal from "../common/SetTokenModal";
+import { JsonViewer } from "@textea/json-viewer";
 
 function coverageEligibilityMapper(coverage: any) {
   const { resource } = unbundleAs(
@@ -49,8 +50,11 @@ export default function CoverageEligibilityHome() {
         insurance_no: string;
         expiry: string;
         status: string;
+        resource: object;
       }[]
     >();
+  const [showJSON, setShowJSON] = React.useState(false);
+  const [coverage, setCoverage] = React.useState<{}>();
 
   async function getCoverages() {
     setCoverageEligibilityRequests(undefined);
@@ -58,6 +62,14 @@ export default function CoverageEligibilityHome() {
     setCoverageEligibilityRequests(
       res.coverageeligibility.map(coverageEligibilityMapper)
     );
+  }
+
+  async function getCoverage(id: any): Promise<any> {
+    const obj = coverageEligibilityRequests?.find(
+      (coverage: any) => coverage.request_id === id
+    )
+    setCoverage(obj?.resource);
+    console.log('coverage', coverage)
   }
 
   useEffect(() => {
@@ -131,9 +143,9 @@ export default function CoverageEligibilityHome() {
           showActions: coverage.status === "Pending",
           patient_name: coverage.name,
           request_no: coverage.request_no.slice(-8),
-        }))}
+        })) as any}
         rowActions={{
-          approve: {
+         approve: {
             callback: (request_id: any) => {
               approveCoverageEligibilityRequest({ request_id });
               toast("Coverage Eligibility Request Approved", {
@@ -157,6 +169,13 @@ export default function CoverageEligibilityHome() {
             },
             actionType: "danger",
           },
+          "view payload" : {
+            callback: (id) => {
+              getCoverage(id)
+              setShowJSON(true)
+            },
+            actionType: "primary",
+          },
         }}
         primaryColumnIndex={1}
       />
@@ -179,6 +198,21 @@ export default function CoverageEligibilityHome() {
         </Modal>
       )}
       {!coverageEligibilityRequests && <Loading type="skeleton" length={5} />}
+      
+      {showJSON && (
+        <Modal
+          onClose={() => setShowJSON(false)}
+          className="max-w-3xl w-full"
+        >
+          <div
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${
+              !showJSON && "hidden"
+            }`}
+          >
+            <JsonViewer value={coverage} />
+          </div>
+        </Modal>
+      )}
     </>
   );
 }
