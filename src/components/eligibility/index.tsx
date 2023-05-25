@@ -67,8 +67,6 @@ export default function CoverageEligibilityHome() {
   const [requestId, setRequestId] = React.useState("");
   const [isValidJSON, setIsValidJSON] = React.useState(true);
 
-  console.log('coverages', coverageEligibilityRequests)
-
   const handleInputChange = (value: any, event: any) => {
     setCoverageResponse(value);
   };

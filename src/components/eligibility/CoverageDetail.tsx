@@ -37,7 +37,7 @@ export default function CoverageDetail({ onAction, coverage }: any) {
             {Object.entries(coverage)
               .filter(
                 ([name, _]) =>
-                  !["servicedPeriod", "expiry", "resource"].includes(name)
+                  !["servicedPeriod", "expiry", "resource", "response_fhir"].includes(name)
               )
               .map(([name, detail]: any) => {
                 return (
