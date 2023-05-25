@@ -67,6 +67,8 @@ export default function CoverageEligibilityHome() {
   const [requestId, setRequestId] = React.useState("");
   const [isValidJSON, setIsValidJSON] = React.useState(true);
 
+  console.log('coverages', coverageEligibilityRequests)
+
   const handleInputChange = (value: any, event: any) => {
     setCoverageResponse(value);
   };
@@ -91,13 +93,15 @@ export default function CoverageEligibilityHome() {
   }
 
   async function getCoverages() {
-    setCoverageEligibilityRequests(undefined);
-    const res: any = await listRequest({ type: "coverageeligibility" }).catch(() => {
+    await listRequest({ type: "coverageeligibility" })
+    .then((resp) => {
+      setCoverageEligibilityRequests(
+        resp.coverageeligibility.map(coverageEligibilityMapper)
+      );
+    }).catch(() => {
       console.error("Error while fetching request list")
+      setCoverageEligibilityRequests([]);
     });
-    setCoverageEligibilityRequests(
-      res.coverageeligibility.map(coverageEligibilityMapper)
-    );
   }
 
   async function getCoverage(id: any): Promise<any> {
@@ -190,7 +194,7 @@ export default function CoverageEligibilityHome() {
           id: coverage.request_id,
           showActions: coverage.status === "Pending",
           patient_name: coverage.name,
-          request_no: coverage.request_no.slice(-8),
+          request_no: coverage.request_no,
         })) as any}
         rowActions={{
           approve: {

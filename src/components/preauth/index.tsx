@@ -92,9 +92,13 @@ export default function PreAuths() {
   const [isValidJSON, setIsValidJSON] = React.useState(true);
 
   async function getPreAuths() {
-    setPreauths(undefined);
-    const res: any = await listRequest({ type: "preauth" });
-    setPreauths(res.preauth.map(preAuthMapper));
+    await listRequest({ type: "preauth" })
+    .then((res) => {
+      setPreauths(res.preauth.map(preAuthMapper));
+    }).catch(() => {
+      console.error("Error while fetching request list")
+      setPreauths([]);
+    });
   }
 
   async function getPreauth(id: any): Promise<any> {

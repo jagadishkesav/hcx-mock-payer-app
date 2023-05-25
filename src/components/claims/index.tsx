@@ -150,8 +150,13 @@ export default function Claims() {
 
   async function getClaims() {
     setClaims(undefined);
-    const res: any = await listRequest({ type: "claim" });
-    setClaims(res.claim.map(claimsMapper));
+    await listRequest({ type: "claim" })
+    .then((res) => {
+      setClaims(res.claim.map(claimsMapper));
+    }).catch(() => {
+      console.error("Error while fetching request list")
+      setClaims([]);
+    });
   }
 
   async function getClaim(id: any): Promise<any> {
