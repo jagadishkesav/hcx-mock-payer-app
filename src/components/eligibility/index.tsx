@@ -194,7 +194,7 @@ export default function CoverageEligibilityHome() {
           id: coverage.request_id,
           showActions: coverage.status === "Pending",
           patient_name: coverage.name,
-          request_no: coverage.request_no,
+          request_no: coverage.request_no.slice(-8),
         })) as any}
         rowActions={{
           approve: {
