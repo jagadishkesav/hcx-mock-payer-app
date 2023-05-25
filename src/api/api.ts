@@ -112,7 +112,7 @@ export function listRequest(data: { type: string }) {
     body: JSON.stringify({
       type: data.type,
       recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"),
-      limit: 120
+      days: 10
     }),
     headers:{
       "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
@@ -222,6 +222,18 @@ export function rejectClaim(data: { request_id: string; type: string }) {
     url: API_BASE_URL + "/claim/reject",
     method: "POST",
     body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+export function updateResponse(data: { request_id: string; response_fhir: string }) {
+  return request({
+    url: API_BASE_URL + "/response/update",
+    method: "POST",
+    body: JSON.stringify(data),
     headers:{
       "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
       "Content-Type": "application/json"

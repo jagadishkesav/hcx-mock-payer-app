@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
-import { listRequest } from "../../api/api";
+import { listRequest, updateResponse } from "../../api/api";
 import { navigate } from "raviger";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
@@ -9,6 +9,9 @@ import { classNames } from "../common/AppLayout";
 import SetTokenModal from "../common/SetTokenModal";
 import Modal from "../common/Modal";
 import { JsonViewer } from "@textea/json-viewer";
+import { Editor } from "@monaco-editor/react";
+import { options } from "../common/JSONEditorOptions";
+import { toast } from "react-toastify";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -66,6 +69,7 @@ export type ClaimDetail = {
     coverage: object;
     claim: object;
   };
+  response_fhir: object;
 };
 
 export function currencyObjToString({
@@ -130,6 +134,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     ...(claim.status === "Pending" && { approved_amount: "-" }),
     status: claim.status,
     resources,
+    response_fhir: claim.response_fhir,
   };
 }
 
@@ -137,7 +142,11 @@ export default function Claims() {
   const [claims, setClaims] = useState<ClaimDetail[]>();
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showJSON, setShowJSON] = React.useState(false);
-  const [claim, setClaim] = React.useState<{}>();
+  const [claim, setClaim] = React.useState("");
+  const [claimResponse, setClaimResponse] = React.useState("");
+  const [requestId, setRequestId] = React.useState("");
+  const [showEditor, setShowEditor] = React.useState(false);
+  const [isValidJSON, setIsValidJSON] = React.useState(true);
 
   async function getClaims() {
     setClaims(undefined);
@@ -149,13 +158,48 @@ export default function Claims() {
     const obj = claims?.find(
       (claim: any) => claim.request_id === id
     )
-    setClaim(obj?.resources.claim);
-    console.log('claim', claim)
+    setRequestId(id)
+    setClaim(JSON.stringify(obj?.resources.claim, null, 4));
+    setClaimResponse(JSON.stringify(obj?.response_fhir, null, 4))
   }
 
   useEffect(() => {
     getClaims();
   }, []);
+
+  useEffect(() => {
+    checkResponseJSONValid();
+  }, [claimResponse]);
+
+  const updateRespFhir = () => {
+    updateResponse({ request_id: requestId, response_fhir: claimResponse })
+    setShowEditor(false);
+    getClaims();
+  }
+
+  const handleInputChange = (value: any, event: any) => {
+    setClaimResponse(value);
+  };
+
+  const checkResponseJSONValid = () => {
+    let input: any = '';
+    try {
+      if (claimResponse !== 'undefined' && claimResponse !== '') {
+        input = JSON.parse(claimResponse);
+        setIsValidJSON(true)
+      } else {
+        input = undefined;
+      }
+    } catch (err: any) {
+      setIsValidJSON(false);
+      toast("Invalid json", {
+        type: "error",
+        autoClose: 1000
+      });
+      return;
+    }
+  }
+
 
   return (
     <>
@@ -208,14 +252,14 @@ export default function Claims() {
         headers={
           claims
             ? [
-                "request_no", // last 8 digits of request_id
-                "patient_name", // actually name
-                "insurance_no",
-                "requested_amount",
-                "approved_amount",
-                "provider",
-                "status",
-              ]
+              "request_no", // last 8 digits of request_id
+              "patient_name", // actually name
+              "insurance_no",
+              "requested_amount",
+              "approved_amount",
+              "provider",
+              "status",
+            ]
             : []
         }
         onRowClick={(request_id) => navigate(`/claims/${request_id}`)}
@@ -227,13 +271,20 @@ export default function Claims() {
           })) as any
         }
         rowActions={{
-          "view payload" : {
+          "view request": {
             callback: (id) => {
               getClaim(id)
               setShowJSON(true)
             },
             actionType: "primary",
           },
+          "view response": {
+            callback: (id) => {
+              getClaim(id)
+              setShowEditor(true)
+            },
+            actionType: "primary",
+          }
         }}
         primaryColumnIndex={1}
       />
@@ -245,14 +296,52 @@ export default function Claims() {
           className="max-w-3xl w-full"
         >
           <div
-            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${
-              !showJSON && "hidden"
-            }`}
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${!showJSON && "hidden"
+              }`}
           >
-            <JsonViewer value={claim} />
+            <Editor
+              height="82vh"
+              language="json"
+              theme="clouds"
+              defaultValue={claim}
+              options={options}
+            />
           </div>
         </Modal>
       )}
+      {showEditor && (
+        <Modal
+          onClose={() => setShowEditor(false)}
+          className="max-w-3xl w-full"
+        >
+          <div
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${!showEditor && "hidden"
+              }`}
+          >
+            <Editor
+              height="82vh"
+              language="json"
+              theme="clouds"
+              defaultValue={claimResponse}
+              onChange={handleInputChange}
+              options={options}
+            />
+
+            {isValidJSON ?
+              <button
+                type="button"
+                className="flex items-center gap-2 justify-center rounded-md bg-indigo-600 py-1.5 px-3 mt-4 mx-auto text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={(e) => updateRespFhir()}
+              >
+                Update
+              </button>
+              : null}
+          </div>
+
+        </Modal>
+
+      )
+      }
     </>
   );
 }
