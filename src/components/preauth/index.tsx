@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
-import { listRequest } from "../../api/api";
+import { listRequest, updateResponse } from "../../api/api";
 import { navigate } from "raviger";
 import {
   IAdditionalInfo,
@@ -15,6 +15,9 @@ import { classNames } from "../common/AppLayout";
 import SetTokenModal from "../common/SetTokenModal";
 import Modal from "../common/Modal";
 import { JsonViewer } from "@textea/json-viewer";
+import { Editor } from "@monaco-editor/react";
+import { options } from "../common/JSONEditorOptions";
+import { toast } from "react-toastify";
 
 type PreAuthDetail = {
   id: string;
@@ -36,6 +39,7 @@ type PreAuthDetail = {
     claim: object;
   };
   address: any;
+  response_fhir: object;
 };
 
 export function preAuthMapper(preauth: any): PreAuthDetail {
@@ -73,6 +77,7 @@ export function preAuthMapper(preauth: any): PreAuthDetail {
     ...(preauth.status === "Pending" && { approved_amount: "-" }),
     status: preauth.status,
     resources,
+    response_fhir: preauth.response_fhir,
   };
 }
 
@@ -80,25 +85,67 @@ export default function PreAuths() {
   const [preauths, setPreauths] = useState<PreAuthDetail[]>();
   const [showFilter, setShowFilter] = useState<boolean>(false);
   const [showJSON, setShowJSON] = React.useState(false);
-  const [preauth, setPreauth] = React.useState<{}>();
-  
+  const [preauth, setPreauth] = React.useState("");
+  const [preauthResponse, setPreauthResponse] = React.useState("");
+  const [requestId, setRequestId] = React.useState("");
+  const [showEditor, setShowEditor] = React.useState(false);
+  const [isValidJSON, setIsValidJSON] = React.useState(true);
+
   async function getPreAuths() {
-    setPreauths(undefined);
-    const res: any = await listRequest({ type: "preauth" });
-    setPreauths(res.preauth.map(preAuthMapper));
+    await listRequest({ type: "preauth" })
+    .then((res) => {
+      setPreauths(res.preauth.map(preAuthMapper));
+    }).catch(() => {
+      console.error("Error while fetching request list")
+      setPreauths([]);
+    });
   }
 
   async function getPreauth(id: any): Promise<any> {
     const obj = preauths?.find(
       (preauth: any) => preauth.request_id === id
     )
-    setPreauth(obj?.resources.claim);
-    console.log('preauth', preauth)
+    setRequestId(id)
+    setPreauth(JSON.stringify(obj?.resources.claim, null, 4));
+    setPreauthResponse(JSON.stringify(obj?.response_fhir, null, 4))
   }
 
   useEffect(() => {
     getPreAuths();
   }, []);
+
+  useEffect(() => {
+    checkResponseJSONValid();
+  }, [preauthResponse]);
+
+  const updateRespFhir = () => {
+    updateResponse({ request_id: requestId, response_fhir: preauthResponse })
+    setShowEditor(false);
+    getPreAuths();
+  }
+
+  const handleInputChange = (value: any, event: any) => {
+    setPreauthResponse(value);
+  };
+
+  const checkResponseJSONValid = () => {
+    let input: any = '';
+    try {
+      if (preauthResponse !== 'undefined' && preauthResponse !== '') {
+        input = JSON.parse(preauthResponse);
+        setIsValidJSON(true)
+      } else {
+        input = undefined;
+      }
+    } catch (err: any) {
+      setIsValidJSON(false);
+      toast("Invalid json", {
+        type: "error",
+        autoClose: 1000
+      });
+      return;
+    }
+  }
 
   return (
     <>
@@ -151,15 +198,15 @@ export default function PreAuths() {
         headers={
           preauths
             ? [
-                "request_no",
-                "patient_name",
-                "insurance_no",
-                "approved_amount",
-                "requested_amount",
-                "expiry",
-                "provider",
-                "status"
-              ]
+              "request_no",
+              "patient_name",
+              "insurance_no",
+              "approved_amount",
+              "requested_amount",
+              "expiry",
+              "provider",
+              "status"
+            ]
             : []
         }
         onRowClick={(id) => navigate(`/preauths/${id}`)}
@@ -171,7 +218,7 @@ export default function PreAuths() {
           })) as any
         }
         rowActions={{
-          "view payload" : {
+          "view request": {
             callback: (id) => {
               getPreauth(id)
               setShowJSON(true)
@@ -182,21 +229,59 @@ export default function PreAuths() {
         primaryColumnIndex={1}
       />
       {!preauths && <Loading type="skeleton" length={5} />}
-      
+
       {showJSON && (
         <Modal
           onClose={() => setShowJSON(false)}
           className="max-w-3xl w-full"
         >
           <div
-            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${
-              !showJSON && "hidden"
-            }`}
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${!showJSON && "hidden"
+              }`}
           >
-            <JsonViewer value={preauth} />
+            <Editor
+              height="82vh"
+              language="json"
+              theme="clouds"
+              defaultValue={preauth}
+              options={options}
+            />
           </div>
         </Modal>
       )}
+      {showEditor && (
+        <Modal
+          onClose={() => setShowEditor(false)}
+          className="max-w-3xl w-full"
+        >
+          <div
+            className={`mt-3 bg-slate-100 rounded-lg shadow-lg px-4 py-2 text-left ${!showEditor && "hidden"
+              }`}
+          >
+            <Editor
+              height="82vh"
+              language="json"
+              theme="clouds"
+              defaultValue={preauthResponse}
+              onChange={handleInputChange}
+              options={options}
+            />
+
+            {isValidJSON ?
+              <button
+                type="button"
+                className="flex items-center gap-2 justify-center rounded-md bg-indigo-600 py-1.5 px-3 mt-4 mx-auto text-center text-sm font-semibold leading-6 text-white shadow-sm hover:bg-indigo-500 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-indigo-600"
+                onClick={(e) => updateRespFhir()}
+              >
+                Update
+              </button>
+              : null}
+          </div>
+
+        </Modal>
+
+      )
+      }
     </>
   );
 }
