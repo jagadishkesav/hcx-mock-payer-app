@@ -10,7 +10,7 @@ export default function Login() {
     const queryParams = queryString.parse(window.location.search);
     console.log('query params', queryParams);
     if(queryParams['email'] != null && queryParams['password']){
-      login(String(queryParams['email']), String(queryParams['password']));
+      login(atob(String(queryParams['email'])), atob(String(queryParams['password'])));
     }
   }, []);
 
