@@ -305,7 +305,7 @@ export default function Claims() {
             callback: (id) => {
               getClaim(id);
               setShowEditor(false);
-              sendCommunicationRequest({"request_id":requestId})
+              sendCommunicationRequest({"request_id":id})
 
             },
             actionType: "primary",    
