@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import Table from "../common/Table";
-import { listRequest, updateResponse } from "../../api/api";
+import { listRequest, sendCommunicationRequest, updateResponse } from "../../api/api";
 import { navigate } from "raviger";
 import Loading from "../common/Loading";
 import { unbundleAs } from "../../utils/fhirUtils";
@@ -12,11 +12,14 @@ import { JsonViewer } from "@textea/json-viewer";
 import { Editor } from "@monaco-editor/react";
 import { options } from "../common/JSONEditorOptions";
 import { toast } from "react-toastify";
+import _ from "lodash";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
   remarks?: string;
   approved_amount?: number;
+  account_number? : number;
+  ifsc_code? : string;
 }
 export interface Item {
   unitPrice: {
@@ -58,7 +61,9 @@ export type ClaimDetail = {
   address: string;
   items: Item[];
   diagnosis: Diagnosis[];
+  sub_type : string;
   insurance_no: string;
+  otp_verification: string;
   requested_amount: string;
   approved_amount: string;
   status: string;
@@ -120,10 +125,12 @@ export function claimsMapper(claim: any): ClaimDetail {
 
   return {
     id: claim.request_id,
+    otp_verification: claim.otp_verification || "Pending",
     request_id: claim.request_id,
     request_no: identifier?.value,
     name: resources.patient.name[0].text,
     gender: resources.patient.gender,
+    sub_type : resources.claim.subType !== undefined ? resources.claim.subType.coding[0].code : "Others",
     items,
     address: resources.patient.address,
     provider: resources.claim.provider.name,
@@ -152,9 +159,12 @@ export default function Claims() {
     setClaims(undefined);
     await listRequest({ type: "claim" })
     .then((res) => {
-      setClaims(res.claim.map(claimsMapper));
-    }).catch(() => {
-      console.error("Error while fetching request list")
+      console.log("claim list", res);
+      const result = _.filter(res.claim, (claim) => claim.payload.entry[0].resource.resourceType === 'Claim');
+      setClaims(result.map(claimsMapper));
+      
+    }).catch((err) => {
+      console.error("Error while fetching request list", err);
       setClaims([]);
     });
   }
@@ -260,6 +270,7 @@ export default function Claims() {
               "request_no", // last 8 digits of request_id
               "patient_name", // actually name
               "insurance_no",
+              "sub_type",
               "requested_amount",
               "approved_amount",
               "provider",
@@ -289,7 +300,18 @@ export default function Claims() {
               setShowEditor(true)
             },
             actionType: "primary",
-          }
+          },
+          "verify claim": {
+            callback: (id) => {
+              getClaim(id);
+              setShowEditor(false);
+              sendCommunicationRequest({"request_id":id})
+
+            },
+            actionType: "primary",    
+            hideCondition : 'sub_type !== "OPD"'
+            
+          }        
         }}
         primaryColumnIndex={1}
       />

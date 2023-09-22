@@ -39,6 +39,7 @@ export default function Table({
     [key: string]: {
       callback: (id: string) => void;
       actionType: "danger" | "primary" | "secondary";
+      hideCondition? : string;
     };
   };
   onRowClick?: (id: string) => void;
@@ -151,14 +152,15 @@ export default function Table({
                                     "bg-indigo-600 hover:bg-indigo-700 focus:ring-indigo-500",
                                   item.showActions !== false &&
                                     action.actionType === "secondary" &&
-                                    "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500",
+                                    "bg-gray-100 hover:bg-gray-200 focus:ring-gray-500 ",
                                   item.showActions !== false &&
                                     action.actionType === "danger" &&
                                     "bg-red-600 hover:bg-red-700 focus:ring-red-500",
                                   // showActions === false ? disabled
                                   item.showActions === false &&
                                     "bg-gray-300 hover:bg-gray-400 focus:ring-gray-500 pointer-events-none cursor-not-allowed",
-                                  "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2"
+                                  "inline-flex items-center px-2 py-1 border border-transparent text-xs font-medium rounded text-white focus:outline-none focus:ring-2 focus:ring-offset-2",
+                                  action.hideCondition !== undefined && eval(`item.${action.hideCondition}`) ? 'invisible' : ''
                                 )}
                                 onClick={(e) => {
                                   e.stopPropagation();

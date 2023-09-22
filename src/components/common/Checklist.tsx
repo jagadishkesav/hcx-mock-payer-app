@@ -2,6 +2,7 @@ import { CheckIcon, MinusIcon, XMarkIcon } from "@heroicons/react/24/outline";
 import { useEffect, useState } from "react";
 import { ClaimDetail } from "../claims";
 import ApprovalForm, { ApprovalValueType } from "./ApprovalForm";
+import { properText } from "../../utils/StringUtils";
 
 export type ChecklistItem = {
   id: string;
@@ -25,6 +26,7 @@ export default function Checklist(props: {
   nextTab?: () => void;
   claim: ClaimDetail;
   type: "medical" | "financial";
+  enableButtons? : true | false;
 }) {
   const {
     scores,
@@ -38,9 +40,10 @@ export default function Checklist(props: {
     nextTab,
     claim,
     type,
+    enableButtons = true,
   } = props;
 
-  const [sticky, setSticky] = useState(false);
+  const [sticky, setSticky] = useState(true);
 
   const score = items?.filter((item) => item.status === "pass").length || 0;
   const settledValue =
@@ -75,13 +78,9 @@ export default function Checklist(props: {
   return (
     <div className={`mt-24 relative ${className ?? ""}`} id="checklist">
       <div
-        className={`rounded-lg p-4 bg-white z-10 w-full max-w-md ${
-          sticky
-            ? "fixed top-5 overflow-auto min-w-fit"
-            : "absolute -translate-y-[20px] min-w-fit"
-        }`}
+        className={`rounded-lg p-4 bg-white z-10 w-full max-w-md absolute`}
       >
-        {!settled && (
+        {!settled && enableButtons && (
           <>
             <div className="text-gray-800 text-lg mt-[20px] text-center font-bold pb-4">
               Checklist
@@ -152,16 +151,19 @@ export default function Checklist(props: {
         )}
 
         <div className={`${!settled && "mt-8"}`}>
-          {approval && setApproval && (
+          {approval && setApproval && enableButtons &&(
             <ApprovalForm
               approval={approval}
               setApproval={setApproval}
+              claimType= {claim.sub_type}
               onApprove={() => {
                 onApprove({
                   request_id: claim.request_id,
                   type,
                   approved_amount: approval.amount,
                   remarks: approval.remarks,
+                  account_number:approval.account_number,
+                  ifsc_code:approval.ifsc_code
                 });
                 nextTab && nextTab();
               }}
@@ -177,7 +179,7 @@ export default function Checklist(props: {
             />
           )}
         </div>
-        {(settled || !approval) && nextTab && (
+        {(settled || !approval) && enableButtons && nextTab && (
           <button
             onClick={nextTab}
             className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
@@ -186,6 +188,15 @@ export default function Checklist(props: {
             Next
           </button>
         )}
+      {enableButtons == false ? <> 
+        <div className="text-gray-800 text-lg mt-[20px] text-left font-bold pb-4">
+              Checklist
+            </div>
+      <p className="text-sm italic text-gray-500">
+      <span className="font-mono">{"Claim is of for an OPD and it can only be approved once the OTP verification is complete"}</span></p>
+      </>
+
+      : null}
       </div>
     </div>
   );

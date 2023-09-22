@@ -28,6 +28,8 @@ export default function FinancialInfo({
     )
   );
   const [remarks, setRemarks] = useState(financial_info.remarks);
+  const [accountNumber, setAccountNumber] = useState(financial_info.account_number || "*********************");
+  const [ifscCode, setIfscCode] = useState(financial_info.ifsc_code || "**********");
   const status = financial_info.status;
   const supportingFiles = (claim as any).resources.claim.supportingInfo;
   return (
@@ -43,6 +45,13 @@ export default function FinancialInfo({
           {textOrDash(claim.approved_amount)}
           <div className="font-semibold col-span-1">Status</div>
           <div className="w-24">{<StatusChip status={status} />}</div>
+          {claim.sub_type == "OPD" ? 
+          <>
+          <div className="font-semibold col-span-1">Bank Account Number</div>
+          {accountNumber}
+          <div className="font-semibold col-span-1">IFSC Code</div>
+          {textOrDash(ifscCode)}
+          </> : null}
         </div>
       </div>
       <div className="mt-8 p-6 bg-white rounded-lg">
