@@ -28,12 +28,16 @@ const handleApprove = async ({
   type,
   remarks,
   approved_amount,
+  account_number,
+  ifsc_code
 }: any) => {
   await approveClaim({
     request_id,
     type,
     remarks,
     approved_amount,
+    account_number,
+    ifsc_code
   });
   toast("Claim Approved", { type: "success" });
 };
@@ -186,6 +190,16 @@ export default function ClaimDetails({
           </div>
         }
       />
+      {claim.sub_type == "OPD" ? <> 
+        <p className="text-sm italic text-gray-500">
+            {properText(use)} OTP Verification : <StatusChip status={claim.otp_verification as any} size={"sm"}/> 
+      </p>
+      <p className="text-sm italic text-gray-500">
+      <span className="font-mono">{"Claim can not be approved until OTP verification is complete"}</span></p>
+      </>
+
+      : null}
+      
       <p className="text-sm italic text-gray-500">
         {properText(use)} ID : <span className="font-mono">{claim.id}</span>
       </p>
@@ -209,6 +223,7 @@ export default function ClaimDetails({
                 fail: 1,
                 na: 2,
               }}
+              enableButtons={claim.sub_type == "OPD" && claim.otp_verification == "pending"? false : true}
               items={currentTab?.checklist as any}
               setItems={currentTab?.setChecklist as any}
               approval={currentTab?.approval}

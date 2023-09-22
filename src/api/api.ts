@@ -176,6 +176,25 @@ export function approvePreauth(data: {
   });
 }
 
+export function sendCommunicationRequest(data: {
+  request_id: string;
+}) {
+  const newData = {
+    ...data,
+  };
+  return request({
+    url: API_BASE_URL + "/create/communication/request",
+    method: "POST",
+    body: JSON.stringify(newData),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
+
+
 export function rejectPreauth(data: { request_id: string; type: string }) {
   const newData = {
     ...data,
@@ -197,6 +216,8 @@ export function approveClaim(data: {
   type: string;
   remarks: string;
   approved_amount: number;
+  account_number: number;
+  ifsc_code: string;
 }) {
   const newData = {
     ...data,
