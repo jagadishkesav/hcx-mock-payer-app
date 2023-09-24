@@ -66,6 +66,8 @@ export type ClaimDetail = {
   otp_verification: string;
   requested_amount: string;
   approved_amount: string;
+  account_number: string;
+  ifsc_code: string;
   status: string;
   medical_info: IAdditionalInfo;
   financial_info: IAdditionalInfo;
@@ -126,6 +128,8 @@ export function claimsMapper(claim: any): ClaimDetail {
   return {
     id: claim.request_id,
     otp_verification: claim.otp_verification || "Pending",
+    account_number: claim.account_number || "",
+    ifsc_code: claim.ifsc_code || "",
     request_id: claim.request_id,
     request_no: identifier?.value,
     name: resources.patient.name ? resources.patient.name[0].text : "Unnamed",
@@ -306,7 +310,7 @@ export default function Claims() {
             callback: (id) => {
               getClaim(id);
               setShowEditor(false);
-              sendCommunicationRequest({"request_id":id})
+              sendCommunicationRequest({"request_id":id, type:"otp"})
 
             },
             actionType: "primary",    

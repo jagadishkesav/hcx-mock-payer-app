@@ -178,6 +178,7 @@ export function approvePreauth(data: {
 
 export function sendCommunicationRequest(data: {
   request_id: string;
+  type: string;
 }) {
   const newData = {
     ...data,
@@ -216,8 +217,6 @@ export function approveClaim(data: {
   type: string;
   remarks: string;
   approved_amount: number;
-  account_number: number;
-  ifsc_code: string;
 }) {
   const newData = {
     ...data,

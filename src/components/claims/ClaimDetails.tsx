@@ -27,19 +27,15 @@ const handleApprove = async ({
   request_id,
   type,
   remarks,
-  approved_amount,
-  account_number,
-  ifsc_code
+  approved_amount
 }: any) => {
   await approveClaim({
     request_id,
     type,
     remarks,
     approved_amount,
-    account_number,
-    ifsc_code
   });
-  toast("Claim Approved", { type: "success" });
+  toast(`${type} claim approved`, { type: "success" });
 };
 
 export default function ClaimDetails({
@@ -223,7 +219,7 @@ export default function ClaimDetails({
                 fail: 1,
                 na: 2,
               }}
-              enableButtons={claim.sub_type == "OPD" && claim.otp_verification == "Pending"? false : true}
+              enableButtons={claim.sub_type == "OPD" && claim.otp_verification == "Pending" && claim.account_number != ""? false : true}
               items={currentTab?.checklist as any}
               setItems={currentTab?.setChecklist as any}
               approval={currentTab?.approval}
