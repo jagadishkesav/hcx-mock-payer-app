@@ -132,7 +132,7 @@ export default function Table({
                           showBorder && "border-b-[1px] border-gray-300"
                         )}
                       >
-                        {header === "status" ? (
+                        {header === "status" || header == "otp_verification" ? (
                           <StatusChip status={item[header] as any} />
                         ) : (
                           item[header]
