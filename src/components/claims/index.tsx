@@ -128,7 +128,7 @@ export function claimsMapper(claim: any): ClaimDetail {
     otp_verification: claim.otp_verification || "Pending",
     request_id: claim.request_id,
     request_no: identifier?.value,
-    name: resources.patient.name[0].text,
+    name: resources.patient.name ? resources.patient.name[0].text : "Unnamed",
     gender: resources.patient.gender,
     sub_type : resources.claim.subType !== undefined ? resources.claim.subType.coding[0].code : "Others",
     items,
@@ -275,6 +275,7 @@ export default function Claims() {
               "approved_amount",
               "provider",
               "status",
+              "otp_verification"
             ]
             : []
         }

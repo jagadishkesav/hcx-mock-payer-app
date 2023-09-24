@@ -183,7 +183,7 @@ export function sendCommunicationRequest(data: {
     ...data,
   };
   return request({
-    url: API_BASE_URL + "/create/communication/request",
+    url: "https://dev-hcx.swasth.app/hcx-mock-service/v0.7" + "/create/communication/request",
     method: "POST",
     body: JSON.stringify(newData),
     headers:{

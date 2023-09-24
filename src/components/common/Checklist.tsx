@@ -193,7 +193,7 @@ export default function Checklist(props: {
               Checklist
             </div>
       <p className="text-sm italic text-gray-500">
-      <span className="font-mono">{"Claim is of for an OPD and it can only be approved once the OTP verification is complete"}</span></p>
+      <span className="font-mono">{"Claim is for an OPD and it can only be approved once the OTP verification is complete"}</span></p>
       </>
 
       : null}
