@@ -35,7 +35,7 @@ const handleApprove = async ({
     remarks,
     approved_amount,
   });
-  toast("Claim Approved", { type: "success" });
+  toast(`${type} claim approved`, { type: "success" });
 };
 
 export default function ClaimDetails({
