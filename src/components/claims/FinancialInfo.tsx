@@ -28,8 +28,8 @@ export default function FinancialInfo({
     )
   );
   const [remarks, setRemarks] = useState(financial_info.remarks);
-  const [accountNumber, setAccountNumber] = useState(financial_info.account_number || "*********************");
-  const [ifscCode, setIfscCode] = useState(financial_info.ifsc_code || "**********");
+  const [accountNumber, setAccountNumber] = useState(claim.account_number || "*********************");
+  const [ifscCode, setIfscCode] = useState(claim.ifsc_code || "**********");
   const status = financial_info.status;
   const supportingFiles = (claim as any).resources.claim.supportingInfo;
   return (

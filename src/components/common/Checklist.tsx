@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { ClaimDetail } from "../claims";
 import ApprovalForm, { ApprovalValueType } from "./ApprovalForm";
 import { properText } from "../../utils/StringUtils";
+import { sendCommunicationRequest } from "../../api/api";
 
 export type ChecklistItem = {
   id: string;
@@ -161,9 +162,7 @@ export default function Checklist(props: {
                   request_id: claim.request_id,
                   type,
                   approved_amount: approval.amount,
-                  remarks: approval.remarks,
-                  account_number:approval.account_number,
-                  ifsc_code:approval.ifsc_code
+                  remarks: approval.remarks
                 });
                 nextTab && nextTab();
               }}
@@ -192,10 +191,15 @@ export default function Checklist(props: {
         <div className="text-gray-800 text-lg mt-[20px] text-left font-bold pb-4">
               Checklist
             </div>
+            <button
+            onClick={() => sendCommunicationRequest({"request_id":claim.request_id, type:"account_details"})}
+            className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Request Bank Details
+          </button>
       <p className="text-sm italic text-gray-500">
-      <span className="font-mono">{"Claim is for an OPD and it can only be approved once the OTP verification is complete"}</span></p>
+      <span className="font-mono">{"Claim is for an OPD and it can only be approved once the OTP verification is complete and bank details are provided"}</span></p>
       </>
-
       : null}
       </div>
     </div>

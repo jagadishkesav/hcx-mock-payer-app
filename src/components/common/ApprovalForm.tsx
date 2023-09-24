@@ -4,8 +4,6 @@ import { ClaimDetail } from "../claims";
 export type ApprovalValueType = {
     amount: number,
     remarks?: string,
-    account_number? : number,
-    ifsc_code? : string
 }
 
 export default function ApprovalForm(props: {
@@ -51,46 +49,6 @@ export default function ApprovalForm(props: {
                     />
                 </dd>
             </div>
-            {claimType == "OPD" ?
-            <>
-             <div className="sm:col-span-2 mt-4">
-                <dt className="text-sm font-medium text-gray-500">
-                    Bank Account Number
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                    <input
-                        onChange={(e) => setApproval({ ...approval, account_number: parseFloat(e.target.value) })}
-                        min={0}
-                        value={approval.account_number}
-                        disabled={disabled}
-                        type="number"
-                        className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                    {/*<h1 className={`text-3xl font-black ${disabled ? "text-gray-300 line-through" : ""}`}>
-                        {approval.amount}
-                    </h1>*/}
-                </dd>
-            </div>
-            <div className="sm:col-span-2 mt-4">
-                <dt className="text-sm font-medium text-gray-500">
-                    IFSC Code
-                </dt>
-                <dd className="mt-1 text-sm text-gray-900">
-                    <input
-                        onChange={(e) => setApproval({ ...approval, ifsc_code: e.target.value })}
-                        min={0}
-                        value={approval.ifsc_code}
-                        disabled={disabled}
-                        type="number"
-                        className="w-full h-9 border p-3 border-gray-300 rounded-md shadow-sm focus:ring-indigo-500 focus:border-indigo-500"
-                    />
-                    {/*<h1 className={`text-3xl font-black ${disabled ? "text-gray-300 line-through" : ""}`}>
-                        {approval.amount}
-                    </h1>*/}
-                </dd>
-            </div>
-            </> : null
-            }
             {settled || <div className="flex items-center justify-end gap-2 mt-2">
                 <button
                     onClick={onReject}
