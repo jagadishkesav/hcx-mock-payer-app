@@ -4,6 +4,7 @@ import { ClaimDetail } from "../claims";
 import ApprovalForm, { ApprovalValueType } from "./ApprovalForm";
 import { properText } from "../../utils/StringUtils";
 import { sendCommunicationRequest } from "../../api/api";
+import { toast } from "react-toastify";
 
 export type ChecklistItem = {
   id: string;
@@ -45,6 +46,7 @@ export default function Checklist(props: {
   } = props;
 
   const [sticky, setSticky] = useState(true);
+  console.log("enable buttons", enableButtons);
 
   const score = items?.filter((item) => item.status === "pass").length || 0;
   const settledValue =
@@ -192,7 +194,7 @@ export default function Checklist(props: {
               Checklist
             </div>
             <button
-            onClick={() => sendCommunicationRequest({"request_id":claim.request_id, type:"account_details"})}
+            onClick={() => {sendCommunicationRequest({"request_id":claim.request_id, type:"bank_details"}); toast.success("Bank Details requested");}}
             className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             Request Bank Details

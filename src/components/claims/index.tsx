@@ -77,6 +77,7 @@ export type ClaimDetail = {
     claim: object;
   };
   response_fhir: object;
+  use: string;
 };
 
 export function currencyObjToString({
@@ -127,6 +128,7 @@ export function claimsMapper(claim: any): ClaimDetail {
 
   return {
     id: claim.request_id,
+    use: claim.use,
     otp_verification: claim.otp_verification || "Pending",
     account_number: claim.account_number || "",
     ifsc_code: claim.ifsc_code || "",
@@ -310,7 +312,8 @@ export default function Claims() {
             callback: (id) => {
               getClaim(id);
               setShowEditor(false);
-              sendCommunicationRequest({"request_id":id, type:"otp"})
+              sendCommunicationRequest({"request_id":id, type:"otp"});
+              toast.success("OTP verification communication request has been raised")
 
             },
             actionType: "primary",    
