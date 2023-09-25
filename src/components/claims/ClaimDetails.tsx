@@ -12,6 +12,7 @@ import Checklist, { ChecklistItem } from "../common/Checklist";
 import FinancialInfo from "./FinancialInfo";
 import PatientDetails from "./PatientDetails";
 import MedicalInfo from "./MedicalInfo";
+import { lowerCase } from "lodash";
 
 export interface RejectApproveHandlers {
   handleReject: typeof handleReject;
@@ -54,7 +55,7 @@ export default function ClaimDetails({
     remarks: "",
     amount: 0,
   });
-
+  console.log("claim type" ,  use);
   /*const [financialApproval, setFinancialApproval] = useState<{ remarks: string | undefined, amount: number }>({
     remarks: "",
     amount: 0,
@@ -185,7 +186,7 @@ export default function ClaimDetails({
           </div>
         }
       />
-      {claim.sub_type == "OPD" ? <> 
+      {claim.sub_type == "OPD" && use == "claim" ? <> 
         <p className="text-sm italic text-gray-500">
             {properText(use)} OTP Verification : <StatusChip status={claim.otp_verification as any} size={"sm"}/> 
       </p>
@@ -218,7 +219,7 @@ export default function ClaimDetails({
                 fail: 1,
                 na: 2,
               }}
-              enableButtons={claim.sub_type == "OPD" && claim.otp_verification == "Pending" || claim.account_number == ""? false : true}
+              enableButtons={use == "claim" && claim.sub_type == "OPD" && lowerCase(claim.otp_verification) != "successful" || claim.account_number == "" && use == "claim" ? false : true}
               items={currentTab?.checklist as any}
               setItems={currentTab?.setChecklist as any}
               approval={currentTab?.approval}
