@@ -218,7 +218,7 @@ export default function ClaimDetails({
                 fail: 1,
                 na: 2,
               }}
-              enableButtons={claim.sub_type == "OPD" && claim.otp_verification == "Pending" && claim.account_number == ""? false : true}
+              enableButtons={claim.sub_type == "OPD" && claim.otp_verification == "Pending" || claim.account_number == ""? false : true}
               items={currentTab?.checklist as any}
               setItems={currentTab?.setChecklist as any}
               approval={currentTab?.approval}
