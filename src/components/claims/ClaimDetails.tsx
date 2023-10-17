@@ -28,15 +28,15 @@ const handleApprove = async ({
   request_id,
   type,
   remarks,
-  approved_amount
-}: any) => {
+  approved_amount,
+}: any, use:any) => {
   await approveClaim({
     request_id,
     type,
     remarks,
     approved_amount,
   });
-  toast(`${type} claim approved`, { type: "success" });
+  toast(`${type} ${use} approved`, { type: "success" });
 };
 
 export default function ClaimDetails({
@@ -225,7 +225,7 @@ export default function ClaimDetails({
               approval={currentTab?.approval}
               setApproval={currentTab?.setApproval as any}
               onApprove={async (e: any) => {
-                await handleApprove(e);
+                await handleApprove(e, use);
                 setTimeout(() => {
                   getClaims()
                 }, 1000);
