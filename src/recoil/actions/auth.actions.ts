@@ -44,6 +44,12 @@ export function useAuthActions() {
         console.log("participant search response", resp);
         const participant = _.get(resp, 'participants')[0] || {}
         dispatch(addParticipantDetails(participant));
+        if(Object.entries(participant).length == 0){
+          Api.participantDetailsByCode({participant_code:username}).then((res) => {
+            const participant2 = _.get(res, 'participants')[0] || {}
+            dispatch(addParticipantDetails(participant2));
+          })
+        }
       })
       navigate("/")
     });

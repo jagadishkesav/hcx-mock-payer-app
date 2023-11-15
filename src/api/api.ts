@@ -106,6 +106,19 @@ export async function participantDetails(data: { primaryEmail: string }) {
   });
 }
 
+export async function participantDetailsByCode(data: { participant_code: string }) {
+  const reqBody = { filters: { participant_code: { 'eq': data.participant_code}}};
+  return request({
+    url: HCX_BASE_URL + "/api/v0.7/participant/search",
+    method: "POST",
+    body: JSON.stringify(reqBody),
+    headers:{
+      "Authorization": "Bearer " + store.getState().tokenReducer.participantToken,
+      "Content-Type": "application/json"
+    }
+  });
+}
+
 export function listRequest(data: { type: string }) {
   return request({
     url: API_BASE_URL + "/request/list",
