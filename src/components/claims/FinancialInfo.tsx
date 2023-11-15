@@ -32,6 +32,8 @@ export default function FinancialInfo({
   const [ifscCode, setIfscCode] = useState(claim.ifsc_code || "**********");
   const status = financial_info.status;
   const supportingFiles = (claim as any).resources.claim.supportingInfo;
+
+  
   return (
     <>
       <div className="p-6 bg-white rounded-lg">

@@ -3,11 +3,12 @@ import {
   ArrowDownTrayIcon,
   EyeIcon,
 } from "@heroicons/react/24/outline";
-import React from "react";
+import React, { useEffect } from "react";
 import { formatDate, properText, textOrDash } from "../../utils/StringUtils";
 import PriorityChip from "../common/PriorityChip";
 import StatusChip from "../common/StatusChip";
 import SupportingFiles from "./SupportingFiles";
+import axios from "axios";
 
 const componentMap: { [key: string]: (detail: any) => JSX.Element } = {
   status: (detail: any) => (
@@ -42,7 +43,38 @@ export default function PatientDetails({ claim }: { claim: any }) {
     "address",
   ];
 
+  
+  const processFile = (url: string) => {
+    let data = JSON.stringify({
+      "file_locations": [url]
+    });
+
+    let config = {
+      method: 'post',
+      maxBodyLength: Infinity,
+      url: 'http://docxhcxapi.centralindia.cloudapp.azure.com/document/analyse/submit ',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer HCX@12345'
+      },
+      data: data
+    };
+    axios.request(config)
+      .then((response: { data: any; }) => {
+        console.log(JSON.stringify(response.data));
+        localStorage.setItem(url, response.data.request_id);
+      })
+      .catch((error: any) => {
+        console.log(error);
+      });
+  }
   const supportingFiles = claim.resources.claim.supportingInfo;
+  useEffect(()=>{
+    supportingFiles.map((file: any, index: any) => {
+      processFile(file.valueAttachment.url);
+    });
+  },[])
+  
   return (
     <>
       <div className="flex flex-col gap-4">

@@ -3,6 +3,7 @@ import { store } from "../store";
 import { Participant } from "./token";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const HCX_BASE_URL = process.env.REACT_APP_HCX_BASE_URL;
+export const HCX_MOCK_SERVICE_URL = process.env.REACT_APP_HCX_MOCK_SERVICE_URL;
 
 
 const request = (options: any) => {
@@ -184,7 +185,7 @@ export function sendCommunicationRequest(data: {
     ...data,
   };
   return request({
-    url: "https://dev-hcx.swasth.app/hcx-mock-service/v0.7" + "/create/communication/request",
+    url: HCX_MOCK_SERVICE_URL + "/create/communication/request",
     method: "POST",
     body: JSON.stringify(newData),
     headers:{
