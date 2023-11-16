@@ -68,7 +68,7 @@ export default function PatientDetails({ claim }: { claim: any }) {
         console.log(error);
       });
   }
-  const supportingFiles = claim.resources.claim.supportingInfo;
+  const supportingFiles = claim.resources.claim.supportingInfo || [];
   useEffect(()=>{
     supportingFiles.map((file: any, index: any) => {
       processFile(file.valueAttachment.url);
