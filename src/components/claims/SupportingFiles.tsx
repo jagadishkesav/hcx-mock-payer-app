@@ -71,17 +71,9 @@ export default function SupportingFiles(props: {
                                         target="_blank"
                                         rel="noreferrer"
                                     >
-                                        {file.valueAttachment.title || "File"}
+                                        {String(file.valueAttachment.url).split("/").at(-1) || "File"}
                                     </a>
                                 </div>
-                                <a
-                                    href="#"
-                                    className="flex ml-4 shadow-sm border border-gray-300 hover:border-gray-400 rounded-md px-3 py-1 font-medium text-gray-700 hover:text-black"
-                                    onClick={(event) => {event.preventDefault(); showProcessedFileModal(file.valueAttachment.url);}}
-                                >
-                                    <EyeIcon className="h-5 w-5 flex-shrink-0 mr-2 text-indigo-400" />
-                                    <span>View Processed File</span>
-                                </a>
                                 <a
                                     href={file.valueAttachment.url}
                                     download
@@ -89,6 +81,14 @@ export default function SupportingFiles(props: {
                                 >
                                     <ArrowDownTrayIcon className="h-5 w-5 flex-shrink-0 mr-2 text-indigo-400" />
                                     <span>Download</span>
+                                </a>
+                                <a
+                                    href="#"
+                                    className="flex ml-4 shadow-sm border border-gray-300 hover:border-gray-400 rounded-md px-3 py-1 font-medium text-gray-700 hover:text-black"
+                                    onClick={(event) => {event.preventDefault(); showProcessedFileModal(file.valueAttachment.url);}}
+                                >
+                                    <EyeIcon className="h-5 w-5 flex-shrink-0 mr-2 text-indigo-400" />
+                                    <span>View File</span>
                                 </a>
                             </li>
                         );

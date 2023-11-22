@@ -27,7 +27,7 @@ export default function Checklist(props: {
   onReject: any;
   nextTab?: () => void;
   claim: ClaimDetail;
-  type: "medical" | "financial";
+  type: "medical" | "financial" | "general_details";
   enableButtons? : true | false;
 }) {
   const {
@@ -46,7 +46,6 @@ export default function Checklist(props: {
   } = props;
 
   const [sticky, setSticky] = useState(true);
-  console.log("enable buttons", enableButtons);
 
   const score = items?.filter((item) => item.status === "pass").length || 0;
   const settledValue =
