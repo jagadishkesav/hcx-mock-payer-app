@@ -78,6 +78,7 @@ export type ClaimDetail = {
   };
   response_fhir: object;
   use: string;
+  platform: string;
 };
 
 export function currencyObjToString({
@@ -129,6 +130,7 @@ export function claimsMapper(claim: any): ClaimDetail {
   return {
     id: claim.request_id,
     use: claim.use,
+    platform: claim.app || "others",
     otp_verification: claim.otp_verification || "Pending",
     account_number: claim.account_number || "",
     ifsc_code: claim.ifsc_code || "",

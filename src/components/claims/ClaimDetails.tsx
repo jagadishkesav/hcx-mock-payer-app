@@ -65,6 +65,7 @@ export default function ClaimDetails({
 }) {
   const [activeTab, setActiveTab] = React.useState("patient_details");
   const [claim, setClaim] = React.useState<ClaimDetail | null>(null);
+  console.log("claim", claim);
   const [medicineApproval, setMedicineApproval] = useState<{
     remarks: string | undefined;
     amount: number;
@@ -261,7 +262,7 @@ export default function ClaimDetails({
                   fail: 1,
                   na: 2,
                 }}
-                enableButtons={use == "claim" && claim.sub_type == "OPD" && lowerCase(claim.otp_verification) !== "successful" || claim.account_number == "1234" && use == "claim" && claim.sub_type == "OPD" ? false : true}
+                enableButtons={use == "claim" && claim.platform == "BSP" && claim.sub_type == "OPD" && lowerCase(claim.otp_verification) !== "successful" || claim.account_number == "1234" && use == "claim" && claim.platform == "BSP" && claim.sub_type == "OPD" ? false : true}
                 items={currentTab?.checklist as any}
                 setItems={currentTab?.setChecklist as any}
                 approval={currentTab?.approval}
