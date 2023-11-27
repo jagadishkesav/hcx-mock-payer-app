@@ -9,6 +9,7 @@ import * as _ from 'lodash';
 import { useDispatch } from 'react-redux'
 import { addParticipantToken } from "../../reducers/token_reducer";
 import { addParticipantDetails } from "../../reducers/participant_details_reducer";
+import { addAppData } from "../../reducers/app_data";
 
 export function useAuthActions() {
   const [auth, setAuth] = useRecoilState(authAtom);
@@ -35,6 +36,7 @@ export function useAuthActions() {
       // store user details and jwt token in local storage to keep user logged in between page refreshes
       console.log("keycloak response", res);
       dispatch(addParticipantToken(res.access_token));
+      dispatch(addAppData({"username":username,"password":password}));
       setAuth({
         username: username,
         token: res.access_token,

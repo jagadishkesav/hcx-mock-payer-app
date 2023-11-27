@@ -13,6 +13,8 @@ import { Editor } from "@monaco-editor/react";
 import { options } from "../common/JSONEditorOptions";
 import { toast } from "react-toastify";
 import _ from "lodash";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
 
 export interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -52,6 +54,8 @@ export interface Diagnosis {
 }
 
 export type ClaimDetail = {
+  sender_code:string;
+  recipient_code:string;
   id: string;
   request_id: string;
   request_no: string;
@@ -128,6 +132,8 @@ export function claimsMapper(claim: any): ClaimDetail {
   );
 
   return {
+    sender_code: claim.sender_code,
+    recipient_code:claim.recipient_code,
     id: claim.request_id,
     use: claim.use,
     platform: claim.app || "others",
@@ -162,6 +168,9 @@ export default function Claims() {
   const [requestId, setRequestId] = React.useState("");
   const [showEditor, setShowEditor] = React.useState(false);
   const [isValidJSON, setIsValidJSON] = React.useState(true);
+  const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
+  const [parCode, setParCode] = useState(_.get(appData,"username") || "");
+  const [pass, setPass] = useState(_.get(appData,"password") || "");
 
   async function getClaims() {
     setClaims(undefined);
@@ -184,6 +193,13 @@ export default function Claims() {
     setRequestId(id)
     setClaim(JSON.stringify(obj?.resources.claim, null, 4));
     setClaimResponse(JSON.stringify(obj?.response_fhir, null, 4))
+  }
+
+  const getClaimFields = (id:string, field:string) => {
+    const obj = claims?.find(
+      (claim: any) => claim.request_id === id
+    );
+    return  _.get(obj, field);
   }
 
   useEffect(() => {
@@ -314,7 +330,7 @@ export default function Claims() {
             callback: (id) => {
               getClaim(id);
               setShowEditor(false);
-              sendCommunicationRequest({"request_id":id, type:"otp"});
+              sendCommunicationRequest({"request_id":id, type:"otp", participantCode: parCode, password:pass, recipientCode: getClaimFields(id, "sender_code")});
               toast.success("OTP verification communication request has been raised")
 
             },

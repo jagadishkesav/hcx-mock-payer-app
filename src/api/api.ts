@@ -1,6 +1,7 @@
 import _ from "lodash";
 import { store } from "../store";
 import { Participant } from "./token";
+import { StringLiteral } from "typescript";
 export const API_BASE_URL = process.env.REACT_APP_API_BASE_URL;
 export const HCX_BASE_URL = process.env.REACT_APP_HCX_BASE_URL;
 export const HCX_MOCK_SERVICE_URL = process.env.REACT_APP_HCX_MOCK_SERVICE_URL;
@@ -193,6 +194,9 @@ export function approvePreauth(data: {
 export function sendCommunicationRequest(data: {
   request_id: string;
   type: string;
+  participantCode:string;
+  password:string;
+  recipientCode:string;
 }) {
   const newData = {
     ...data,
