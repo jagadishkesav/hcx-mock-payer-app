@@ -294,7 +294,7 @@ export default function Claims() {
               "request_no", // last 8 digits of request_id
               "patient_name", // actually name
               "insurance_no",
-              "sub_type",
+              "claim_type",
               "requested_amount",
               "approved_amount",
               "provider",
@@ -309,6 +309,7 @@ export default function Claims() {
             ...claim,
             request_no: claim.request_no?.slice(-8),
             patient_name: claim.name,
+            claim_type: claim.sub_type
           })) as any
         }
         rowActions={{
@@ -325,19 +326,19 @@ export default function Claims() {
               setShowEditor(true)
             },
             actionType: "primary",
-          },
-          "verify claim": {
-            callback: (id) => {
-              getClaim(id);
-              setShowEditor(false);
-              sendCommunicationRequest({"request_id":id, type:"otp", participantCode: parCode, password:pass, recipientCode: getClaimFields(id, "sender_code")});
-              toast.success("OTP verification communication request has been raised")
+          }
+          // "verify claim": {
+          //   callback: (id) => {
+          //     getClaim(id);
+          //     setShowEditor(false);
+          //     sendCommunicationRequest({"request_id":id, type:"otp", participantCode: parCode, password:pass, recipientCode: getClaimFields(id, "sender_code")});
+          //     toast.success("OTP verification communication request has been raised")
 
-            },
-            actionType: "primary",    
-            hideCondition : 'sub_type !== "OPD"'
+          //   },
+          //   actionType: "primary",    
+          //   hideCondition : 'sub_type !== "OPD"'
             
-          }        
+          // }        
         }}
         primaryColumnIndex={1}
       />

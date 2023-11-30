@@ -149,7 +149,8 @@ import Table from "../common/Table";
           </div>
         </div>
         <>
-      <div className="p-6 bg-white rounded-lg">
+        <div className="mt-6 bg-white rounded-lg">
+        <div className="w-full h-full p-6 bg-white rounded-lg">
         <div className="text-gray-500 text-base font-bold pb-4">
           Financial Details
         </div>
@@ -163,11 +164,12 @@ import Table from "../common/Table";
           {claim.sub_type == "OPD" ? 
           <>
           <div className="font-semibold col-span-1">Bank Account Number</div>
-          {accountNumber}
+          {accountNumber == "1234" ? "Not Available" : accountNumber}
           <div className="font-semibold col-span-1">IFSC Code</div>
-          {textOrDash(ifscCode)}
+          {ifscCode == "1234" ? "Not Available" : textOrDash(ifscCode)}
           </> : null}
         </div>
+      </div>
       </div>
       <div className="mt-8 p-6 bg-white rounded-lg">
         <div className="text-gray-500 text-base font-bold">Bill</div>

@@ -197,14 +197,22 @@ export default function Checklist(props: {
         )}
       {enableButtons == false ? <> 
         <div className="text-gray-800 text-lg mt-[20px] text-left font-bold pb-4">
-              Checklist
-            </div>
-            <button
+              Additional Verification Steps
+        </div>
+        <div className="flex justify-between">
+          <button
             onClick={() => {sendCommunicationRequest({"request_id":claim.request_id, type:"bank_details", recipientCode:claim.sender_code, participantCode:claim.recipient_code, password:pass}); toast.success("Bank Details requested");}}
             className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
           >
             Request Bank Details
           </button>
+          <button
+            onClick={() => {sendCommunicationRequest({"request_id":claim.request_id, type:"otp", recipientCode:claim.sender_code, participantCode:claim.recipient_code, password:pass}); toast.success("OTP Verification requested");}}
+            className="my-4 inline-flex gap-2 items-center justify-center py-2 px-4 border border-transparent shadow-sm text-sm font-medium rounded-md text-green-600 disabled:opacity-60 disabled:grayscale disabled:hover:bg-green-100 bg-green-100 hover:bg-green-200 border-green-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500"
+          >
+            Request OTP Verification
+          </button>
+        </div>
       <p className="text-sm italic text-gray-500">
       <span className="font-mono">{"Claim is for an OPD and it can only be approved once the OTP verification is complete and bank details are provided"}</span></p>
       </>
