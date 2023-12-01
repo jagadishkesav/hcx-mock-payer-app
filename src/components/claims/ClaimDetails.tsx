@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { properText } from "../../utils/StringUtils";
-import { approveClaim, listRequest, rejectClaim } from "../../api/api";
+import { approveClaim, listRequest, participantDetailsByCode, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
 import { ClaimDetail, claimsMapper } from ".";
 import Loading from "../common/Loading";
@@ -14,6 +14,9 @@ import PatientDetails from "./PatientDetails";
 import MedicalInfo from "./MedicalInfo";
 import { lowerCase } from "lodash";
 import OPDClaims from "./OPDClaims";
+import { useSelector } from "react-redux";
+import { RootState } from "../../store";
+import _ from "lodash";
 
 export interface RejectApproveHandlers {
   handleReject: typeof handleReject;
@@ -65,6 +68,7 @@ export default function ClaimDetails({
 }) {
   const [activeTab, setActiveTab] = React.useState("patient_details");
   const [claim, setClaim] = React.useState<ClaimDetail | null>(null);
+  const [senderRole, setSenderRole] = useState("other");
   console.log("claim", claim);
   const [medicineApproval, setMedicineApproval] = useState<{
     remarks: string | undefined;
@@ -79,6 +83,7 @@ export default function ClaimDetails({
     amount: 0,
   });*/
 
+
   async function getClaims(): Promise<any> {
     const res: any = await listRequest({ type: use });
     const claim = res[`${use}`].find(
@@ -86,6 +91,13 @@ export default function ClaimDetails({
     );
     setClaim(claimsMapper(claim));
     if (claim.sub_type == "OPD") { setActiveTab("general_details") }
+    participantDetailsByCode({participant_code: claim?.sender_code? claim?.sender_code : "1234"}).then((res) => {
+      const participant2 = _.get(res, 'participants')[0] || {}
+      setSenderRole(participant2.roles[0]);
+    }).catch(err =>{
+      console.log("cant find the participant");
+    })
+    console.log("participant sender", senderRole);
   }
 
   useEffect(() => {
@@ -163,7 +175,7 @@ export default function ClaimDetails({
   );
 
   useEffect(() => {
-    getClaims();
+    getClaims();    
   }, [request_id]);
 
   if (!claim)
@@ -262,7 +274,7 @@ export default function ClaimDetails({
                   fail: 1,
                   na: 2,
                 }}
-                enableButtons={use == "claim" && claim.platform == "BSP" && claim.sub_type == "OPD" && lowerCase(claim.otp_verification) !== "successful" || claim.account_number == "1234" && use == "claim" && claim.platform == "BSP" && claim.sub_type == "OPD" ? false : true}
+                enableButtons={use == "claim" && senderRole == "bsp" && claim.sub_type == "OPD" && lowerCase(claim.otp_verification) !== "successful" || claim.account_number == "1234" && use == "claim" && senderRole == "bsp" && claim.sub_type == "OPD" ? false : true}
                 items={currentTab?.checklist as any}
                 setItems={currentTab?.setChecklist as any}
                 approval={currentTab?.approval}
