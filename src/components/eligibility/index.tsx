@@ -20,20 +20,23 @@ import Editor from '@monaco-editor/react';
 import { editableInputTypes } from "@testing-library/user-event/dist/utils";
 import { options } from "../common/JSONEditorOptions";
 import { time } from "console";
+import _ from "lodash";
 
 function coverageEligibilityMapper(coverage: any) {
   const { resource } = unbundleAs(
     coverage.payload,
     "CoverageEligibilityRequest"
   );
+  
+  console.log("coverage mapper",  coverage, resource);
 
   return {
     id: coverage.request_id,
     request_id: coverage.request_id,
     request_no: resource.id,
     name: resource.patient?.name[0].text,
-    provider: resource.provider.name,
-    insurance_no: resource.insurance[0].coverage.subscriberId,
+    provider: resource.provider?.name,
+    insurance_no: resource.insurance[0].coverage?.subscriberId,
     status: coverage.status,
     servicedPeriod: resource.servicedPeriod,
     expiry: resource.servicedPeriod?.end
@@ -93,11 +96,12 @@ export default function CoverageEligibilityHome() {
   async function getCoverages() {
     await listRequest({ type: "coverageeligibility" })
     .then((resp) => {
+      const result = _.filter(resp.coverageeligibility, (coverageEli ) => coverageEli.payload.entry[0].resource.resourceType === 'CoverageEligibilityRequest');
       setCoverageEligibilityRequests(
-        resp.coverageeligibility.map(coverageEligibilityMapper)
+        result.map((coverage) => coverageEligibilityMapper(coverage))
       );
-    }).catch(() => {
-      console.error("Error while fetching request list")
+    }).catch((err:any) => {
+      console.error("Error while fetching request list", err);
       setCoverageEligibilityRequests([]);
     });
   }
