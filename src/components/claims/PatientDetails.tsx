@@ -34,6 +34,8 @@ const componentMap: { [key: string]: (detail: any) => JSX.Element } = {
 };
 
 export default function PatientDetails({ claim }: { claim: any }) {
+
+  console.log("claim in patient details", claim);
   const includeFields = [
     "provider",
     "name",
@@ -42,6 +44,8 @@ export default function PatientDetails({ claim }: { claim: any }) {
     "status",
     "address",
   ];
+
+
 
   
   const processFile = (url: string) => {

@@ -112,16 +112,16 @@ export function parseAdditionalInfo(additional_info: any) {
   };
 }
 
-export function claimsMapper(claim: any): ClaimDetail {
+const claimsMapper = (claim: any): ClaimDetail  => {
   const { identifier } = claim.payload;
 
   const resources = {
     patient: unbundleAs(claim.payload, "Patient").resource,
-    coverage: unbundleAs(claim.payload, "Coverage").resource,
+    coverage: unbundleAs(claim.payload, "Coverage") ? unbundleAs(claim.payload, "Coverage").resource : undefined,
     claim: unbundleAs(claim.payload, "Claim").resource,
   };
 
-  const insurance_no = resources.coverage.subscriberId;
+  const insurance_no = resources.coverage !== undefined ? resources.coverage.subscriberId : "Not Available";
   const diagnosis = resources.claim.diagnosis as Diagnosis[];
   const items = resources.claim.item as Item[];
   const requested_amount = currencyObjToString(
@@ -144,10 +144,10 @@ export function claimsMapper(claim: any): ClaimDetail {
     request_no: identifier?.value,
     name: resources.patient.name ? resources.patient.name[0].text : "Unnamed",
     gender: resources.patient.gender,
-    sub_type : resources.claim.subType !== undefined ? resources.claim.subType.coding[0].code : "Others",
+    sub_type : resources.claim.subType? resources.claim.subType.coding[0].code : "Others",
     items,
     address: resources.patient.address,
-    provider: resources.claim.provider.name,
+    provider: resources.claim.provider ? resources.claim.provider.name : "Not Available",
     diagnosis: diagnosis,
     insurance_no,
     requested_amount,
