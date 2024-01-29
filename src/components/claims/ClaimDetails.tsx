@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { properText } from "../../utils/StringUtils";
 import { approveClaim, listRequest, participantDetailsByCode, rejectClaim } from "../../api/api";
 import { toast } from "react-toastify";
-import { ClaimDetail } from ".";
+import { ClaimDetail, claimsMapper } from ".";
 import Loading from "../common/Loading";
 import StatusChip from "../common/StatusChip";
 import Heading from "../common/Heading";
@@ -361,8 +361,5 @@ export default function ClaimDetails({
       }
     </div>
   );
-}
-function claimsMapper(claim: any): React.SetStateAction<ClaimDetail | null> {
-  throw new Error("Function not implemented.");
 }
 

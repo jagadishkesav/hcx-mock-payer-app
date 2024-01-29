@@ -112,7 +112,7 @@ export function parseAdditionalInfo(additional_info: any) {
   };
 }
 
-const claimsMapper = (claim: any): ClaimDetail  => {
+export function claimsMapper(claim: any): ClaimDetail {
   const { identifier } = claim.payload;
 
   const resources = {
