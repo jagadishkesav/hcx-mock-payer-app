@@ -8,7 +8,6 @@ export const store = configureStore({
     tokenReducer:tokenReducer,
     participantDetailsReducer:participantDetailsReducer,
     appDataReducer:appDataReducer
-    
   },
 })
 

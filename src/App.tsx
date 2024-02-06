@@ -1,50 +1,96 @@
-import { useRoutes } from "raviger";
-import React from "react";
-import { ToastContainer } from "react-toastify";
-import { useRecoilState } from "recoil";
-import NotFound from "./components/common/NotFound";
-import { authAtom } from "./recoil/state/auth";
-import AppRouter from "./router/AppRouter";
-import PublicRouter from "./router/PublicRouter";
-import { Provider } from 'react-redux';
-import { store } from "./store";
+import { lazy, useEffect, useState } from 'react';
+import { Route, Routes } from 'react-router-dom';
+
+import SignIn from './pages/Authentication/SignIn';
+import Loader from './common/Loader';
+import PageTitle from './components/PageTitle';
+import CoverageEligibilityList from './pages/CoverageEligibility/CoverageEligibilityList';
+import PreauthList from './pages/Preauth/PreauthList';
+import ClaimsList from './pages/Claims/Claims';
+import ClaimDetail from './pages/Claims/ClaimDetails';
+import CoverageEligibilityDetails from './pages/CoverageEligibility/CoverageEligibilityDetails';
+
+const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
 function App() {
-  const [auth] = useRecoilState(authAtom);
+  const [loading, setLoading] = useState<boolean>(true);
+  console.log("i started");
 
-  const routes = {
-    "/": () => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/profile": () => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/coverage": () => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/coverage/:id": ({ id }: any) => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/claims": () => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/claims/:id": ({ id }: any) => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/preauths": () => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "/preauths/:id": ({ id }: any) => auth.isAuthenticated === "true" ? <AppRouter /> : <PublicRouter />,
-    "*": () => <NotFound />
-  };
+  useEffect(() => {
+    setTimeout(() => setLoading(false), 1000);
+  }, []);
 
-  const route = useRoutes(routes);
-
-  return (
-    <Provider store={store}>
-    <div className="App">
-      <ToastContainer
-        position="top-right"
-        autoClose={5000}
-        hideProgressBar
-        newestOnTop={false}
-        closeOnClick
-        rtl={false}
-        pauseOnFocusLoss
-        draggable
-        pauseOnHover
-        theme="dark"
-      />
-      {route}
-    </div>
-    </Provider>
+  return loading ? (
+    <Loader />
+  ) : (
+    <>
+      <Routes>
+        <Route 
+          path="/payer/login" 
+          element={<SignIn/>}
+        >  
+        </Route>
+        <Route element={<DefaultLayout />}>
+          <Route
+            path="/payer/coverageeligibility/list"
+            element={
+              <>
+                <PageTitle title="Coverage Eligibility" />
+                <CoverageEligibilityList />
+              </>
+            }
+          />
+          <Route
+            path="/payer/coverageeligibility/details"
+            element={
+              <>
+                <PageTitle title="Coverage Eligibility" />
+                <CoverageEligibilityDetails />
+              </>
+            }
+          />
+          <Route
+            path="/payer/preauth/list"
+            element={
+              <>
+                <PageTitle title="PreAuthorization" />
+                <PreauthList claimType='preauth'/>
+              </>
+            }
+          />
+          
+          <Route
+            path="/payer/preauth/detail"
+            element={
+              <>
+                <PageTitle title="PreAuthorization" />
+                <ClaimDetail claimType='preauth'/>
+              </>
+            }
+          />
+           <Route
+            path="/payer/claims/list"
+            element={
+              <>
+                <PageTitle title="Claims" />
+                <ClaimsList claimType='claim'/>
+              </>
+            }
+          />
+          <Route
+            path="/payer/claims/detail"
+            element={
+              <>
+                <PageTitle title="Claims" />
+                <ClaimDetail claimType='claim'/>
+              </>
+            }
+          />
+        </Route>
+      </Routes>
+    </>
   );
 }
 
 export default App;
+

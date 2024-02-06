@@ -1,15 +1,32 @@
 import { createSlice } from '@reduxjs/toolkit'
 import type { PayloadAction } from '@reduxjs/toolkit'
+import { ClaimDetail } from '../pages/Claims/Claims';
 
 export interface AppDataInterface {
   appData: Object
 }
 
+interface TerminologyFilter {
+  Code: string;
+  Display: string;
+  System: string;
+}
 
 const initialState: AppDataInterface = {
     appData: {
-      username:"",
-      password:""
+      termsAccepted:false,
+      showTerms:false,
+      showLinkedUsers:false,
+      username:'',
+      password:'',
+      sidebar:"Profile",
+      linkeduser: "",
+      counter : false,
+      stageRegister:"roleSelection",
+      termSearch:<TerminologyFilter[]>([{"Code":"123","Display":"display text","System":"system"}]),
+      showTermSearch:false,
+      termSearchText:'',
+      claim:<ClaimDetail | null>(null)
     },
 }
 
