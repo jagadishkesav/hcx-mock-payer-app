@@ -20,9 +20,6 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const sidebar = useRef<any>(null);
 
   const dispatch = useDispatch();
-  const appLink = process.env.REACT_APP_PAYOR_APP;
-  const dashboardLink = process.env.REACT_APP_DASHBOARD;
-  console.log("process env react app", appLink, process.env.REACT_PAYOR_APP);
 
   const participantDetails: Object = useSelector((state: RootState) => state.participantDetailsReducer.participantDetails);
   const authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);

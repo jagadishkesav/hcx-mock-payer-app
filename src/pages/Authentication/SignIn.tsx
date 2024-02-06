@@ -4,15 +4,13 @@ import Logo from '../../images/hcx/swasth_logo.png';
 import HcxImage from '../../images/hcx/banner.svg';
 import { useSelector, useDispatch } from 'react-redux';
 import { addAppData } from '../../reducers/app_data';
-import { generateToken, generateTokenParticipant, generateTokenUser, resetPassword } from "../../api/KeycloakService";
+import { generateToken } from "../../api/KeycloakService";
 import _ from 'lodash';
-import { getParticipant, getParticipantByCode } from '../../api/RegistryService';
-import { serachUser } from '../../api/UserService';
+import {  getParticipantByCode } from '../../api/RegistryService';
 import { addParticipantDetails } from '../../reducers/participant_details_reducer';
 import { addParticipantToken } from '../../reducers/token_reducer';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
-import axios from 'axios';
 
 
 const SignIn: React.FC = () => {

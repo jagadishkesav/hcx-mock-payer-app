@@ -1,12 +1,10 @@
 import axios from 'axios';
 import { generateToken } from './KeycloakService';
 
-const baseUrl = process.env.REACT_APP_HCX_PATH;
+const baseUrl = process.env.REACT_APP_HCX_BASE_URL;
 const apiVersion = process.env.REACT_APP_HCX_API_VERSION;
-const adminClientId = process.env.REACT_APP_HCX_ADMIN_CLIENT_ID;
 const adminUsername = process.env.REACT_APP_HCX_ADMIN_USERNAME;
 const adminPassword = process.env.REACT_APP_HCX_ADMIN_PASSWORD;
-const hcxRealm = process.env.REACT_APP_KEYCLOAK_HCX_REALM;
 
 export const post = async (path: string, body: any, headers = {}, token="") => {
   console.log("token used", token);
