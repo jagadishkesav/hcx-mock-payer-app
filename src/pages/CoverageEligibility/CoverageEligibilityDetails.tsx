@@ -16,7 +16,7 @@ const CoverageEligibilityDetails = () => {
     const activeClasses = 'text-primary border-primary';
     const inactiveClasses = 'border-transparent';
     const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
-    const [coverage, setCoverage] = useState<CoverageDetail | null>(_.get(appData,"claim") || null);
+    const [coverage, setCoverage] = useState<CoverageDetail | null>(_.get(appData,"coverage") || null);
     const [openTab, setOpenTab] = useState(1);
     const [coverageChecklist, setCoverageChecklist] = useState<ChecklistItem[]>([
         {

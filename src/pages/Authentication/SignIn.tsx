@@ -62,26 +62,6 @@ const SignIn: React.FC = () => {
   }
 
 
-  const forgotPassword = () => {
-    console.log("forgot password");
-    if (userName == "") {
-      toast.error("Please enter the Email Address", {
-        position: toast.POSITION.TOP_CENTER
-      });
-    }
-    serachUser(userName).then((res: any) => {
-      let osOwner = res["data"]["users"][0]["osOwner"];
-      resetPassword(osOwner[0]).then((async function () {
-        toast.success("Passwors reset link has been successfully sent to the email address", {
-          position: toast.POSITION.TOP_LEFT
-        });
-      })).catch(err => {
-        toast.error(_.get(err, 'response.data.error.message') || "Internal Server Error", {
-          position: toast.POSITION.TOP_CENTER
-        });
-      })
-    });
-  }
 
   return (
     <>
