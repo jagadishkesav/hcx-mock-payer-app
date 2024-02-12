@@ -270,7 +270,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
      
       const onClaimClick = (id:string) => {
         getClaim(id);
-        navigate(`/payer/claims/detail`)
+        navigate(`/payor/claims/detail`)
       }
 
     return(

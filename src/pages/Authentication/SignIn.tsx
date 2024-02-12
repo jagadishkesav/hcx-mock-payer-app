@@ -44,7 +44,7 @@ const SignIn: React.FC = () => {
         console.log("participant token", res);
         getParticipantByCode(userName).then((res: any) => {
             dispatch(addParticipantDetails(res["data"]["participants"][0]));
-            navigate("/payer/coverageeligibility/list");
+            navigate("/payor/coverageeligibility/list");
         }).catch((error) => {
           toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
             position: toast.POSITION.TOP_RIGHT
@@ -75,7 +75,7 @@ const SignIn: React.FC = () => {
               </Link>
 
               <p className="2xl:px-20 font-bold text-xl text-black dark:text-white">
-                HCX Payer App
+                HCX Payor App
               </p>
 
               <span className="mt-15 inline-block">
