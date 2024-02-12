@@ -50,7 +50,7 @@ const FileManager:React.FC<FileManagerProps> = ({files}:FileManagerProps) => {
             </div>
 
             <p className="font-medium text-black dark:text-white">
-             {String(file.valueAttachment.url).split("/").at(-1)?.substring(0,30) || "Document"}
+             {decodeURIComponent(file.valueAttachment.url).split("/").at(-1) || "Document"}
             </p>
           </div>
 
