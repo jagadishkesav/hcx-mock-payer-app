@@ -14,9 +14,9 @@ ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
     <Provider store={store}>
     <ToastContainer></ToastContainer>
-    <Router> 
-      <App />
-    </Router>
+   <BrowserRouter basename=‘/payor’>
+    <App />
+  </BrowserRouter>
     </Provider>
   </React.StrictMode>
 );
