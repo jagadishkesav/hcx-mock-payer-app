@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactElement, useEffect, useState } from 'react';
 import DropdownDefault from './DropdownDefault'
 import Pagination from './Pagination';
 import { lowerCase } from 'lodash';
@@ -9,7 +9,9 @@ import { ChevronUp, ChevronDown } from 'react-feather';
 interface ActionProps {
   text: string;
   type: "success" | "danger" | "neutral" | "normal";
+  svgicon?: ReactElement<any, any>
 }
+
 
 
 interface DataTableProps{
@@ -91,7 +93,9 @@ const CommonDataTable: React.FC<DataTableProps> = ({title, header, data, actions
                      return(   
                     <button onClick={(event) => {event.stopPropagation(); onAction && onAction(action.text, value.id)}} 
                     disabled={!value["enableButtons"] && action.text !== "View"}
-                    className={"font-medium pr-4 underline "+ (colorPicker(action.type)) + (value["enableButtons"] == undefined || value["enableButtons"] || action.text == "View" ? "" : "opacity-50 cursor-not-allowed")}>{action.text}</button>
+                    className={"font-medium pr-4 underline "+ (colorPicker(action.type)) + (value["enableButtons"] == undefined || value["enableButtons"] || action.text == "View" ? "" : "opacity-50 cursor-not-allowed")}>
+                    {action.svgicon? action.svgicon : action.text}
+                    </button>
                      )     
                   })} </div>
                   </td>: null

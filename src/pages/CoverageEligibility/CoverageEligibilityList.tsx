@@ -168,7 +168,7 @@ import { addAppData } from "../../reducers/app_data";
         setCoverageMapped(obj)
         getCoverage(id);
         //setShowCoverageModal(true);
-        navigate("/payer/coverageeligibility/details")
+        navigate("/payor/coverageeligibility/details")
       }
     
     

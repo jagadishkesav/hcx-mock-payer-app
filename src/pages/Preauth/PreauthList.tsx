@@ -257,7 +257,7 @@ const PreauthList:React.FC<claimProps> = ({claimType}:claimProps) => {
      
       const onClaimClick = (id:string) => {
         getClaim(id);
-        navigate(`/payer/${claimUseType}/detail`)
+        navigate(`/payor/${claimUseType}/detail`)
       }
 
       const onActionClick =(action:string,id:string)=> {
