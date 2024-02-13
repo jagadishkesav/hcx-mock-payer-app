@@ -1,5 +1,6 @@
+
 import { lazy, useEffect, useState } from 'react';
-import { Route, Routes } from 'react-router-dom';
+import { Route, Routes , Navigate } from 'react-router-dom';
 
 import SignIn from './pages/Authentication/SignIn';
 import Loader from './common/Loader';
@@ -26,13 +27,14 @@ function App() {
     <>
       <Routes>
         <Route 
-          path="/payor/login" 
+          path="/login" 
           element={<SignIn/>}
         >  
         </Route>
+        <Route path="/" element={<Navigate to="/login" />} />
         <Route element={<DefaultLayout />}>
           <Route
-            path="/payor/coverageeligibility/list"
+            path="/coverageeligibility/list"
             element={
               <>
                 <PageTitle title="Coverage Eligibility" />
@@ -41,7 +43,7 @@ function App() {
             }
           />
           <Route
-            path="/payor/coverageeligibility/details"
+            path="/coverageeligibility/details"
             element={
               <>
                 <PageTitle title="Coverage Eligibility" />
@@ -50,7 +52,7 @@ function App() {
             }
           />
           <Route
-            path="/payor/preauth/list"
+            path="/preauth/list"
             element={
               <>
                 <PageTitle title="PreAuthorization" />
@@ -60,7 +62,7 @@ function App() {
           />
           
           <Route
-            path="/payor/preauth/detail"
+            path="/preauth/detail"
             element={
               <>
                 <PageTitle title="PreAuthorization" />
@@ -69,7 +71,7 @@ function App() {
             }
           />
            <Route
-            path="/payor/claims/list"
+            path="/claims/list"
             element={
               <>
                 <PageTitle title="Claims" />
@@ -78,7 +80,7 @@ function App() {
             }
           />
           <Route
-            path="/payor/claims/detail"
+            path="/claims/detail"
             element={
               <>
                 <PageTitle title="Claims" />
@@ -93,4 +95,3 @@ function App() {
 }
 
 export default App;
-

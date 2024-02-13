@@ -12,11 +12,11 @@ import "react-toastify/dist/ReactToastify.css";
 
 ReactDOM.createRoot(document.getElementById('root') as HTMLElement).render(
   <React.StrictMode>
-    <Provider store={store}>
-    <ToastContainer></ToastContainer>
-   <BrowserRouter basename=‘/payor’>
+  <Provider store={store}>
+  <ToastContainer></ToastContainer>
+  <Router basename='/payor'> 
     <App />
-  </BrowserRouter>
-    </Provider>
-  </React.StrictMode>
+  </Router>
+  </Provider>
+</React.StrictMode>
 );

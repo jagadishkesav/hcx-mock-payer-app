@@ -9,11 +9,6 @@
     "preview": "vite preview",
     "postbuild": "mkdir build/payor && mv build/assets build/payor/assets"
   },
-  "author": {
-    "name": "TailAdmin",
-    "email": "hello@tailadmin.com",
-    "url": "https://tailadmin.com"
-  },
   "dependencies": {
     "@heroicons/react": "^2.1.1",
     "@monaco-editor/react": "^4.6.0",
@@ -36,11 +31,17 @@
     "react-flatpickr": "^3.10.13",
     "react-redux": "^8.1.2",
     "react-router-dom": "^6.8.1",
+    "react-scripts": "^5.0.1",
     "react-toastify": "^9.1.3",
     "simple-datatables": "^7.2.0",
     "sort-by": "^0.0.2",
     "swiper": "^9.2.0",
     "use-debounce": "^9.0.4"
+  },
+  "author": {
+    "name": "TailAdmin",
+    "email": "hello@tailadmin.com",
+    "url": "https://tailadmin.com"
   },
   "devDependencies": {
     "@types/lodash": "^4.14.197",
