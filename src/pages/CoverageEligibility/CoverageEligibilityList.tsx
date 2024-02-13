@@ -196,7 +196,17 @@ import { addAppData } from "../../reducers/app_data";
                                     request_no: coverage.request_no.slice(-8),
                                     enableButtons: coverage.status == "Pending" ? true : false
                                   })) as any}
-                                actions={[{text:"Approve",type:"success"},{text:"Reject",type:"danger"},{text:"View",type:"normal"}]}
+                                actions={[{text:"Approve",type:"success",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
+                              </svg>
+                              },{text:"Reject",type:"danger", svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
+                            </svg>
+                            },{text:"View",type:"normal",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
+                              <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
+                            </svg>
+                            }]}
                                 onAction={(action,id)=>onActionClick(action,id)}  
                                 onRowClick={(id:string) => onCoverageClick(id)}    
             ></CommonDataTable> : 
