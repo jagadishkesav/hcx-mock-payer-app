@@ -44,7 +44,7 @@ const SignIn: React.FC = () => {
         console.log("participant token", res);
         getParticipantByCode(userName).then((res: any) => {
             dispatch(addParticipantDetails(res["data"]["participants"][0]));
-            navigate("/payor/coverageeligibility/list");
+            navigate("/coverageeligibility/list");
         }).catch((error) => {
           toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
             position: toast.POSITION.TOP_RIGHT
