@@ -37,5 +37,16 @@ export const rejectClaim = async (requestId:string,type:string ,token="",url:str
     return postPath(API_BASE_URL + url, payload, {}, token);
 }
 
+export const sendCommunicationRequest = async (
+    request_id: string,
+    type: string,
+    participantCode:string,
+    password:string,
+    recipientCode:string,
+    token="") => {
+    var payload = { request_id:request_id, type:type,recipientCode: recipientCode, participantCode:participantCode, password:password};    
+    return postPath(HCX_MOCK_SERVICE_URL + "/create/communication/request", payload, {}, token);
+  }
+
 
 
