@@ -11,7 +11,7 @@ import CommonDataTable from "../../components/CommonDataTable";
 import Checklist from "../../components/Checklist";
 import FileManager from "../../components/FileManager";
 import { toast } from "react-toastify";
-import { approveClaim, rejectClaim } from "../../api/PayerService";
+import { approveClaim, rejectClaim, sendCommunicationRequest } from "../../api/PayerService";
 import EmptyState from "../../components/EmptyState";
 import axios from "axios";
 
@@ -45,7 +45,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     });
 
     const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
-    console.log("claim selected",  claim);
+    console.log("claim selected is here",  claim);
     const [openTab, setOpenTab] = useState(1);
 
     const activeClasses = 'text-primary border-primary';
@@ -161,7 +161,8 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
         type: string,
         remarks: string,
         approved_amount: number) => {
-        if (type == "medical" || "financial") {
+        console.log("camee in approve",type);
+        if (type == "medical" || type == "financial") {
            approveClaim(
             request_id,
             type,
@@ -170,7 +171,8 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
             authToken,
             "/claim/approve");
           toast(`${type} ${claimType} approved`, { type: "success" });
-        } else {
+        }else{
+          console.log("came in else ", type);
           approveClaim(
             request_id,
             "medical",
@@ -188,6 +190,14 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
           toast(`${claimType} approved`, { type: "success" });
         }
       };
+
+  const sendCommunication = (type: string) => {
+  
+    {claim? sendCommunicationRequest(claim?.request_id,type,claim?.recipient_code,_.get(appData,"password") || "password",claim?.sender_code, authToken).then((res)=>{
+      toast(`${type} requested using communication request`, { type: "success" });
+    }): 
+     toast.error("Unable to send communication request. Please try again")}
+  }
 
     return (
         <>
@@ -261,7 +271,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={detailsChecklist}  settled={false} title="Checklist" type="general"></Checklist>
+                        <Checklist checklist={detailsChecklist}  settled={opdSettled} title="Checklist" type="general"></Checklist>
                         </div>
                         </div>
                         </>
@@ -286,7 +296,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <FileManager files={supportingFiles}></FileManager>     
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={opddetailsChecklist} settled={opdSettled} type="opd" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={opddetailsChecklist} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>
