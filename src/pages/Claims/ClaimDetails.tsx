@@ -207,8 +207,20 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <h2 className="mb-2.5 text-title-md2 font-bold text-black dark:text-white">
                             {properText(claimType)} Details
                         </h2>
+                        <div className="group relative inline-block">
                         <p className="font-medium mb-1">Claim ID : {claim ? claim.request_id : "Not Available"}</p>
+                        <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                          <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                          Correlation ID for the request
+                        </div>
+                        </div>
+                        <div className="group relative inline-block">
                         <p className="font-medium">Claim No : {claim ? claim.request_no : "Not Available"}</p>
+                        <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                          <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                          Identifier value of the Bundle submitted for the request
+                        </div>
+                        </div>
                     </div>
                     <div>
                         <h2 className="mb-2.5 text-title-md2 font-bold text-black dark:text-white">

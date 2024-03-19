@@ -53,7 +53,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
       </p>
       <span className="mx-auto mb-6 inline-block h-1 w-25 rounded bg-primary"></span>
       <div className={"relative h-4 rounded-full bg-stroke dark:bg-strokedark mb-5 w-full"} >
-        <div className={"absolute left-0 flex h-full items-center justify-center rounded-full bg-primary "}
+        <div className={"absolute left-0 flex h-full items-center justify-center rounded-full bg-[#13C296]"}
           style={{ width: `${progressText}%` }}>
           <p className="my-auto text-center text-[10px] font-bold leading-none text-white">
             {progressText}%
