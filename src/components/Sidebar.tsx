@@ -26,14 +26,11 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
   const [email, setEmail] = useState('');
   const [pass, setPass] = useState('');
-  console.log("part details in dash", participantDetails, authToken);
 
   //const { login } = useAuthActions();
   useEffect(() => {
     getParticipantByCode(_.get(appData, "username")).then(res => {
-      console.log("verifier details", res);
       const partData = res["data"]["participants"][0];
-      console.log("part data in launch", partData, btoa(_.get(partData, "mock_payor.primary_email")));
       setEmail(_.get(partData, "mock_payor.primary_email") ? _.get(partData, "mock_payor.primary_email") : '');
       setPass(_.get(partData, "mock_payor.password") ? _.get(partData, "mock_payor.password") : '');
     })

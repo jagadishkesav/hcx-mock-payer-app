@@ -41,19 +41,19 @@ const CommonDataTable: React.FC<DataTableProps> = ({title, header, data, actions
   
 
   useEffect(() => {
-    const newData = data.map(item => {
-      const newItem:DataItem = {};
-      tableHeader.forEach(key => {
-        if (item.hasOwnProperty(key)) {
-          newItem[key] =  item[key as keyof DataItem];
-        }
-      });
-      return newItem;
-    });
+    // const newData = data.map(item => {
+    //   const newItem:DataItem = {};
+    //   tableHeader.forEach(key => {
+    //     if (item.hasOwnProperty(key)) {
+    //       newItem[key] =  item[key as keyof DataItem];
+    //     }
+    //   });
+    //   return newItem;
+    // });
 
-    const filteredData = newData.filter(row =>
-      Object.values(row).some(value =>
-        value.toString().toLowerCase().includes(searchQuery.toLowerCase())
+    const filteredData = data.filter(row =>
+      tableHeader.some(value =>
+        row[value].toString().toLowerCase().includes(searchQuery.toLowerCase())
       )
     );
     setTableData(filteredData)

@@ -11,6 +11,9 @@ import ModalEditor from "../../components/ModalEditor";
 import ModalCoverageEligibility from "../../components/ModalCoverageEligibility";
 import { useNavigate } from "react-router-dom";
 import { addAppData } from "../../reducers/app_data";
+import { addParticipantToken } from "../../reducers/token_reducer";
+import { getParticipantByCode } from "../../api/RegistryService";
+import { addParticipantDetails } from "../../reducers/participant_details_reducer";
 
 
   export type CoverageDetail = {
@@ -30,10 +33,11 @@ import { addAppData } from "../../reducers/app_data";
   const CoverageEligibilityList = () => {
 
     const participantDetails: Object = useSelector((state: RootState) => state.participantDetailsReducer.participantDetails);
-    const authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
+    let authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
     const [showComponent, setShowComponent] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
 
     const coverageEligibilityMapper = (coverage: any):CoverageDetail => {
         const { resource } = unbundleAs(
@@ -124,10 +128,26 @@ import { addAppData } from "../../reducers/app_data";
       }
     
       useEffect(() => {
-        getCoverages();
+        if( sessionStorage.getItem('hcx_user_token') as string == "abcd"){
+          navigate("/login");
+        }else{
+          authToken = sessionStorage.getItem('hcx_user_token') as string;
+          dispatch(addAppData({ "username": sessionStorage.getItem('hcx_user_name') as string }));
+          dispatch(addAppData({ "password": sessionStorage.getItem('hcx_password') as string }));
+          dispatch(addParticipantToken(sessionStorage.getItem('hcx_user_token') as string));
+          getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string).then((res: any) => {
+          dispatch(addParticipantDetails(res["data"]["participants"][0]));
+          getCoverages();
+        }).catch((error) => {
+          toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
+            position: toast.POSITION.TOP_RIGHT
+          });
+        });
+        }
       }, []);
-    
-    
+
+
+
       const updateRespFhir = (value: any) => {
         setCoverageResponse(value);
         console.log("value of responseFHIR", value);
@@ -137,6 +157,7 @@ import { addAppData } from "../../reducers/app_data";
       }
 
       const onActionClick =(action:string,id:string)=> {
+        console.log("action", action, id);
         setRequestId(id);
         if(action == "View"){
           getCoverage(id);
@@ -164,6 +185,7 @@ import { addAppData } from "../../reducers/app_data";
         const obj = coverageEligibilityRequests?.find(
           (coverage: any) => coverage.request_id === id
         )
+        console.log("selected coverage", id, obj);
         setRequestId(id);
         setCoverageMapped(obj)
         getCoverage(id);

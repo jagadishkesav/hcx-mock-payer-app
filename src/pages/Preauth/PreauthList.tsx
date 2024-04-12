@@ -10,6 +10,9 @@ import Loader from "../../common/Loader";
 import { Navigate, useNavigate } from "react-router-dom";
 import { addAppData } from "../../reducers/app_data";
 import ModalEditor from "../../components/ModalEditor";
+import { addParticipantToken } from "../../reducers/token_reducer";
+import { getParticipantByCode } from "../../api/RegistryService";
+import { addParticipantDetails } from "../../reducers/participant_details_reducer";
 
 interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -180,7 +183,7 @@ const PreauthList:React.FC<claimProps> = ({claimType}:claimProps) => {
       const [showEditor, setShowEditor] = useState(false);
       const [isValidJSON, setIsValidJSON] = useState(true);
       const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
-      const authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
+      let authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
       const [parCode, setParCode] = useState(_.get(appData,"username") || "");
       const [pass, setPass] = useState(_.get(appData,"password") || "");
       const [showComponent, setShowComponent] = useState(false);
@@ -217,7 +220,22 @@ const PreauthList:React.FC<claimProps> = ({claimType}:claimProps) => {
       }
     
       useEffect(() => {
-        getClaims();
+        if( sessionStorage.getItem('hcx_user_token') as string == "abcd"){
+          navigate("/login");
+        }else{
+          authToken = sessionStorage.getItem('hcx_user_token') as string;
+          dispatch(addAppData({ "username": sessionStorage.getItem('hcx_user_name') as string }));
+          dispatch(addAppData({ "password": sessionStorage.getItem('hcx_password') as string }));
+          dispatch(addParticipantToken(sessionStorage.getItem('hcx_user_token') as string));
+          getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string).then((res: any) => {
+          dispatch(addParticipantDetails(res["data"]["participants"][0]));
+          getClaims();
+        }).catch((error) => {
+          toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
+            position: toast.POSITION.TOP_RIGHT
+          });
+        });
+        }
       }, []);
     
       useEffect(() => {
