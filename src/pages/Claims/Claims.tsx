@@ -297,7 +297,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
             <ModalEditor title={"Claim"} request={claim} response={claimResponse } onUpdate={(value) => updateRespFhir(value)} onClose={() => setShowEditor(false)}></ModalEditor> 
             : null }
         { showComponent ?
-        <CommonDataTable title={properText(claimUseType)}
+        <CommonDataTable title={claimUseType == "preauth" ? "Pre-Authorization Requests" : "Claim Requests"}
                            header={
                             claims
                               ? [

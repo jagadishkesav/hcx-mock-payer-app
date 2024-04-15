@@ -292,17 +292,17 @@ const PreauthList:React.FC<claimProps> = ({claimType}:claimProps) => {
             <ModalEditor title={"Preauth"} request={claim} response={claimResponse } onUpdate={(value) => updateRespFhir(value)} onClose={() => setShowEditor(false)}></ModalEditor> 
             : null }
         { showComponent ? 
-   <CommonDataTable title={claimUseType}
+   <CommonDataTable title={claimUseType == "preauth" ? "Pre-Authorization Requests" : "Claim Requests"}
                            header={
                             claims
                               ? [
                                 "request_no", // last 8 digits of request_id
-                                "patient_name", // actually name
                                 "insurance_no",
+                                "patient_name", // actually name
                                 "claim_type",
+                                "provider",
                                 "requested_amount",
                                 "approved_amount",
-                                "provider",
                                 "status"
                               ]
                               : []

@@ -45,7 +45,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     });
 
     const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
-    console.log("claim selected is here",  claim);
+    //console.log("supportingFiles claim selected is here",  supportingFiles);
     const [openTab, setOpenTab] = useState(1);
 
     const activeClasses = 'text-primary border-primary';
@@ -205,7 +205,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="mb-2.5 text-title-md2 font-bold text-black dark:text-white">
-                            {properText(claimType)} Details
+                            {properText(claimType)} Request Details
                         </h2>
                         <div className="group relative inline-block">
                         <p className="font-medium mb-1">Claim ID : {claim ? claim.request_id : "Not Available"}</p>
@@ -218,7 +218,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <p className="font-medium">Claim No : {claim ? claim.request_no : "Not Available"}</p>
                         <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                           <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                          Identifier value of the Bundle submitted for the request
+                          ID of the Bundle submitted for the request
                         </div>
                         </div>
                     </div>
@@ -279,7 +279,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <>
                         <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                         <div className="flex flex-col gap-9">   
-                        <DetailsBox title="Patient Details" claim={claim} fields={["name", "insurance_no", "gender", "address"]}></DetailsBox>
+                        <DetailsBox title="Beneficiary Details" claim={claim} fields={["name", "insurance_no", "gender", "address"]}></DetailsBox>
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         </div>
                         <div className="flex flex-col gap-9">
@@ -293,7 +293,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <>
                         <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                         <div className="flex flex-col gap-9">   
-                        <DetailsBox title="Patient Details" claim={claim} fields={[ "name", "insurance_no", "gender", "address"]}></DetailsBox>
+                        <DetailsBox title="Beneficiary Details" claim={claim} fields={[ "name", "insurance_no", "gender", "address"]}></DetailsBox>
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         <DetailsBox title="Financial Details" claim={financialDetailsBoxInfo} fields={["requested_amount", "approved_amount", "status", "bank_account_number", "ifsc_code"]}></DetailsBox>
                         <CommonDataTable title="Bill Details" 

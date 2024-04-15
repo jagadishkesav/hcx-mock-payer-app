@@ -48,14 +48,14 @@ const DetailsBox:React.FC<DetailsProps> = ({title,claim,fields}:DetailsProps) =>
         </p>
         <span className="mx-auto mb-6 inline-block h-1 w-25 rounded bg-primary"></span>
         <div className="flex flex-col-reverse gap-5 xl:flex-row xl:justify-between mb-2">
-            <div className="flex flex-col gap-4 sm:flex-row xl:gap-9">
+            <div className="flex flex-col gap-4 w-full">
                 <div>
                 {Object.entries(claim).filter(([name, _]) => fields.includes(name)).map(([name, detail], index) => {
-                    return(<span className="mt-2 block">
-                        <span className="font-medium">{properText(name)} :</span>
-                        {componentMap[name]
+                    return(<span className="mt-2 block flex justify-between">
+                        <span className="font-medium w-1/2">{properText(name)} :</span>
+                        <span className="font-medium w-1/2"> {componentMap[name]
                           ? (componentMap[name](detail) as any)
-                          : detail}
+                          : detail}</span>
                     </span>)
                 })}
                 
