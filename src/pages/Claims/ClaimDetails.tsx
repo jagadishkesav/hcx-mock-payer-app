@@ -308,7 +308,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <FileManager files={supportingFiles}></FileManager>     
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={opddetailsChecklist} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={opddetailsChecklist} appAmount={claim ? claim.approved_amount : "0"} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>
@@ -359,7 +359,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                             <FileManager files={supportingFiles}></FileManager>             
                                           </div>
                                           <div className="flex flex-col gap-9">
-                        <Checklist checklist={checklist} settled={medSettled} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={checklist} settled={medSettled} appAmount={claim ? claim.approved_amount : "0"} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                          : null}           
@@ -384,7 +384,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                             <FileManager files={supportingFiles}></FileManager>     
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={financialCheckList} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={financialCheckList} appAmount={claim ? claim.approved_amount : "0"} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>
