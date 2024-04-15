@@ -57,6 +57,13 @@ const CoverageEligibilityDetails = () => {
           
       };
 
+      useEffect(()=>{
+        
+        if(!coverage){
+            navigate(`/coverageeligibility/list`);
+        }
+      },[]);
+
     
     return (
         <>

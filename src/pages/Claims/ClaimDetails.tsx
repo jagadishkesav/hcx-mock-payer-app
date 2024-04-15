@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { bgcolorPicker, colorPicker } from "../../utils/StringUtil";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +29,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
 
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
     const [claim, setClaim] = useState<ClaimDetail | null>(_.get(appData,"claim") || null);
     const [requestID, setRequestId] = useState(_.get(appData,"claim.request_id") || "12345");
@@ -43,8 +44,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     "Total_Claim_Cost" : textOrDash(_.get(claim, "requested_amount") || "Not Available"),
     "Priority" :  textOrDash(_.get(claim, "resources.claim.priority.coding[0].code") || "Not Available")
     });
+    console.log("claim in details", claim);
 
-    const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
+    let supportingFiles: any[] = [];
+  
     //console.log("supportingFiles claim selected is here",  supportingFiles);
     const [openTab, setOpenTab] = useState(1);
 
@@ -75,12 +78,22 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
           console.log(error);
         });
     }
+    
     useEffect(()=>{
-      supportingFiles.map((file: any, index: any) => {
-        processFile(file.valueAttachment.url);
-      });
-    },[])
-
+      console.log("claim on refresh", claim)
+      if(claim){
+        supportingFiles = (claim as any).resources.claim.supportingInfo || [];
+        supportingFiles.map((file: any, index: any) => {
+          processFile(file.valueAttachment.url);
+        });
+      }else{
+        if(claimType == "claim"){
+        navigate(`/claims/list`);
+        }else{
+          navigate(`/preauth/list`);
+        }
+      }
+    },[]);
 
     const financialDetailsBoxInfo = {
       requested_amount : claim ? claim.requested_amount : "Not Available",
@@ -211,7 +224,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <p className="font-medium mb-1">Claim ID : {claim ? claim.request_id : "Not Available"}</p>
                         <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                           <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
-                          Correlation ID for the request
+                          API CALL ID for the request
                         </div>
                         </div>
                         <div className="group relative inline-block">
