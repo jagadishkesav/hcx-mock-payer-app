@@ -37,6 +37,8 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     const [medSettled, setMedSettled] = useState(claim?.medical_info.status == "Approved" ? true :false)
     const [finSettled, setFinSettled] = useState(claim?.financial_info.status == "Approved" ? true :false)
     const [opdSettled, setOpdSettled] = useState(claim?.status == "Approved" ? true :false);
+    const [showFilesList, setShowFilesList] = useState(false);
+    const [supportFiles, setSupportFiles] = useState([]);
     const [claimDetailsBox, setClaimDetailsBox] = useState(
     {"resource_created": formatDate(_.get(claim, "resources.claim.created") || "2023-12-18T06:17:07+00:00") , 
     "Insurer":  textOrDash(_.get(claim, "resources.claim.insurer.name") || "Not Available"),
@@ -46,8 +48,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     });
     console.log("claim in details", claim);
 
-    let supportingFiles: any[] = [];
-  
+    
     //console.log("supportingFiles claim selected is here",  supportingFiles);
     const [openTab, setOpenTab] = useState(1);
 
@@ -82,10 +83,12 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     useEffect(()=>{
       console.log("claim on refresh", claim)
       if(claim){
-        supportingFiles = (claim as any).resources.claim.supportingInfo || [];
+        const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
         supportingFiles.map((file: any, index: any) => {
           processFile(file.valueAttachment.url);
         });
+        setSupportFiles(supportingFiles);
+        setShowFilesList(true);
       }else{
         if(claimType == "claim"){
         navigate(`/claims/list`);
@@ -318,7 +321,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                         }))}
                                             ></CommonDataTable> 
-                        <FileManager files={supportingFiles}></FileManager>     
+                        {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}    
                         </div>
                         <div className="flex flex-col gap-9">
                         <Checklist checklist={opddetailsChecklist} appAmount={claim ? claim.approved_amount : "0"} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
@@ -369,7 +372,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                             value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                           }))}
                                             ></CommonDataTable>     
-                                            <FileManager files={supportingFiles}></FileManager>             
+                                           {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}           
                                           </div>
                                           <div className="flex flex-col gap-9">
                         <Checklist checklist={checklist} settled={medSettled} appAmount={claim ? claim.approved_amount : "0"} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
@@ -394,7 +397,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                         }))}
                                             ></CommonDataTable> 
-                                            <FileManager files={supportingFiles}></FileManager>     
+                          {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}
                         </div>
                         <div className="flex flex-col gap-9">
                         <Checklist checklist={financialCheckList} appAmount={claim ? claim.approved_amount : "0"} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
