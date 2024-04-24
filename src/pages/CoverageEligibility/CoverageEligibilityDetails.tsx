@@ -73,18 +73,22 @@ const CoverageEligibilityDetails = () => {
                         <h2 className="mb-2.5 text-title-md2 font-bold text-black dark:text-white">
                         Coverage Eligibility Request Details
                         </h2>
+                        <div>
                         <div className="group relative inline-block">
-                        <p className="font-medium mb-1">Coverage ID : {coverage? coverage.request_id : "Not Available"}</p>
+                        <p className="font-medium mb-1">Request ID : {coverage? coverage.request_id : "Not Available"}</p>
                         <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                           <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
                           API CALL ID for the request
                         </div>
                         </div>
+                        </div>
+                        <div>
                         <div className="group relative inline-block">
-                        <p className="font-medium">Coverage No : {coverage ? coverage.request_no : "Not Available"}</p>
+                        <p className="font-medium">Bundle ID : {coverage ? coverage.request_no : "Not Available"}</p>
                         <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
                           <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
                           ID of the Bundle submitted for the request
+                        </div>
                         </div>
                         </div>
                     </div>
