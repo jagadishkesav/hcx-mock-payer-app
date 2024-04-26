@@ -141,7 +141,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
           dispatch(addAppData({ "username": sessionStorage.getItem('hcx_user_name') as string }));
           dispatch(addAppData({ "password": sessionStorage.getItem('hcx_password') as string }));
           dispatch(addParticipantToken(sessionStorage.getItem('hcx_user_token') as string));
-          getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string).then((res: any) => {
+          getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string, authToken).then((res: any) => {
           dispatch(addParticipantDetails(res["data"]["participants"][0]));
           getCoverages();
         }).catch((error) => {

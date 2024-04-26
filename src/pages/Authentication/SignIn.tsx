@@ -44,9 +44,9 @@ const SignIn: React.FC = () => {
         sessionStorage.setItem('hcx_password', password);
         dispatch(addParticipantToken(res as string));
         console.log("participant token", res);
-        getParticipantByCode(userName).then((res: any) => {
+        getParticipantByCode(userName, res as string).then((res: any) => {
             dispatch(addParticipantDetails(res["data"]["participants"][0]));
-            navigate("/coverageeligibility/list");
+            navigate("/home");
         }).catch((error) => {
           toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
             position: toast.POSITION.TOP_RIGHT

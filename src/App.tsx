@@ -10,6 +10,7 @@ import PreauthList from './pages/Preauth/PreauthList';
 import ClaimsList from './pages/Claims/Claims';
 import ClaimDetail from './pages/Claims/ClaimDetails';
 import CoverageEligibilityDetails from './pages/CoverageEligibility/CoverageEligibilityDetails';
+import Home from './pages/Home/Home';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -33,6 +34,15 @@ function App() {
         </Route>
         <Route path="/" element={<Navigate to="/login" />} />
         <Route element={<DefaultLayout />}>
+        <Route
+            path="/home"
+            element={
+              <>
+                <PageTitle title="Home" />
+                <Home />
+              </>
+            }
+          />
           <Route
             path="/coverageeligibility/list"
             element={
