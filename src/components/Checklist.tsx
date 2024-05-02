@@ -9,15 +9,17 @@ interface ChecklistProps {
   title: string,
   settled: boolean,
   type: "financial" | "medical" | "general" | "opd" | "coverage";
+  appAmount?: string;
   onApprove?: (type: string, amount: number, remarks: string) => void;
   onReject?: (type: string) => void;
   sendCommunication?: (type: string) => void;
 }
 
-const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, onApprove, onReject, sendCommunication }: ChecklistProps) => {
+const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, appAmount, onApprove, onReject, sendCommunication }: ChecklistProps) => {
+  console.log("parseFloat(appAmount as string)",appAmount?.replace("INR ",""), parseFloat(appAmount as string));
   const [title1, setTitle] = useState(title);
   const [remarks, setRemarks] = useState('');
-  const [approvedAmount, setApprovedAmount] = useState(0);
+  const [approvedAmount, setApprovedAmount] = useState(parseFloat(appAmount?.replace("INR ","") as string)? parseFloat(appAmount?.replace("INR ","") as string) : 0);
   const [selected, setSelected] = useState<Array<string>>([]);
   const [progressText, setProgressText] = useState(settled ? 100 : 0);
 
@@ -53,7 +55,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
       </p>
       <span className="mx-auto mb-6 inline-block h-1 w-25 rounded bg-primary"></span>
       <div className={"relative h-4 rounded-full bg-stroke dark:bg-strokedark mb-5 w-full"} >
-        <div className={"absolute left-0 flex h-full items-center justify-center rounded-full bg-primary "}
+        <div className={"absolute left-0 flex h-full items-center justify-center rounded-full bg-[#13C296]"}
           style={{ width: `${progressText}%` }}>
           <p className="my-auto text-center text-[10px] font-bold leading-none text-white">
             {progressText}%
@@ -143,6 +145,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
                   min={0}
                   placeholder="Default Input"
                   value={approvedAmount}
+                  disabled={settled}
                   onChange={(event) => setApprovedAmount(parseFloat(event.target.value))}
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                 />
@@ -155,6 +158,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
                   rows={6}
                   placeholder="Default textarea"
                   value={remarks}
+                  disabled={settled}
                   onChange={(event) => setRemarks(event.target.value)}
                   className="w-full rounded-lg border-[1.5px] border-stroke bg-transparent py-3 px-5 font-medium outline-none transition focus:border-primary active:border-primary disabled:cursor-default disabled:bg-whiter dark:border-form-strokedark dark:bg-form-input dark:focus:border-primary"
                 ></textarea>

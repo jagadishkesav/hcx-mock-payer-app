@@ -26,10 +26,10 @@ const SignIn: React.FC = () => {
   let sessionToken = sessionStorage.getItem("hcx_user_token");
 
   useEffect(() => {
-    console.log("session token", sessionToken);
+    console.log("session token in signin", sessionToken);
     sessionStorage.removeItem("hcx_user_token");
     dispatch(addAppData({ "sidebar": "Profile" }));
-  }, [])
+  }, []);
 
   const Signin = (username: string, password: string) => {
     if (username == "" || password == "") {
@@ -41,11 +41,12 @@ const SignIn: React.FC = () => {
       generateToken(username, password).then((res) => {
         sessionStorage.setItem('hcx_user_token', res as string);
         sessionStorage.setItem('hcx_user_name', username);
+        sessionStorage.setItem('hcx_password', password);
         dispatch(addParticipantToken(res as string));
         console.log("participant token", res);
-        getParticipantByCode(userName).then((res: any) => {
+        getParticipantByCode(userName, res as string).then((res: any) => {
             dispatch(addParticipantDetails(res["data"]["participants"][0]));
-            navigate("/coverageeligibility/list");
+            navigate("/home");
         }).catch((error) => {
           toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
             position: toast.POSITION.TOP_RIGHT

@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { bgcolorPicker, colorPicker } from "../../utils/StringUtil";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
@@ -29,6 +29,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
 
 
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
     const [claim, setClaim] = useState<ClaimDetail | null>(_.get(appData,"claim") || null);
     const [requestID, setRequestId] = useState(_.get(appData,"claim.request_id") || "12345");
@@ -36,6 +37,8 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     const [medSettled, setMedSettled] = useState(claim?.medical_info.status == "Approved" ? true :false)
     const [finSettled, setFinSettled] = useState(claim?.financial_info.status == "Approved" ? true :false)
     const [opdSettled, setOpdSettled] = useState(claim?.status == "Approved" ? true :false);
+    const [showFilesList, setShowFilesList] = useState(false);
+    const [supportFiles, setSupportFiles] = useState([]);
     const [claimDetailsBox, setClaimDetailsBox] = useState(
     {"resource_created": formatDate(_.get(claim, "resources.claim.created") || "2023-12-18T06:17:07+00:00") , 
     "Insurer":  textOrDash(_.get(claim, "resources.claim.insurer.name") || "Not Available"),
@@ -43,9 +46,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     "Total_Claim_Cost" : textOrDash(_.get(claim, "requested_amount") || "Not Available"),
     "Priority" :  textOrDash(_.get(claim, "resources.claim.priority.coding[0].code") || "Not Available")
     });
+    console.log("claim in details", claim);
 
-    const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
-    console.log("claim selected is here",  claim);
+    
+    //console.log("supportingFiles claim selected is here",  supportingFiles);
     const [openTab, setOpenTab] = useState(1);
 
     const activeClasses = 'text-primary border-primary';
@@ -75,19 +79,31 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
           console.log(error);
         });
     }
+    
     useEffect(()=>{
-      supportingFiles.map((file: any, index: any) => {
-        processFile(file.valueAttachment.url);
-      });
-    },[])
-
+      console.log("claim on refresh", claim)
+      if(claim){
+        const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
+        supportingFiles.map((file: any, index: any) => {
+          processFile(file.valueAttachment.url);
+        });
+        setSupportFiles(supportingFiles);
+        setShowFilesList(true);
+      }else{
+        if(claimType == "claim"){
+        navigate(`/claims/list`);
+        }else{
+          navigate(`/preauth/list`);
+        }
+      }
+    },[]);
 
     const financialDetailsBoxInfo = {
       requested_amount : claim ? claim.requested_amount : "Not Available",
       approved_amount : claim ? claim.approved_amount : "Not Available",
-      status : claim ? claim.financial_info.status : "Not Available",
-      bank_account_number : claim ? claim.account_number : "Not Available",
-      ifsc_code : claim ? claim.ifsc_code : "Not Available"
+      status : claim ? claim.financial_info.status  : "Not Available",
+      bank_account_number : claim ? claim.account_number !== "1234" ? claim.account_number : "Not Available" : "Not Available",
+      ifsc_code : claim ? claim.ifsc_code !== "1234"? claim.ifsc_code : "Not Available" : "Not Available"
     }
 
     const [opddetailsChecklist, setopdDetailsChecklist] = useState<ChecklistItem[]>([
@@ -205,10 +221,26 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                 <div className="flex items-center justify-between">
                     <div>
                         <h2 className="mb-2.5 text-title-md2 font-bold text-black dark:text-white">
-                            {properText(claimType)} Details
+                            {properText(claimType)} Request Details
                         </h2>
-                        <p className="font-medium mb-1">Claim ID : {claim ? claim.request_id : "Not Available"}</p>
-                        <p className="font-medium">Claim No : {claim ? claim.request_no : "Not Available"}</p>
+                        <div>
+                        <div className="group relative inline-block">
+                        <p className="font-medium mb-1">Request ID : {claim ? claim.request_id : "Not Available"}</p>
+                        <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                          <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                          API CALL ID for the request
+                        </div>
+                        </div>
+                        </div>
+                        <div>
+                        <div className="group relative inline-block">
+                        <p className="font-medium">Bundle ID : {claim ? claim.request_no : "Not Available"}</p>
+                        <div className="absolute left-full top-1/2 z-20 ml-3 -translate-y-1/2 whitespace-nowrap rounded bg-black py-1.5 px-4.5 text-sm font-medium text-white opacity-0 group-hover:opacity-100">
+                          <span className="absolute left-[-3px] top-1/2 -z-10 h-2 w-2 -translate-y-1/2 rotate-45 rounded-sm bg-black"></span>
+                          ID of the Bundle submitted for the request
+                        </div>
+                        </div>
+                        </div>
                     </div>
                     <div>
                         <h2 className="mb-2.5 text-title-md2 font-bold text-black dark:text-white">
@@ -267,7 +299,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <>
                         <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                         <div className="flex flex-col gap-9">   
-                        <DetailsBox title="Patient Details" claim={claim} fields={["name", "insurance_no", "gender", "address"]}></DetailsBox>
+                        <DetailsBox title="Beneficiary Details" claim={claim} fields={["name", "insurance_no", "gender", "address"]}></DetailsBox>
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         </div>
                         <div className="flex flex-col gap-9">
@@ -281,7 +313,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <>
                         <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                         <div className="flex flex-col gap-9">   
-                        <DetailsBox title="Patient Details" claim={claim} fields={[ "name", "insurance_no", "gender", "address"]}></DetailsBox>
+                        <DetailsBox title="Beneficiary Details" claim={claim} fields={[ "name", "insurance_no", "gender", "address"]}></DetailsBox>
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         <DetailsBox title="Financial Details" claim={financialDetailsBoxInfo} fields={["requested_amount", "approved_amount", "status", "bank_account_number", "ifsc_code"]}></DetailsBox>
                         <CommonDataTable title="Bill Details" 
@@ -293,10 +325,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                         }))}
                                             ></CommonDataTable> 
-                        <FileManager files={supportingFiles}></FileManager>     
+                        {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}    
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={opddetailsChecklist} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={opddetailsChecklist} appAmount={claim ? claim.approved_amount : "0"} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>
@@ -344,10 +376,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                             value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                           }))}
                                             ></CommonDataTable>     
-                                            <FileManager files={supportingFiles}></FileManager>             
+                                           {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}           
                                           </div>
                                           <div className="flex flex-col gap-9">
-                        <Checklist checklist={checklist} settled={medSettled} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={checklist} settled={medSettled} appAmount={claim ? claim.approved_amount : "0"} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                          : null}           
@@ -369,10 +401,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                         }))}
                                             ></CommonDataTable> 
-                                            <FileManager files={supportingFiles}></FileManager>     
+                          {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={financialCheckList} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={financialCheckList} appAmount={claim ? claim.approved_amount : "0"} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>

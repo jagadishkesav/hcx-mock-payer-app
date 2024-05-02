@@ -64,7 +64,7 @@ const CommonDataTable: React.FC<DataTableProps> = ({title, header, data, actions
           <tbody>
           {tableData.map((value:any)=> {
                 return( 
-                <tr onClick={() =>onRowClick && onRowClick(value.id)}>
+                <tr className="cursor-pointer hover:bg-gray-100" onClick={() =>onRowClick && onRowClick(value.id)}>
                 {tableHeader.map((header) => {
                   if(lowerCase(header) == "status"){
                     return(

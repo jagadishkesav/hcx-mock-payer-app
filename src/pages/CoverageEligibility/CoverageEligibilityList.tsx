@@ -11,6 +11,9 @@ import ModalEditor from "../../components/ModalEditor";
 import ModalCoverageEligibility from "../../components/ModalCoverageEligibility";
 import { useNavigate } from "react-router-dom";
 import { addAppData } from "../../reducers/app_data";
+import { addParticipantToken } from "../../reducers/token_reducer";
+import { getParticipantByCode } from "../../api/RegistryService";
+import { addParticipantDetails } from "../../reducers/participant_details_reducer";
 
 
   export type CoverageDetail = {
@@ -20,6 +23,7 @@ import { addAppData } from "../../reducers/app_data";
     name: string;
     insurance_no: string;
     provider:string;
+    provider_name:string;
     expiry: string;
     status: string;
     resource: object;
@@ -30,10 +34,11 @@ import { addAppData } from "../../reducers/app_data";
   const CoverageEligibilityList = () => {
 
     const participantDetails: Object = useSelector((state: RootState) => state.participantDetailsReducer.participantDetails);
-    const authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
+    let authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
     const [showComponent, setShowComponent] = useState(false);
     const navigate = useNavigate();
     const dispatch = useDispatch();
+
 
     const coverageEligibilityMapper = (coverage: any):CoverageDetail => {
         const { resource } = unbundleAs(
@@ -47,6 +52,7 @@ import { addAppData } from "../../reducers/app_data";
           request_no: resource.id,
           name: resource.patient?.name[0].text,
           provider: resource.provider?.name,
+          provider_name : resource.provider?.name,
           insurance_no: resource.insurance[0].coverage?.subscriberId,
           status: coverage.status,
           servicedPeriod: resource.servicedPeriod,
@@ -67,6 +73,8 @@ import { addAppData } from "../../reducers/app_data";
             request_no: string;
             name: string;
             insurance_no: string;
+            provider:string;
+            provider_name:string;
             expiry: string;
             status: string;
             resource: object;
@@ -86,6 +94,8 @@ import { addAppData } from "../../reducers/app_data";
         request_no: string;
         name: string;
         insurance_no: string;
+        provider:string;
+        provider_name:string;
         expiry: string;
         status: string;
         resource: object;
@@ -124,10 +134,26 @@ import { addAppData } from "../../reducers/app_data";
       }
     
       useEffect(() => {
-        getCoverages();
+        if( sessionStorage.getItem('hcx_user_token') as string == "abcd"){
+          navigate("/login");
+        }else{
+          authToken = sessionStorage.getItem('hcx_user_token') as string;
+          dispatch(addAppData({ "username": sessionStorage.getItem('hcx_user_name') as string }));
+          dispatch(addAppData({ "password": sessionStorage.getItem('hcx_password') as string }));
+          dispatch(addParticipantToken(sessionStorage.getItem('hcx_user_token') as string));
+          getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string, authToken).then((res: any) => {
+          dispatch(addParticipantDetails(res["data"]["participants"][0]));
+          getCoverages();
+        }).catch((error) => {
+          toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
+            position: toast.POSITION.TOP_RIGHT
+          });
+        });
+        }
       }, []);
-    
-    
+
+
+
       const updateRespFhir = (value: any) => {
         setCoverageResponse(value);
         console.log("value of responseFHIR", value);
@@ -137,6 +163,7 @@ import { addAppData } from "../../reducers/app_data";
       }
 
       const onActionClick =(action:string,id:string)=> {
+        console.log("action", action, id);
         setRequestId(id);
         if(action == "View"){
           getCoverage(id);
@@ -164,6 +191,7 @@ import { addAppData } from "../../reducers/app_data";
         const obj = coverageEligibilityRequests?.find(
           (coverage: any) => coverage.request_id === id
         )
+        console.log("selected coverage", id, obj);
         setRequestId(id);
         setCoverageMapped(obj)
         getCoverage(id);
@@ -178,14 +206,14 @@ import { addAppData } from "../../reducers/app_data";
             <ModalEditor title={"Coverage Eligibility"} request={coverageString} response={coverageResponse} onUpdate={(value) => updateRespFhir(value)} onClose={() => setShowEditor(false)}></ModalEditor> 
             : null }
          { showComponent ? 
-          <CommonDataTable title="Coverage Eligibility"
+          <CommonDataTable title="Coverage Eligibility Requests"
                             header={
                                 coverageEligibilityRequests
                                 ? [
                                     "request_no",
-                                    "patient_name",
-                                    "provider",
                                     "insurance_no",
+                                    "patient_name",
+                                    "provider_name",
                                     "status",
                                 ]
                                 : []}
@@ -196,13 +224,7 @@ import { addAppData } from "../../reducers/app_data";
                                     request_no: coverage.request_no.slice(-8),
                                     enableButtons: coverage.status == "Pending" ? true : false
                                   })) as any}
-                                actions={[{text:"Approve",type:"success",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                                <path strokeLinecap="round" strokeLinejoin="round" d="m4.5 12.75 6 6 9-13.5" />
-                              </svg>
-                              },{text:"Reject",type:"danger", svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
-                              <path strokeLinecap="round" strokeLinejoin="round" d="M6 18 18 6M6 6l12 12" />
-                            </svg>
-                            },{text:"View",type:"normal",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
+                                actions={[{text:"View",type:"normal",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">
                               <path strokeLinecap="round" strokeLinejoin="round" d="M2.036 12.322a1.012 1.012 0 0 1 0-.639C3.423 7.51 7.36 4.5 12 4.5c4.638 0 8.573 3.007 9.963 7.178.07.207.07.431 0 .639C20.577 16.49 16.64 19.5 12 19.5c-4.638 0-8.573-3.007-9.963-7.178Z" />
                               <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 1 1-6 0 3 3 0 0 1 6 0Z" />
                             </svg>
