@@ -101,9 +101,9 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     const financialDetailsBoxInfo = {
       requested_amount : claim ? claim.requested_amount : "Not Available",
       approved_amount : claim ? claim.approved_amount : "Not Available",
-      status : claim ? claim.financial_info.status : "Not Available",
-      bank_account_number : claim ? claim.account_number : "Not Available",
-      ifsc_code : claim ? claim.ifsc_code : "Not Available"
+      status : claim ? claim.financial_info.status  : "Not Available",
+      bank_account_number : claim ? claim.account_number !== "1234" ? claim.account_number : "Not Available" : "Not Available",
+      ifsc_code : claim ? claim.ifsc_code !== "1234"? claim.ifsc_code : "Not Available" : "Not Available"
     }
 
     const [opddetailsChecklist, setopdDetailsChecklist] = useState<ChecklistItem[]>([
