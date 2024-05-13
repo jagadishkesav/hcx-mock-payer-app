@@ -316,6 +316,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <DetailsBox title="Beneficiary Details" claim={claim} fields={[ "name", "insurance_no", "gender", "address"]}></DetailsBox>
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         <DetailsBox title="Financial Details" claim={financialDetailsBoxInfo} fields={["requested_amount", "approved_amount", "status", "bank_account_number", "ifsc_code"]}></DetailsBox>
+                        {claim.items && claim.items.length > 0 ? ( 
                         <CommonDataTable title="Bill Details" 
                                          header={["display","code","value"]}
                                          data={claim.items.map((item: any) => ({
@@ -324,7 +325,11 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           code: item.productOrService.coding[0].code,
                                           value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                         }))}
-                                            ></CommonDataTable> 
+                                            ></CommonDataTable> ) : 
+                                        <EmptyState
+                                            title="No Bill details found"
+                                            description="No Bill details have been added to this claim."
+                                        />}
                         {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}    
                         </div>
                         <div className="flex flex-col gap-9">
@@ -367,14 +372,13 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                             title="No Daignosis found"
                                             description="No Diagnosis have been added to this claim."
                                           />}
-                        {claim.items && claim.items.length > 0 ? (  
+                        {claim.procedure && claim.procedure.length > 0 ? (  
                         <CommonDataTable title="Procedures" 
-                                         header={["display","code","value"]}
-                                         data={claim.items.map((item: any) => ({
-                                            id: item.productOrService.coding[0].code,
-                                            display: item.productOrService.coding[0].display,
-                                            code: item.productOrService.coding[0].code,
-                                            value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
+                                         header={["display","code"]}
+                                         data={claim.procedure.map((item: any) => ({
+                                            id: item.procedureCodeableConcept.coding[0].code,
+                                            display: item.procedureCodeableConcept.coding[0].display ? item.procedureCodeableConcept.coding[0].display : "NA",
+                                            code: item.procedureCodeableConcept.coding[0].code,
                                           }))}
                                             ></CommonDataTable>):
                                             <EmptyState
