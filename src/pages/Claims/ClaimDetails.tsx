@@ -364,9 +364,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                               })),
                                           ]}></CommonDataTable>): 
                                           <EmptyState
-                                            title="No Bills found"
-                                            description="No Bills have been added to this claim."
+                                            title="No Daignosis found"
+                                            description="No Diagnosis have been added to this claim."
                                           />}
+                        {claim.items && claim.items.length > 0 ? (  
                         <CommonDataTable title="Procedures" 
                                          header={["display","code","value"]}
                                          data={claim.items.map((item: any) => ({
@@ -375,7 +376,11 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                             code: item.productOrService.coding[0].code,
                                             value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                           }))}
-                                            ></CommonDataTable>     
+                                            ></CommonDataTable>):
+                                            <EmptyState
+                                            title="No Procedures found"
+                                            description="No Procedures have been added to this claim."
+                                          /> }     
                                            {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}           
                                           </div>
                                           <div className="flex flex-col gap-9">
@@ -392,6 +397,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <div className="grid grid-cols-1 gap-9 sm:grid-cols-2">
                         <div className="flex flex-col gap-9">   
                         <DetailsBox title="Financial Details" claim={financialDetailsBoxInfo} fields={["requested_amount", "approved_amount", "status", "bank_account_number", "ifsc_code"]}></DetailsBox>
+                        {claim.items && claim.items.length > 0 ? (  
                         <CommonDataTable title="Bill Details" 
                                          header={["display","code","value"]}
                                          data={claim.items.map((item: any) => ({
@@ -400,7 +406,10 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           code: item.productOrService.coding[0].code,
                                           value: `${item.unitPrice.value} ${item.unitPrice.currency}`,
                                         }))}
-                                            ></CommonDataTable> 
+                                            ></CommonDataTable> ): <EmptyState
+                                            title="No Bill details found"
+                                            description="No Bill details have been added to this claim."
+                                          />}
                           {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}
                         </div>
                         <div className="flex flex-col gap-9">
