@@ -53,6 +53,19 @@ interface Diagnosis {
 }
 
 
+interface ProcedureCoding {
+  system: string;
+  code: string;
+  display: string;
+}
+
+interface Procedure {
+  sequence: number;
+  procedureCodeableConcept: {
+    coding: ProcedureCoding[];
+  };
+}
+
 
 
 export type ClaimDetail = {
@@ -67,6 +80,7 @@ export type ClaimDetail = {
   address: string;
   items: Item[];
   diagnosis: Diagnosis[];
+  procedure : Procedure[];
   sub_type : string;
   insurance_no: string;
   otp_verification: string;
@@ -139,6 +153,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
         const insurance_no = resources.coverage !== undefined ? resources.coverage.subscriberId : "Not Available";
         const diagnosis = resources.claim.diagnosis as Diagnosis[];
         const items = resources.claim.item as Item[];
+        const procedure = resources.claim.procedure as Procedure[];
         const requested_amount = currencyObjToString(
           resources.claim.total ?? {
             currency: "INR",
@@ -164,6 +179,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
           address: resources.patient.address,
           provider: resources.claim.provider ? resources.claim.provider.name : "Not Available",
           diagnosis: diagnosis,
+          procedure : procedure,
           insurance_no,
           requested_amount,
           ...parseAdditionalInfo(claim.additional_info),
