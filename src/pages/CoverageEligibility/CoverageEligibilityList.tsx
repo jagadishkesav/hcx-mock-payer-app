@@ -31,6 +31,29 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
     servicedPeriod:object;
   }
 
+  export const coverageEligibilityMapper = (coverage: any):CoverageDetail => {
+    const { resource } = unbundleAs(
+      coverage.payload,
+      "CoverageEligibilityRequest"
+    );
+  
+    return {
+      id: coverage.request_id,
+      request_id: coverage.request_id,
+      request_no: resource.id,
+      name: resource.patient?.name[0].text,
+      provider: resource.provider?.name,
+      provider_name : resource.provider?.name,
+      insurance_no: resource.insurance[0].coverage?.subscriberId,
+      status: coverage.status,
+      servicedPeriod: resource.servicedPeriod,
+      expiry: resource.servicedPeriod?.end
+        ? formatDate(resource.servicedPeriod.end)
+        : "",
+      resource,
+      response_fhir: coverage.response_fhir,
+    };
+  }
   const CoverageEligibilityList = () => {
 
     const participantDetails: Object = useSelector((state: RootState) => state.participantDetailsReducer.participantDetails);
@@ -40,29 +63,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
     const dispatch = useDispatch();
 
 
-    const coverageEligibilityMapper = (coverage: any):CoverageDetail => {
-        const { resource } = unbundleAs(
-          coverage.payload,
-          "CoverageEligibilityRequest"
-        );
-      
-        return {
-          id: coverage.request_id,
-          request_id: coverage.request_id,
-          request_no: resource.id,
-          name: resource.patient?.name[0].text,
-          provider: resource.provider?.name,
-          provider_name : resource.provider?.name,
-          insurance_no: resource.insurance[0].coverage?.subscriberId,
-          status: coverage.status,
-          servicedPeriod: resource.servicedPeriod,
-          expiry: resource.servicedPeriod?.end
-            ? formatDate(resource.servicedPeriod.end)
-            : "",
-          resource,
-          response_fhir: coverage.response_fhir,
-        };
-      }
+    
 
       const [selectedRequest, setSelectedRequest] = useState<string>("");
       const [showFilter, setShowFilter] = useState<boolean>(false);

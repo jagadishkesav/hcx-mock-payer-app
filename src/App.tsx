@@ -11,6 +11,7 @@ import ClaimsList from './pages/Claims/Claims';
 import ClaimDetail from './pages/Claims/ClaimDetails';
 import CoverageEligibilityDetails from './pages/CoverageEligibility/CoverageEligibilityDetails';
 import Home from './pages/Home/Home';
+import BeneficiarySearch from './pages/Beneficiary/BeneficiarySearch';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -95,6 +96,15 @@ function App() {
               <>
                 <PageTitle title="Claims" />
                 <ClaimDetail claimType='claim'/>
+              </>
+            }
+          />
+          <Route
+            path="/beneficiary/search"
+            element={
+              <>
+                <PageTitle title="Beneficiary Serach" />
+                <BeneficiarySearch/>
               </>
             }
           />

@@ -16,7 +16,8 @@ interface ChecklistProps {
 }
 
 const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, appAmount, onApprove, onReject, sendCommunication }: ChecklistProps) => {
-  console.log("parseFloat(appAmount as string)",appAmount?.replace("INR ",""), parseFloat(appAmount as string));
+  console.log("approved amount received ",  appAmount);
+  console.log("parseFloat(appAmount as string)" ,appAmount?.replace("INR ",""), parseFloat(appAmount?.replace("INR ","") as string));
   const [title1, setTitle] = useState(title);
   const [remarks, setRemarks] = useState('');
   const [approvedAmount, setApprovedAmount] = useState(parseFloat(appAmount?.replace("INR ","") as string)? parseFloat(appAmount?.replace("INR ","") as string) : 0);

@@ -33,6 +33,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     const appData: Object = useSelector((state: RootState) => state.appDataReducer.appData);
     const [claim, setClaim] = useState<ClaimDetail | null>(_.get(appData,"claim") || null);
     const [requestID, setRequestId] = useState(_.get(appData,"claim.request_id") || "12345");
+    const [claimAmount, setClaimAmount] = useState(_.get(appData,"claim.requested_amount") || "0");
     const authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
     const [medSettled, setMedSettled] = useState(claim?.medical_info.status == "Approved" ? true :false)
     const [finSettled, setFinSettled] = useState(claim?.financial_info.status == "Approved" ? true :false)
@@ -333,7 +334,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}    
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={opddetailsChecklist} appAmount={claim ? claim.approved_amount : "0"} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={opddetailsChecklist} appAmount={claim ? claim.approved_amount : claimAmount} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>
@@ -388,7 +389,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                            {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}           
                                           </div>
                                           <div className="flex flex-col gap-9">
-                        <Checklist checklist={checklist} settled={medSettled} appAmount={claim ? claim.approved_amount : "0"} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={checklist} settled={medSettled} appAmount={claim ? claim.approved_amount : claimAmount} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                          : null}           
@@ -417,7 +418,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                           {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={financialCheckList} appAmount={claim ? claim.approved_amount : "0"} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={financialCheckList} appAmount={claim && claim.approved_amount !== "-"? claim.approved_amount : claimAmount} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         </div>
                         </div>
                         </>
