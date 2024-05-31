@@ -24,13 +24,13 @@ const CardsItemThree: React.FC<CardItemProps> = ({
       {cardData ? 
       <div className="px-7.5 pt-6 pb-9">
         <span className="mt-2 block flex justify-between">
-          <span className="font-medium w-1/2">Total Request :</span><span className="font-medium w-1/2"> {_.get(cardData, "TotalValue") ? _.get(cardData, "TotalValue") : 0} </span> 
+          <span className="font-medium w-1/2">Total Request :</span><span className="font-medium w-1/2"> {_.get(cardData, "total") ? _.get(cardData, "total") : 0} </span> 
         </span>
         <span className="mt-2 block flex justify-between">
-          <span className="font-medium w-1/2">Pending Request :</span><span className="font-medium w-1/2">{_.get(cardData, "TotalPending") ? _.get(cardData, "TotalPending") : 0}</span> 
+          <span className="font-medium w-1/2">Pending Request :</span><span className="font-medium w-1/2">{_.get(cardData, "pending") ? _.get(cardData, "pending") : 0}</span> 
         </span>
         <span className="mt-2 block flex justify-between">
-          <span className="font-medium w-1/2">Last 3 days :</span><span className="font-medium w-1/2">{_.get(cardData, "last3") ? _.get(cardData, "last3") : 0}</span> 
+          <span className="font-medium w-1/2">Last 3 days :</span><span className="font-medium w-1/2">{_.get(cardData, "lastThreedays") ? _.get(cardData, "lastThreedays") : 0}</span> 
         </span>
       </div> : <div className="px-7.5 pt-6 pb-9"><p>{cardContent}</p></div> } 
     </div>

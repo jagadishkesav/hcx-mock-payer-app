@@ -170,19 +170,26 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
               <p className="font-semibold">{`${properText(type)} approval is complete`}</p>
             </div>
             : <div className="flex gap-5 mt-2">
-              <button className={"inline-flex rounded-full bg-[#13C296] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled ? "opacity-50 cursor-not-allowed" : "")}
-                disabled={settled}
+              <button className={"inline-flex rounded-full bg-[#13C296] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled || progressText !== 100? "opacity-50 cursor-not-allowed" : "")}
+                disabled={settled || progressText !== 100}
                 onClick={() => { onApprove && onApprove(type, approvedAmount, remarks) }}>
-
                 Approve
               </button>
-              <button className={"inline-flex rounded-full bg-[#DC3545] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled ? "opacity-50 cursor-not-allowed" : "")}
-                disabled={settled}
+              <button className={"inline-flex rounded-full bg-[#DC3545] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled || progressText !== 100 ? "opacity-50 cursor-not-allowed" : "")}
+                disabled={settled || progressText !== 100}
                 onClick={() => { onReject && onReject(type) }}>
                 Reject
               </button>
             </div>}
         </div> : null}
+          {type == "general" ? 
+          <>
+              <button className={"inline-flex mt-5 rounded-full bg-[#13C296] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled || progressText !== 100? "opacity-50 cursor-not-allowed" : "")}
+                disabled={settled || progressText !== 100}
+                onClick={() => { onApprove && onApprove(type, 0, "") }}>
+                Submit
+              </button>
+          </> : null}
     </div>
 
   )

@@ -8,18 +8,18 @@ export const HCX_MOCK_SERVICE_URL = process.env.REACT_APP_HCX_MOCK_SERVICE_URL;
 
 
 export const listRequest = async (type: string, token="") => {
-    var payload = { type:type, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 10 };
+    var payload = { type:type, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 100 };
     return postPath(API_BASE_URL + "/request/list", payload, {}, token);
 }
 
 export const listRequestById = async (type: string, request_id:string, token="") => {
-    var payload = { type:type, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 10 };
-    return postPath("http://localhost:8080/payer"  + `/request/list/?request_id=${request_id}`, payload, {}, token);
+    var payload = { type:type, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 100 };
+    return postPath(API_BASE_URL  + `/request/list/?request_id=${request_id}`, payload, {}, token);
 }
 
 export const listRequestStats = async (token="") => {
-    var payload = {recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 10 };
-    return postPath("http://localhost:8080/payer" + "/request/stats", payload, {}, token);
+    var payload = {recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 100 };
+    return postPath(API_BASE_URL + "/request/stats", payload, {}, token);
 }
 
 export const updateResponse = async (data: { request_id: string; response_fhir: string }, token="") => {
@@ -49,7 +49,7 @@ export const rejectClaim = async (requestId:string,type:string ,token="",url:str
 
 export const listBeneficiary = async (searchField:string, searchValue:string, token="") => {
     var payload = {[searchField]:searchValue, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code")};
-    return postPath("http://localhost:8080" + "/patient/request/list", payload, {}, token);
+    return postPath(API_BASE_URL+ "/beneficiary/request/list", payload, {}, token);
 }
 
 export const sendCommunicationRequest = async (

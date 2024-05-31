@@ -9,6 +9,7 @@ import { getParticipantByCode } from "../../api/RegistryService";
 import { addParticipantDetails } from "../../reducers/participant_details_reducer";
 import { toast } from "react-toastify";
 import { listRequestStats } from "../../api/PayerService";
+import _ from "lodash";
 
 const Home: React.FC = () => {
 
@@ -18,6 +19,51 @@ const Home: React.FC = () => {
     const [covCardData, setCovCardData] = useState({});
     const [preauthCardData, setPreauthCardData] = useState({});
     const [claimsCardData, setClaimsCardData] = useState({});
+
+    interface DataItem {
+      count: number;
+      action: string;
+      status?: string;
+  }
+  
+  interface DataStructure {
+      total: DataItem[];
+      totalByStatus: DataItem[];
+      lastThreedays: DataItem[];
+      [key: string]: DataItem[]; // Allow other similar arrays if needed
+  }
+
+  const  aggregateClaims =(data: DataStructure, type:string) => {
+    const result: { [key: string]: number } = {};
+
+    // Function to add counts to the result object
+    const addToResult = (key: string, count: number) => {
+        if (result[key] === undefined) {
+            result[key] = 0;
+        }
+        result[key] += count;
+    };
+
+    _.forEach(data, (items, key) => {
+        if (items) {
+            _.forEach(items, (item) => {
+                if (item.action === type) {
+                    if (key === 'total') {
+                        addToResult('total', item.count);
+                    } else if (key === 'lastThreedays') {
+                        addToResult('lastThreedays', item.count);
+                    } else if (item.status) {
+                        addToResult(item.status.toLowerCase(), item.count);
+                    }
+                }
+            });
+        }
+    });
+
+    return result;
+}
+
+    //console.log(JSON.stringify(claimsData, null, 2));
 
     useEffect(() => {
         if( sessionStorage.getItem('hcx_user_token') as string == "abcd"){
@@ -34,73 +80,11 @@ const Home: React.FC = () => {
             position: toast.POSITION.TOP_RIGHT
           });
         });
-        let totalClaim = 0;
-        let totalPreAuth = 0;
-        let totalCoverage = 0;
         listRequestStats(authToken).then((res:any) => {
           console.log("payor table stats ", res);
-
-          res.data.total.map((value:any) => {
-            if(value.action == "claim"){
-              setClaimsCardData({
-                ...claimsCardData, "last3":value.count
-              })
-            }
-            if(value.action == "preauth"){
-              setPreauthCardData({
-                ...preauthCardData, "last3":value.count
-              })
-            }
-            if(value.action == "coverageeligibility"){
-              setCovCardData({
-                ...covCardData, "last3":value.count
-              })
-            }
-          });
-
-          res.data.total.map((value:any) => {
-            if(value.action == "claim" && value.status == "Pending"){
-              console.log(" i came in pending")
-              totalClaim = totalClaim + value.count;
-              setClaimsCardData({
-                ...claimsCardData, "TotalPending":value.count, "TotalValue":totalClaim
-              })
-            }
-            if(value.action == "claim" && value.status != "Pending"){
-              totalClaim = totalClaim + value.count;
-              setClaimsCardData({
-                ...claimsCardData, "TotalValue":totalClaim
-              })
-            }
-
-            if(value.action == "preauth" && value.status == "Pending"){
-              console.log(" i came in pending")
-              totalPreAuth = totalPreAuth + value.count;
-              setPreauthCardData({
-                ...preauthCardData, "TotalPending":value.count, "TotalValue":totalClaim
-              })
-            }
-            if(value.action == "preauth" && value.status != "Pending"){
-              totalPreAuth = totalPreAuth + value.count;
-              setPreauthCardData({
-                ...preauthCardData, "TotalValue":totalClaim
-              })
-            }
-
-            if(value.action == "coverageeligibility" && value.status == "Pending"){
-              console.log(" i came in pending")
-              totalCoverage = totalCoverage + value.count;
-              setCovCardData({
-                ...covCardData, "TotalPending":value.count, "TotalValue":totalClaim
-              })
-            }
-            if(value.action == "coverageeligibility" && value.status != "Pending"){
-              totalCoverage = totalCoverage + value.count;
-              setCovCardData({
-                ...covCardData, "TotalValue":totalClaim
-              })
-            }
-          });
+          setClaimsCardData(aggregateClaims(res.data, "claim"));
+          setPreauthCardData(aggregateClaims(res.data, "preauth"));
+          setCovCardData(aggregateClaims(res.data, "coverageligibility"));
         }).catch(err => {
           toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
             position: toast.POSITION.TOP_RIGHT
