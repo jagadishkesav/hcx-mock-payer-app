@@ -105,6 +105,82 @@ interface claimProps{
   claimType : "preauth" | "claim"
 }
 
+export const claimsMapper = (claim: any): ClaimDetail  => {
+  const { identifier } = claim.payload;
+
+  const resources = {
+    patient: unbundleAs(claim.payload, "Patient").resource,
+    coverage: unbundleAs(claim.payload, "Coverage") ? unbundleAs(claim.payload, "Coverage").resource : undefined,
+    claim: unbundleAs(claim.payload, "Claim").resource,
+  };
+
+  const insurance_no = resources.coverage !== undefined ? resources.coverage.subscriberId : "Not Available";
+  const diagnosis = resources.claim.diagnosis as Diagnosis[];
+  const items = resources.claim.item as Item[];
+  const procedure = resources.claim.procedure as Procedure[];
+  const requested_amount = currencyObjToString(
+    resources.claim.total ?? {
+      currency: "INR",
+      value: items?.map((i) => i.unitPrice.value).reduce((a, b) => a + b) ?? 0,
+    }
+  );
+
+  return {
+    sender_code: claim.sender_code,
+    recipient_code:claim.recipient_code,
+    id: claim.request_id,
+    use: claim.use,
+    platform: claim.app || "others",
+    otp_verification: claim.otp_verification || "Pending",
+    account_number: claim.account_number || "Not Available",
+    ifsc_code: claim.ifsc_code || "Not Available",
+    request_id: claim.request_id,
+    request_no: identifier?.value,
+    name: resources.patient.name ? resources.patient.name[0].text : "Unnamed",
+    gender: resources.patient.gender,
+    sub_type : resources.claim.subType? resources.claim.subType.coding[0].code : "Others",
+    items,
+    address: resources.patient.address,
+    provider: resources.claim.provider ? resources.claim.provider.name : "Not Available",
+    diagnosis: diagnosis,
+    procedure : procedure,
+    insurance_no,
+    requested_amount,
+    ...parseAdditionalInfo(claim.additional_info),
+    ...(claim.status === "Pending" && { approved_amount: "-" }),
+    status: claim.status,
+    resources,
+    response_fhir: claim.response_fhir,
+  };
+}
+
+export const currencyObjToString = ({
+  currency,
+  value,
+}: {
+  currency: string;
+  value: number;
+}) => {
+  if (typeof value === "string") {
+    value = parseFloat((value as any).split(" ")[1]);
+  }
+  return currency + " " + value;
+}
+
+export const parseAdditionalInfo = (additional_info: any) => {
+  const { medical, financial } = additional_info;
+  const approved_amount = (financial as IAdditionalInfo).approved_amount ?? 0;
+
+  return {
+    approved_amount: currencyObjToString({
+      currency: "INR",
+      value: approved_amount,
+    }),
+    medical_info: medical,
+    financial_info: financial,
+  };
+}
+
 
 const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
 
@@ -113,82 +189,8 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
 
     useEffect(() => {
       console.log("came to reload the claims list component");
-    },[claimUseType]);
-     const currencyObjToString = ({
-        currency,
-        value,
-      }: {
-        currency: string;
-        value: number;
-      }) => {
-        if (typeof value === "string") {
-          value = parseFloat((value as any).split(" ")[1]);
-        }
-        return currency + " " + value;
-      }
-      
-     const parseAdditionalInfo = (additional_info: any) => {
-        const { medical, financial } = additional_info;
-        const approved_amount = (financial as IAdditionalInfo).approved_amount ?? 0;
-      
-        return {
-          approved_amount: currencyObjToString({
-            currency: "INR",
-            value: approved_amount,
-          }),
-          medical_info: medical,
-          financial_info: financial,
-        };
-      }
-      
-     const claimsMapper = (claim: any): ClaimDetail  => {
-        const { identifier } = claim.payload;
-      
-        const resources = {
-          patient: unbundleAs(claim.payload, "Patient").resource,
-          coverage: unbundleAs(claim.payload, "Coverage") ? unbundleAs(claim.payload, "Coverage").resource : undefined,
-          claim: unbundleAs(claim.payload, "Claim").resource,
-        };
-      
-        const insurance_no = resources.coverage !== undefined ? resources.coverage.subscriberId : "Not Available";
-        const diagnosis = resources.claim.diagnosis as Diagnosis[];
-        const items = resources.claim.item as Item[];
-        const procedure = resources.claim.procedure as Procedure[];
-        const requested_amount = currencyObjToString(
-          resources.claim.total ?? {
-            currency: "INR",
-            value: items?.map((i) => i.unitPrice.value).reduce((a, b) => a + b) ?? 0,
-          }
-        );
-      
-        return {
-          sender_code: claim.sender_code,
-          recipient_code:claim.recipient_code,
-          id: claim.request_id,
-          use: claim.use,
-          platform: claim.app || "others",
-          otp_verification: claim.otp_verification || "Pending",
-          account_number: claim.account_number || "Not Available",
-          ifsc_code: claim.ifsc_code || "Not Available",
-          request_id: claim.request_id,
-          request_no: identifier?.value,
-          name: resources.patient.name ? resources.patient.name[0].text : "Unnamed",
-          gender: resources.patient.gender,
-          sub_type : resources.claim.subType? resources.claim.subType.coding[0].code : "Others",
-          items,
-          address: resources.patient.address,
-          provider: resources.claim.provider ? resources.claim.provider.name : "Not Available",
-          diagnosis: diagnosis,
-          procedure : procedure,
-          insurance_no,
-          requested_amount,
-          ...parseAdditionalInfo(claim.additional_info),
-          ...(claim.status === "Pending" && { approved_amount: "-" }),
-          status: claim.status,
-          resources,
-          response_fhir: claim.response_fhir,
-        };
-      }
+    },[claimUseType]);  
+     
       const dispatch = useDispatch();
       const navigate = useNavigate();
       const [claims, setClaims] = useState<ClaimDetail[]>();
