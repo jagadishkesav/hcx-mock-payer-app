@@ -66,7 +66,8 @@ const Home: React.FC = () => {
     //console.log(JSON.stringify(claimsData, null, 2));
 
     useEffect(() => {
-        if( sessionStorage.getItem('hcx_user_token') as string == "abcd"){
+        console.log("session token ",sessionStorage.getItem('hcx_user_token'));
+        if( sessionStorage.getItem('hcx_user_token') as string == "abcd" || sessionStorage.getItem('hcx_user_token') == null){
           navigate("/login");
         }else{
           authToken = sessionStorage.getItem('hcx_user_token') as string;
@@ -75,21 +76,22 @@ const Home: React.FC = () => {
           dispatch(addParticipantToken(sessionStorage.getItem('hcx_user_token') as string));
           getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string, authToken).then((res: any) => {
           dispatch(addParticipantDetails(res["data"]["participants"][0]));
+          listRequestStats(authToken).then((res:any) => {
+            console.log("payor table stats ", res);
+            setClaimsCardData(aggregateClaims(res.data, "claim"));
+            setPreauthCardData(aggregateClaims(res.data, "preauth"));
+            setCovCardData(aggregateClaims(res.data, "coverageligibility"));
+          }).catch(err => {
+            toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
+              position: toast.POSITION.TOP_RIGHT
+            });
+          });
         }).catch((error) => {
           toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
             position: toast.POSITION.TOP_RIGHT
           });
         });
-        listRequestStats(authToken).then((res:any) => {
-          console.log("payor table stats ", res);
-          setClaimsCardData(aggregateClaims(res.data, "claim"));
-          setPreauthCardData(aggregateClaims(res.data, "preauth"));
-          setCovCardData(aggregateClaims(res.data, "coverageligibility"));
-        }).catch(err => {
-          toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
-            position: toast.POSITION.TOP_RIGHT
-          });
-        });
+
         }
       }, []);
 
