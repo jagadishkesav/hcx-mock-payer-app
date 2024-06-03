@@ -135,7 +135,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
       }
     
       useEffect(() => {
-        if( sessionStorage.getItem('hcx_user_token') as string == "abcd"){
+        if( sessionStorage.getItem('hcx_user_token') as string == "abcd"  || sessionStorage.getItem('hcx_user_token') == null){
           navigate("/login");
         }else{
           authToken = sessionStorage.getItem('hcx_user_token') as string;
