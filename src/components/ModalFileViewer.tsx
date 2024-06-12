@@ -20,26 +20,16 @@ const ModalFileViewer: React.FC<ModalViewerProps> = ({file,onClose}:ModalViewerP
   const [claim, setClaim] = useState("");
   const [showTable, setShowTable] = useState(false);
   const showProcessedFileModal = (url:string) => {
-        console.log("url is here", url, claim);
-        let config = {
-            method: 'get',
-            maxBodyLength: Infinity,
-            url: `https://staging-hcx.swasth.app/hcx-mock-service/document/analysis/${localStorage.getItem(url)}`,
-            headers: { 
-              'Content-Type': 'application/json'
-            }
-          };
-          
-          axios.request(config)
-          .then((response) => {
-            console.log("this api was called ",JSON.stringify(response.data));
-            const result:any = response.data;
-            setClaim(JSON.stringify(result, null, 4));
+        console.log("url is here", url, localStorage.getItem(url));
+            if(localStorage.getItem(url)){
+            setClaim(localStorage.getItem(url) || "");
+            const jsonObject = JSON.parse(localStorage.getItem(url) || "");
+            const prettyJson = JSON.stringify(jsonObject, null, 2);
+            setClaim(prettyJson);
             setShowTable(true);
-          }).catch((error) => {
-            setShowTable(false);
-            console.log(error);
-          });
+            }else{
+              setShowTable(false);
+            }
     }
 
   
@@ -111,8 +101,8 @@ const ModalFileViewer: React.FC<ModalViewerProps> = ({file,onClose}:ModalViewerP
               options={options}
           /> :
           <EmptyState
-          title="File Processing in Progress"
-          description="File is still under processing. Please try after sometime"
+          title="File Processing in incomplete"
+          description="Request has not been forwarded for processing or file processing is still in progress"
         />}
         </div>
       </div>

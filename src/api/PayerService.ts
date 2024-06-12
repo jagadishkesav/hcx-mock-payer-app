@@ -17,6 +17,11 @@ export const listRequestById = async (type: string, request_id:string, token="")
     return postPath(API_BASE_URL  + `/request/list/?request_id=${request_id}`, payload, {}, token);
 }
 
+export const listForwardResponse = async (type: string, correlation_id:string, token="") => {
+    var payload = { type:type, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 100 };
+    return postPath(API_BASE_URL  + `/request/list/?correlation_id=${correlation_id}`, payload, {}, token);
+}
+
 export const listRequestStats = async (token="") => {
     var payload = {recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code"), days: 100 };
     return postPath(API_BASE_URL + "/request/stats", payload, {}, token);
@@ -50,6 +55,11 @@ export const rejectClaim = async (requestId:string,type:string ,token="",url:str
 export const listBeneficiary = async (searchField:string, searchValue:string, token="") => {
     var payload = {[searchField]:searchValue, recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code")};
     return postPath(API_BASE_URL+ "/beneficiary/request/list", payload, {}, token);
+}
+
+export const forwardRequest = async (recipient_code:string, sender_code:string,correlation_id:string,operation:string,request_fhir:string, token="") => {
+    var payload = {recipient_code,sender_code,correlation_id,operation,request_fhir};
+    return postPath(API_BASE_URL+ "/request/forward", payload, {}, token);
 }
 
 export const sendCommunicationRequest = async (

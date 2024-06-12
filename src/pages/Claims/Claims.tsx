@@ -72,6 +72,7 @@ export type ClaimDetail = {
   sender_code:string;
   recipient_code:string;
   id: string;
+  correlation_id:string;
   request_id: string;
   request_no: string;
   name: string;
@@ -97,6 +98,7 @@ export type ClaimDetail = {
     claim: object;
   };
   response_fhir: object;
+  request_fhir:object;
   use: string;
   platform: string;
 };
@@ -107,6 +109,7 @@ interface claimProps{
 
 export const claimsMapper = (claim: any): ClaimDetail  => {
   const { identifier } = claim.payload;
+  const deepClaim = _.cloneDeep(claim.payload)
 
   const resources = {
     patient: unbundleAs(claim.payload, "Patient").resource,
@@ -126,8 +129,10 @@ export const claimsMapper = (claim: any): ClaimDetail  => {
   );
 
   return {
+    request_fhir:deepClaim,
     sender_code: claim.sender_code,
     recipient_code:claim.recipient_code,
+    correlation_id:claim.correlation_id,
     id: claim.request_id,
     use: claim.use,
     platform: claim.app || "others",
@@ -150,7 +155,7 @@ export const claimsMapper = (claim: any): ClaimDetail  => {
     ...(claim.status === "Pending" && { approved_amount: "-" }),
     status: claim.status,
     resources,
-    response_fhir: claim.response_fhir,
+    response_fhir: claim.response_fhir
   };
 }
 
@@ -268,7 +273,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
     
       const updateRespFhir = (value:string) => {
         setClaimResponse(value);
-        updateResponse({ request_id: requestId, response_fhir: value})
+        updateResponse({ request_id: requestId, response_fhir: value}, authToken);
         setShowEditor(false);
         getClaims();
       }
