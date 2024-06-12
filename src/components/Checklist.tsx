@@ -45,9 +45,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
 
   return (
     <div
-      // ref={modal}
-      // onFocus={() => onClose(true)}
-      // onBlur={() => onClose(false)}
+
       className="w-full max-w-203 rounded-lg border-2 border-gray bg-white py-12 px-8 dark:bg-boxdark md:py-5 md:px-5 mb-3 "
     >
 

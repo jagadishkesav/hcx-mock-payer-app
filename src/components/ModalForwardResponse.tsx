@@ -7,28 +7,22 @@ import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import { Link } from 'react-router-dom';
 
-interface ModalEditorProps {
+interface ModalForwardProps {
     request:string;
-    response:string;
     title:string;
-    onUpdate?:(value:any) => void;
     onClose:() => void;
 }
 
-const ModalEditor: React.FC<ModalEditorProps> = ({request,response,title,onUpdate,onClose}:ModalEditorProps) => {
+const ModalForwardResponse: React.FC<ModalForwardProps> = ({request,title,onClose}:ModalForwardProps) => {
   const appData:Object =useSelector((state: RootState) => state.appDataReducer.appData);
-  const [text, setText] = useState(request);
-  const [respText, setRespText] = useState(response);
+  const [text, setText] = useState(request);;
   const [isValidJSON, setIsValidJSON] = useState(true);
   const [openTab, setOpenTab] = useState(1);
-  const [showUpdate, setShowUpdate] = useState(false);
-  const activeClasses = 'text-primary border-primary';
-  const inactiveClasses = 'border-transparent';
-  console.log("reqwyest", text);
+  
   
   useEffect(() => {
     checkResponseJSONValid();
-  }, [respText]);
+  }, [text]);
   
   const checkResponseJSONValid = () => {
     let input: any = '';
@@ -52,18 +46,7 @@ const ModalEditor: React.FC<ModalEditorProps> = ({request,response,title,onUpdat
   useEffect(() => {
       console.log("reloaded app data", appData);
   },[appData])   
-  
-  const handleInputChange = (value: any, event: any) => {
-      setRespText(value);
-    };
-  
-  const onAccept = () => {
-      onUpdate && onUpdate(text);
-  }
-  
-  const onDecline = () => {
-   onClose();
-  }
+    
   return (
     <div>
       <div
@@ -89,31 +72,10 @@ const ModalEditor: React.FC<ModalEditorProps> = ({request,response,title,onUpdat
             </svg>
           </button>
           <h3 className="pb-2 text-xl font-bold text-black dark:text-white sm:text-2xl">
-            {title} Request and Response
+            {title} Forward Response
           </h3>
           <span className="mx-auto mb-3 inline-block h-1 w-25 rounded bg-primary"></span>
-      <div className="mb-6 flex flex-wrap gap-5 border-b border-stroke dark:border-strokedark sm:gap-10">
-        <Link
-          to="#"
-          className={`border-b-2 py-4 text-sm font-medium hover:text-primary md:text-base ${
-            openTab === 1 ? activeClasses : inactiveClasses
-          }`}
-          onClick={() => {setOpenTab(1); setShowUpdate(false)}}
-        >
-          {title} Request
-        </Link>
-        <Link
-          to="#"
-          className={`border-b-2 py-4 text-sm font-medium hover:text-primary md:text-base ${
-            openTab === 2 ? activeClasses : inactiveClasses
-          }`}
-          onClick={() => {setOpenTab(2); setShowUpdate(true)}}
-        >
-          {title} Response
-        </Link>
-      </div>
-
-      <div>
+      
         <div
           className={`leading-relaxed ${openTab === 1 ? 'block' : 'hidden'}`}
         >
@@ -125,41 +87,10 @@ const ModalEditor: React.FC<ModalEditorProps> = ({request,response,title,onUpdat
               options={options}
             />
         </div>
-        <div
-          className={`leading-relaxed ${openTab === 2 ? 'block' : 'hidden'}`}
-        >
-          <Editor
-              height="50vh"
-              language="json"
-              theme="clouds"
-              defaultValue={respText}
-              onChange={handleInputChange}
-              options={options}
-            />
-        </div>
-      </div>
-      {showUpdate && isValidJSON?
-          <div className="-mx-3 flex flex-wrap gap-y-4 mt-3">
-            <div className="w-full px-3 2xsm:w-1/2">
-              <button
-                onClick={() => {onClose();onDecline()}}
-                className="block w-full rounded border border-stroke bg-gray p-3 text-center font-medium text-black transition hover:border-meta-1 hover:bg-meta-1 hover:text-white dark:border-strokedark dark:bg-meta-4 dark:text-white dark:hover:border-meta-1 dark:hover:bg-meta-1"
-              >
-                Cancel
-              </button>
-            </div>
-            <div className="w-full px-3 2xsm:w-1/2">
-              <button className="block w-full rounded border border-primary bg-primary p-3 text-center font-medium text-white transition hover:bg-opacity-90"
-                onClick={() => {onClose();onAccept()}}>
-                Update
-              </button>
-            </div>
-          </div>
-          : null}
         </div>
       </div>
     </div>
   );
 };
 
-export default ModalEditor;
+export default ModalForwardResponse;

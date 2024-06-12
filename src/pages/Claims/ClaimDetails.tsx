@@ -14,6 +14,7 @@ import { toast } from "react-toastify";
 import { approveClaim, rejectClaim, sendCommunicationRequest } from "../../api/PayerService";
 import EmptyState from "../../components/EmptyState";
 import axios from "axios";
+import ForwardRequest from "../../components/ForwardRequest";
 
 export type ChecklistItem = {
     id: string;
@@ -56,38 +57,11 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     const activeClasses = 'text-primary border-primary';
     const inactiveClasses = 'border-transparent';
 
-    const processFile = (url: string) => {
-      let data = JSON.stringify({
-        "file_locations": [url]
-      });
-  
-      let config = {
-        method: 'post',
-        maxBodyLength: Infinity,
-        url: 'http://docxhcxapi.centralindia.cloudapp.azure.com/document/analyse/submit ',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer HCX@12345'
-        },
-        data: data
-      };
-      axios.request(config)
-        .then((response: { data: any; }) => {
-          console.log(JSON.stringify(response.data));
-          localStorage.setItem(url, response.data.request_id);
-        })
-        .catch((error: any) => {
-          console.log(error);
-        });
-    }
     
     useEffect(()=>{
       console.log("claim on refresh", claim)
       if(claim){
         const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
-        supportingFiles.map((file: any, index: any) => {
-          processFile(file.valueAttachment.url);
-        });
         setSupportFiles(supportingFiles);
         setShowFilesList(true);
       }else{
@@ -357,6 +331,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         </div>
                         <div className="flex flex-col gap-9">
                         <Checklist checklist={opddetailsChecklist} appAmount={claimAmount} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
                         </div>
                         </div>
                         </>
@@ -412,6 +387,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           </div>
                                           <div className="flex flex-col gap-9">
                         <Checklist checklist={checklist} settled={medSettled} appAmount={claimAmount} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
                         </div>
                         </div>
                          : null}           
@@ -441,6 +417,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         </div>
                         <div className="flex flex-col gap-9">
                         <Checklist checklist={financialCheckList} appAmount={claimAmount} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
                         </div>
                         </div>
                         </>
