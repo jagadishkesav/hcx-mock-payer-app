@@ -80,7 +80,7 @@ const Home: React.FC = () => {
             console.log("payor table stats ", res);
             setClaimsCardData(aggregateClaims(res.data, "claim"));
             setPreauthCardData(aggregateClaims(res.data, "preauth"));
-            setCovCardData(aggregateClaims(res.data, "coverageligibility"));
+            setCovCardData(aggregateClaims(res.data, "coverageeligibility"));
           }).catch(err => {
             toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
               position: toast.POSITION.TOP_RIGHT
