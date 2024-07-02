@@ -8,7 +8,6 @@ import { useDispatch, useSelector } from "react-redux";
 import { RootState } from "../../store";
 import Loader from "../../common/Loader";
 import ModalEditor from "../../components/ModalEditor";
-import ModalCoverageEligibility from "../../components/ModalCoverageEligibility";
 import { useNavigate } from "react-router-dom";
 import { addAppData } from "../../reducers/app_data";
 import { addParticipantToken } from "../../reducers/token_reducer";
@@ -29,6 +28,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
     resource: object;
     response_fhir: object;
     servicedPeriod:object;
+    created_on:string;
   }
 
   export const coverageEligibilityMapper = (coverage: any):CoverageDetail => {
@@ -52,6 +52,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
         : "",
       resource,
       response_fhir: coverage.response_fhir,
+      created_on:coverage.created_on
     };
   }
   const CoverageEligibilityList = () => {
@@ -80,6 +81,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
             status: string;
             resource: object;
             response_fhir: object;
+            created_on:string;
           }[]
         >();
       const [showJSON, setShowJSON] = useState(false);
@@ -215,6 +217,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
                                     "insurance_no",
                                     "patient_name",
                                     "provider_name",
+                                    "date",
                                     "status",
                                 ]
                                 : []}
@@ -223,6 +226,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
                                     id: coverage.request_id,
                                     patient_name: coverage.name,
                                     request_no: coverage.request_no.slice(-8),
+                                    date:coverage.created_on,
                                     enableButtons: coverage.status == "Pending" ? true : false
                                   })) as any}
                                 actions={[{text:"View",type:"normal",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

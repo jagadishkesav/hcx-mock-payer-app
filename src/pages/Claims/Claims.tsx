@@ -101,6 +101,7 @@ export type ClaimDetail = {
   request_fhir:object;
   use: string;
   platform: string;
+  created_on:string;
 };
 
 interface claimProps{
@@ -155,7 +156,8 @@ export const claimsMapper = (claim: any): ClaimDetail  => {
     ...(claim.status === "Pending" && { approved_amount: "-" }),
     status: claim.status,
     resources,
-    response_fhir: claim.response_fhir
+    response_fhir: claim.response_fhir,
+    created_on:claim.created_on
   };
 }
 
@@ -328,6 +330,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
                                 "patient_name", // actually name
                                 "insurance_no",
                                 "claim_type",
+                                "date",
                                 "requested_amount",
                                 "approved_amount",
                                 "provider",
@@ -342,6 +345,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
                                   insurance_no : claim.insurance_no?.slice(-8),
                                   patient_name: claim.name,
                                   claim_type: claim.sub_type,
+                                  date: claim.created_on,
                                   enableButtons: true
                                 })) as any
                               }
