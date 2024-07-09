@@ -14,6 +14,7 @@ import ModalEditor from "../../components/ModalEditor";
 import { addParticipantToken } from "../../reducers/token_reducer";
 import { getParticipantByCode } from "../../api/RegistryService";
 import { addParticipantDetails } from "../../reducers/participant_details_reducer";
+import NotificationWebSocket from "../../components/NotificationWebSocket";
 
 interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -116,6 +117,7 @@ export const claimsMapper = (claim: any): ClaimDetail  => {
     patient: unbundleAs(claim.payload, "Patient").resource,
     coverage: unbundleAs(claim.payload, "Coverage") ? unbundleAs(claim.payload, "Coverage").resource : undefined,
     claim: unbundleAs(claim.payload, "Claim").resource,
+    practitionerRole :unbundleAs(claim.payload,"PractitionerRole") ? unbundleAs(claim.payload,"PractitionerRole").resource : undefined
   };
 
   const insurance_no = resources.coverage !== undefined ? resources.coverage.subscriberId : "Not Available";

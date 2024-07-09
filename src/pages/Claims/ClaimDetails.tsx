@@ -15,6 +15,7 @@ import { approveClaim, rejectClaim, sendCommunicationRequest } from "../../api/P
 import EmptyState from "../../components/EmptyState";
 import axios from "axios";
 import ForwardRequest from "../../components/ForwardRequest";
+import Messages from "../UiElements/Messages";
 
 export type ChecklistItem = {
     id: string;
@@ -46,7 +47,11 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     "Insurer":  textOrDash(_.get(claim, "resources.claim.insurer.name") || "Not Available"),
     "Provider":  textOrDash(_.get(claim, "provider") || "Not Available"),
     "Total_Claim_Cost" : textOrDash(_.get(claim, "requested_amount") || "Not Available"),
-    "Priority" :  textOrDash(_.get(claim, "resources.claim.priority.coding[0].code") || "Not Available")
+    "Priority" :  textOrDash(_.get(claim, "resources.claim.priority.coding[0].code") || "Not Available"),
+    "Treatment_Type" : textOrDash(_.get(claim, "resources.claim.identifier[0].value") || "Not Available"),
+    "Enterer_Type" : textOrDash(_.get(claim, "resources.practitionerRole.code[0].coding[0].code") || "Not Available"),
+    "Enterer_Name":textOrDash(_.get(claim, "resources.practitionerRole.code[0].text") || "Not Available"),
+
     });
     console.log("claim in details", claim);
 
@@ -204,13 +209,21 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
         }
       };
 
-  const sendCommunication = (type: string) => {
-  
-    {claim? sendCommunicationRequest(claim?.request_id,type,claim?.recipient_code,_.get(appData,"password") || "password",claim?.sender_code, authToken).then((res)=>{
+  const sendCommunication = (type: string, text="") => {
+    console.log("we are here in send comm" , type, text);
+    if(type == "text"){
+      {claim? sendCommunicationRequest(claim?.request_id,type,claim?.recipient_code,_.get(appData,"password") || "password",claim?.sender_code, text, authToken).then((res)=>{
+        toast(`${type} requested using communication request`, { type: "success" });
+      }).catch(err => {
+        toast.error("Unable to send communication request. Please try again")}) : null;
+      }
+    }else{
+    {claim? sendCommunicationRequest(claim?.request_id,type,claim?.recipient_code,_.get(appData,"password") || "password",claim?.sender_code, "", authToken).then((res)=>{
       toast(`${type} requested using communication request`, { type: "success" });
-    }): 
-     toast.error("Unable to send communication request. Please try again")}
-  }
+    }).catch(err => {
+      toast.error("Unable to send communication request. Please try again")}) : null;
+    }} 
+    }
 
     return (
         <>
@@ -332,6 +345,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <div className="flex flex-col gap-9">
                         <Checklist checklist={opddetailsChecklist} appAmount={claimAmount} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
+                        <Messages correlation_id={claim.correlation_id} sendCommunication={(type,text) => sendCommunication(type,text)}></Messages>
                         </div>
                         </div>
                         </>
@@ -388,6 +402,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                           <div className="flex flex-col gap-9">
                         <Checklist checklist={checklist} settled={medSettled} appAmount={claimAmount} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
+                        <Messages correlation_id={claim.correlation_id} sendCommunication={(type,text) => sendCommunication(type,text)}></Messages>
                         </div>
                         </div>
                          : null}           
@@ -418,6 +433,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <div className="flex flex-col gap-9">
                         <Checklist checklist={financialCheckList} appAmount={claimAmount} settled={finSettled} type="financial" title="Checklist" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
+                        <Messages correlation_id={claim.correlation_id} sendCommunication={(type,text) => sendCommunication(type,text)}></Messages>
                         </div>
                         </div>
                         </>
