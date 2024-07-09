@@ -1,9 +1,17 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
+import { listNotification } from '../api/PayerService';
+import { NotificationType } from './NotificationWebSocket';
+import { useSelector } from 'react-redux';
+import { RootState } from '../store';
+import WebSocketService from '../utils/WebSocketService';
+import { IMessage } from '@stomp/stompjs';
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [notifying, setNotifying] = useState(true);
+  let authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
+  const [notifications, setNotifications] = useState<NotificationType[]>([]);
 
   const trigger = useRef<any>(null);
   const dropdown = useRef<any>(null);
@@ -33,8 +41,45 @@ const DropdownNotification = () => {
     return () => document.removeEventListener('keydown', keyHandler);
   });
 
+  const NotificationMapper = ( notification:any) : NotificationType => {
+    return {
+      request_id: notification.requst_id,
+      sender_code:notification.sender_code,
+      recipient_code:notification.recipient_code,
+      message:notification.message,
+      topic_code:notification.topic_code,
+      read:notification.read,
+      created_on:notification.created_on
+    }
+  }
+
+
+  useEffect(() => {
+      listNotification(authToken).then((res:any) => {
+        console.log("Notification is here", res);
+        setNotifications(res.data.notification.map((noti:any) =>{
+          return NotificationMapper(noti);
+        }));
+      })
+  },[]);
+
+  useEffect(() => {
+    WebSocketService.connect();
+    WebSocketService.getClient().onConnect = () => {
+        WebSocketService.getClient().subscribe('/topic/notifications', (message: IMessage) => {
+            console.log(JSON.parse(message.body));
+            setNotifications(prevNotifications => [JSON.parse(message.body), ...prevNotifications]);
+            setNotifying(true);
+        });
+    };
+
+    return () => {
+        WebSocketService.disconnect();
+    };
+}, []);
+
   return (
-    <li className="relative hidden">
+    <li className="relative">
       <Link
         ref={trigger}
         onClick={() => {
@@ -80,69 +125,25 @@ const DropdownNotification = () => {
         </div>
 
         <ul className="flex h-auto flex-col overflow-y-auto">
-          <li>
+          {notifications.map((note,index) => {
+            return(
+            <li>
             <Link
               className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
               to="#"
             >
               <p className="text-sm">
                 <span className="text-black dark:text-white">
-                  Edit your information in a swipe
-                </span>{' '}
-                Sint occaecat cupidatat non proident, sunt in culpa qui officia
-                deserunt mollit anim.
+                  From {note.sender_code}
+                </span>{<br></br>}
+                <span>{note.message}</span>
+                
               </p>
-
-              <p className="text-xs">12 May, 2025</p>
+              <p className="text-xs">{new Date(parseInt(note.created_on)).toLocaleString()}</p>
             </Link>
           </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  It is a long established fact
-                </span>{' '}
-                that a reader will be distracted by the readable.
-              </p>
-
-              <p className="text-xs">24 Feb, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{' '}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
-              </p>
-
-              <p className="text-xs">04 Jan, 2025</p>
-            </Link>
-          </li>
-          <li>
-            <Link
-              className="flex flex-col gap-2.5 border-t border-stroke px-4.5 py-3 hover:bg-gray-2 dark:border-strokedark dark:hover:bg-meta-4"
-              to="#"
-            >
-              <p className="text-sm">
-                <span className="text-black dark:text-white">
-                  There are many variations
-                </span>{' '}
-                of passages of Lorem Ipsum available, but the majority have
-                suffered
-              </p>
-
-              <p className="text-xs">01 Dec, 2024</p>
-            </Link>
-          </li>
+            )
+          })}
         </ul>
       </div>
     </li>

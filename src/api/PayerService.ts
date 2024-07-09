@@ -57,6 +57,18 @@ export const listBeneficiary = async (searchField:string, searchValue:string, to
     return postPath(API_BASE_URL+ "/beneficiary/request/list", payload, {}, token);
 }
 
+export const listNotification = async (token="") => {
+    var payload = {recipient_code: _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code")};
+    return postPath(API_BASE_URL+ "/notification/request/list", payload, {}, token);
+}
+
+
+export const listCommunication = async (correlation_id:string ,token="") => {
+    var payload = {correlation_id: correlation_id};
+    return postPath(API_BASE_URL+ "/communication/request/list", payload, {}, token);
+}
+
+
 export const forwardRequest = async (recipient_code:string, sender_code:string,correlation_id:string,operation:string,request_fhir:string, token="") => {
     var payload = {recipient_code,sender_code,correlation_id,operation,request_fhir};
     return postPath(API_BASE_URL+ "/request/forward", payload, {}, token);
@@ -68,9 +80,14 @@ export const sendCommunicationRequest = async (
     participantCode:string,
     password:string,
     recipientCode:string,
+    text="",
     token="") => {
-    var payload = { request_id:request_id, type:type,recipientCode: recipientCode, participantCode:participantCode, password:password};    
-    return postPath(HCX_MOCK_SERVICE_URL + "/create/communication/request", payload, {}, token);
+    var payload = {}
+    if(text !== ""){
+      payload = { request_id:request_id, type:type,recipientCode: recipientCode, participantCode:participantCode, password:password, text:text};        
+    }else{
+      payload = { request_id:request_id, type:type,recipientCode: recipientCode, participantCode:participantCode, password:password};}    
+    return postPath(HCX_MOCK_SERVICE_URL + "/v0.7/create/communication/request", payload, {}, token);
   }
 
 
