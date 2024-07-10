@@ -14,7 +14,6 @@ import ModalEditor from "../../components/ModalEditor";
 import { addParticipantToken } from "../../reducers/token_reducer";
 import { getParticipantByCode } from "../../api/RegistryService";
 import { addParticipantDetails } from "../../reducers/participant_details_reducer";
-import NotificationWebSocket from "../../components/NotificationWebSocket";
 
 interface IAdditionalInfo {
   status: "Pending" | "Approved" | "Rejected";
@@ -347,7 +346,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
                                   insurance_no : claim.insurance_no?.slice(-8),
                                   patient_name: claim.name,
                                   claim_type: claim.sub_type,
-                                  date: claim.created_on,
+                                  date: new Date(parseInt(claim.created_on)).toLocaleString(),
                                   enableButtons: true
                                 })) as any
                               }

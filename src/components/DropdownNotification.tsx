@@ -1,11 +1,21 @@
 import { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { listNotification } from '../api/PayerService';
-import { NotificationType } from './NotificationWebSocket';
 import { useSelector } from 'react-redux';
 import { RootState } from '../store';
 import WebSocketService from '../utils/WebSocketService';
 import { IMessage } from '@stomp/stompjs';
+
+export type NotificationType = {
+  message: string;
+  sender_code: string;
+  recipient_code:string;
+  request_id: string;
+  topic_code:string;
+  read: string;
+  created_on:string;
+
+}
 
 const DropdownNotification = () => {
   const [dropdownOpen, setDropdownOpen] = useState(false);
@@ -79,7 +89,7 @@ const DropdownNotification = () => {
 }, []);
 
   return (
-    <li className="relative">
+    <li className="relative hidden">
       <Link
         ref={trigger}
         onClick={() => {
