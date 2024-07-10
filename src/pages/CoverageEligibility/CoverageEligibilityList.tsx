@@ -226,7 +226,7 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
                                     id: coverage.request_id,
                                     patient_name: coverage.name,
                                     request_no: coverage.request_no.slice(-8),
-                                    date:coverage.created_on,
+                                    date:new Date(parseInt(coverage.created_on)).toLocaleString(),
                                     enableButtons: coverage.status == "Pending" ? true : false
                                   })) as any}
                                 actions={[{text:"View",type:"normal",svgicon:<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="w-6 h-6">

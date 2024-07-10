@@ -87,7 +87,7 @@ export const sendCommunicationRequest = async (
       payload = { request_id:request_id, type:type,recipientCode: recipientCode, participantCode:participantCode, password:password, text:text};        
     }else{
       payload = { request_id:request_id, type:type,recipientCode: recipientCode, participantCode:participantCode, password:password};}    
-    return postPath(HCX_MOCK_SERVICE_URL + "/v0.7/create/communication/request", payload, {}, token);
+    return postPath(HCX_MOCK_SERVICE_URL + "/create/communication/request", payload, {}, token);
   }
 
 
