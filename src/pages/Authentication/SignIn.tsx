@@ -11,6 +11,7 @@ import { addParticipantDetails } from '../../reducers/participant_details_reduce
 import { addParticipantToken } from '../../reducers/token_reducer';
 import { useNavigate } from "react-router-dom";
 import { toast } from "react-toastify";
+import ReferenceAppsPage from '../ReferenceAppsPage/ReferenceAppsPage';
 
 
 const SignIn: React.FC = () => {
@@ -85,7 +86,7 @@ const SignIn: React.FC = () => {
               </span>
             </div>
           </div>
-
+          <ReferenceAppsPage/>
           <div className="w-full border-stroke dark:border-strokedark xl:w-1/2 xl:border-l-2">
             <div className="w-full p-4 sm:p-12.5 xl:p-17.5">
               <div className="text-center w-full xl:hidden">

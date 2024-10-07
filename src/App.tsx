@@ -12,6 +12,7 @@ import ClaimDetail from './pages/Claims/ClaimDetails';
 import CoverageEligibilityDetails from './pages/CoverageEligibility/CoverageEligibilityDetails';
 import Home from './pages/Home/Home';
 import BeneficiarySearch from './pages/Beneficiary/BeneficiarySearch';
+import NotFound from './components/NotFound';
 
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
@@ -109,6 +110,7 @@ function App() {
             }
           />
         </Route>
+        <Route path="*" element={<NotFound />} /> {/* Wildcard route */}
       </Routes>
     </>
   );
