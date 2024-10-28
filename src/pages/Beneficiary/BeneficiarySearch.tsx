@@ -33,9 +33,7 @@ const BeneficiarySearch = () => {
     const [showBeneficiaryTable,setShowBeneficiaryTable] = useState(false);
     let authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
     const [emptyHeader, setEmptyHeader] = useState("Search a Beneficiary");
-    const [emptyHeaderText, setEmptyHeaderText] = useState("No Beneficiary Search Initiated");
-    console.log("auth token ", authToken);
-    
+    const [emptyHeaderText, setEmptyHeaderText] = useState("No Beneficiary Search Initiated");    
 
     useEffect(() => {    
         if( sessionStorage.getItem('hcx_user_token') as string == "abcd"  || sessionStorage.getItem('hcx_user_token') == null){
@@ -64,7 +62,6 @@ const BeneficiarySearch = () => {
         setShowBeneficiaryTable(false);
         listBeneficiary(searchField, searchValue, authToken).then((res:any) => {
             setBeneficiary(res.data.payload);
-            console.log("beneficiary", res.data.payload);
             setShowBeneficiaryTable(true);
             if(res.data.payload.length == 0){
                 setShowBeneficiaryTable(false);
@@ -85,7 +82,6 @@ const BeneficiarySearch = () => {
 
     const onRowClick = (id:string) => {
         listRequestById("claim",id,authToken).then(res => {
-            console.log("one request ", res);
             if(res.data.claim){
                 dispatch(addAppData({"claim":claimsMapper(res.data.claim[0])}));
             navigate(`/claims/detail`);

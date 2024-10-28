@@ -66,7 +66,6 @@ const DropdownNotification = () => {
 
   useEffect(() => {
       listNotification(authToken).then((res:any) => {
-        console.log("Notification is here", res);
         setNotifications(res.data.notification.map((noti:any) =>{
           return NotificationMapper(noti);
         }));
@@ -77,7 +76,6 @@ const DropdownNotification = () => {
     WebSocketService.connect();
     WebSocketService.getClient().onConnect = () => {
         WebSocketService.getClient().subscribe('/topic/notifications', (message: IMessage) => {
-            console.log(JSON.parse(message.body));
             setNotifications(prevNotifications => [JSON.parse(message.body), ...prevNotifications]);
             setNotifying(true);
         });

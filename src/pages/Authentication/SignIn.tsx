@@ -27,7 +27,6 @@ const SignIn: React.FC = () => {
   let sessionToken = sessionStorage.getItem("hcx_user_token");
 
   useEffect(() => {
-    console.log("session token in signin", sessionToken);
     sessionStorage.removeItem("hcx_user_token");
     dispatch(addAppData({ "sidebar": "Profile" }));
   }, []);
@@ -44,7 +43,6 @@ const SignIn: React.FC = () => {
         sessionStorage.setItem('hcx_user_name', username);
         sessionStorage.setItem('hcx_password', password);
         dispatch(addParticipantToken(res as string));
-        console.log("participant token", res);
         getParticipantByCode(userName, res as string).then((res: any) => {
             dispatch(addParticipantDetails(res["data"]["participants"][0]));
             navigate("/home");

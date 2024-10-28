@@ -193,7 +193,6 @@ export const parseAdditionalInfo = (additional_info: any) => {
 const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
 
     const[claimUseType, setClaimType] = useState(claimType);
-    console.log("claimtype", claimType);
 
     useEffect(() => {
       console.log("came to reload the claims list component");
@@ -220,11 +219,9 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
         setClaims(undefined);
         listRequest(claimType, authToken).then((res) => {
           setShowComponent(false);
-          console.log("claim list", res);
           const result = _.filter(res.data.claim, (claim) => claim.payload.entry[0].resource.resourceType === 'Claim');
           setClaims(
             result.map((value,index) => {
-            console.log("value", value);
             return claimsMapper(value);
           }));
           setShowComponent(true);
@@ -263,7 +260,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
           dispatch(addParticipantDetails(res["data"]["participants"][0]));
           getClaims();
         }).catch((error) => {
-          toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
+          toast.error("Something went wrong. Please contact the administrator", {
             position: toast.POSITION.TOP_RIGHT
           });
         });

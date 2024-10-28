@@ -63,10 +63,7 @@ const Home: React.FC = () => {
     return result;
 }
 
-    //console.log(JSON.stringify(claimsData, null, 2));
-
     useEffect(() => {
-        console.log("session token ",sessionStorage.getItem('hcx_user_token'));
         if( sessionStorage.getItem('hcx_user_token') as string == "abcd" || sessionStorage.getItem('hcx_user_token') == null){
           navigate("/login");
         }else{
@@ -77,7 +74,6 @@ const Home: React.FC = () => {
           getParticipantByCode(sessionStorage.getItem('hcx_user_name') as string, authToken).then((res: any) => {
           dispatch(addParticipantDetails(res["data"]["participants"][0]));
           listRequestStats(authToken).then((res:any) => {
-            console.log("payor table stats ", res);
             setClaimsCardData(aggregateClaims(res.data, "claim"));
             setPreauthCardData(aggregateClaims(res.data, "preauth"));
             setCovCardData(aggregateClaims(res.data, "coverageeligibility"));

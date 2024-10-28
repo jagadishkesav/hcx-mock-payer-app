@@ -26,7 +26,6 @@ const MultiSelectDropdown:React.FC<MultiProps> = ({ options, onSelect }:MultiPro
           });
         }else{
         const index = selected.indexOf(value);
-        console.log("index", index);
         if (index > -1) { // only splice array when item is found
             selected.splice(index, 1); // 2nd parameter means remove one item only
         }

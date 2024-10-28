@@ -7,7 +7,6 @@ const adminUsername = process.env.REACT_APP_HCX_ADMIN_USERNAME;
 const adminPassword = process.env.REACT_APP_HCX_ADMIN_PASSWORD;
 
 export const post = async (path: string, body: any, headers = {}, token="") => {
-  console.log("token used", token);
   if(token == "") token = await getAdminToken() as string;
   return axios({
     method: 'post',
@@ -22,7 +21,6 @@ export const post = async (path: string, body: any, headers = {}, token="") => {
 }
 
 export const postPath = async (path: string, body: any, headers = {}, token="") => {
-  console.log("token used", token);
   if(token == "") token = await getAdminToken() as string;
   return axios({
     method: 'post',

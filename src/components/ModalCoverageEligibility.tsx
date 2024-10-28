@@ -11,7 +11,6 @@ interface CoverageModalProps {
 }
 
 const ModalCoverageEligibility: React.FC<CoverageModalProps> = ({coverage,onClose,onApprove,onReject}:CoverageModalProps) => {
-  console.log("coverage", coverage);
 
   return (
     <div>

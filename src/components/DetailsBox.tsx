@@ -11,7 +11,6 @@ interface DetailsProps{
 
 
 const DetailsBox:React.FC<DetailsProps> = ({title,claim,fields}:DetailsProps) => {
-    console.log("fields", fields, claim, fields.includes("addresss"), Object.entries(claim));
 
     const componentMap: { [key: string]: (detail: any) => JSX.Element } = {
         status: (detail: any) => (
