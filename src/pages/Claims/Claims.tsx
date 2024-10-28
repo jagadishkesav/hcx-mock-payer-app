@@ -260,7 +260,7 @@ const ClaimsList:React.FC<claimProps> = ({claimType}:claimProps) => {
           dispatch(addParticipantDetails(res["data"]["participants"][0]));
           getClaims();
         }).catch((error) => {
-          toast.error("Something went wrong. Please contact the administrator" || "Internal Server Error", {
+          toast.error("Something went wrong. Please contact the administrator", {
             position: toast.POSITION.TOP_RIGHT
           });
         });
