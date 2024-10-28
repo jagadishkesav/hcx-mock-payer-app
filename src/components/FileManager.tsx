@@ -14,7 +14,6 @@ const FileManager:React.FC<FileManagerProps> = ({files}:FileManagerProps) => {
 
   const [showFile, setShowFile] =useState(false);
   const [selectedFile, setSelectedFile] = useState("");
-  console.log("files list ", files);
 
   const onFileView = (file:string) => {
     setSelectedFile(file);

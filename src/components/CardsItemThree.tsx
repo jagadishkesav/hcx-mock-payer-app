@@ -10,10 +10,6 @@ const CardsItemThree: React.FC<CardItemProps> = ({
   cardContent
 }) => {
 
-  if(cardData){
-    console.log("cardData", cardData);
-  }
-
   return (
     <div className="rounded-sm border border-stroke bg-white shadow-default dark:border-strokedark dark:bg-boxdark">
       <div className="border-b border-stroke p-5 px-7.5 dark:border-strokedark">

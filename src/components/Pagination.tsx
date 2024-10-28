@@ -15,7 +15,6 @@ const Pagination: React.FC<PaginationProps> = ({numRows, selectedPage}:Paginatio
   const [pageSelected,setPageSelected] = useState(1);
 
   const clickNext = () => {
-    console.log("i came in next", start);
     if(end < Number(maxPageNums)){
     setStart(start+1)
     setEnd(end+1)
@@ -31,7 +30,6 @@ const Pagination: React.FC<PaginationProps> = ({numRows, selectedPage}:Paginatio
 
   const clickPage = (pageNum:any) => {
     setPageSelected(pageNum);
-    console.log("page selected", pageNum);
     selectedPage(pageNum);
   }
   

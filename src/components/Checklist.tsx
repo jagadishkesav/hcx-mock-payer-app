@@ -16,8 +16,6 @@ interface ChecklistProps {
 }
 
 const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, appAmount, onApprove, onReject, sendCommunication }: ChecklistProps) => {
-  console.log("approved amount received ",  appAmount);
-  console.log("parseFloat(appAmount as string)" ,appAmount?.replace("INR ",""), parseFloat(appAmount?.replace("INR ","") as string));
   const [title1, setTitle] = useState(title);
   const [remarks, setRemarks] = useState('');
   const [approvedAmount, setApprovedAmount] = useState(parseFloat(appAmount?.replace("INR ","") as string)? parseFloat(appAmount?.replace("INR ","") as string) : 0);
@@ -28,7 +26,6 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
 
   const selectChecklist = (value: string) => {
     const index = selected.indexOf(value);
-    console.log("index", index, value);
     if (index > -1) { // only splice array when item is found
       selected.splice(index, 1); // 2nd parameter means remove one item only
     } else {

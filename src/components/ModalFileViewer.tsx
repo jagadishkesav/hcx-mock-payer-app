@@ -20,7 +20,6 @@ const ModalFileViewer: React.FC<ModalViewerProps> = ({file,onClose}:ModalViewerP
   const [claim, setClaim] = useState("");
   const [showTable, setShowTable] = useState(false);
   const showProcessedFileModal = (url:string) => {
-        console.log("url is here", url, localStorage.getItem(url));
             if(localStorage.getItem(url)){
             setClaim(localStorage.getItem(url) || "");
             const jsonObject = JSON.parse(localStorage.getItem(url) || "");
@@ -102,7 +101,7 @@ const ModalFileViewer: React.FC<ModalViewerProps> = ({file,onClose}:ModalViewerP
           /> :
           <EmptyState
           title="File Processing in incomplete"
-          description="Request has not been forwarded for processing or file processing is still in progress"
+          description="Request has not been forwarded for file processing or it is still in progress"
         />}
         </div>
       </div>

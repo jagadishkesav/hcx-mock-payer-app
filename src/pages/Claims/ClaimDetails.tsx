@@ -53,18 +53,97 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     "Enterer_Name":textOrDash(_.get(claim, "resources.practitionerRole.code[0].text") || "Not Available"),
 
     });
-    console.log("claim in details", claim);
-
-    
-    //console.log("supportingFiles claim selected is here",  supportingFiles);
     const [openTab, setOpenTab] = useState(1);
+    const [checklistData, setChecklistData] = useState(null);
+    const [checklistError, setChecklistError] = useState(null);
+    const [loading, setLoading] = useState(true);
+
+    useEffect(() => {
+      // Replace 'your-url-here' with the actual URL of your JSON file
+      axios.get('https://raw.githubusercontent.com/Swasth-Digital-Health-Foundation/hcx-mock-payer-app/main/checklist.json')
+        .then((jsonData) => {
+          console.log("cheklist data from github", JSON.stringify(jsonData.data.checklist.opd, null, 2));
+          setChecklistData(jsonData.data);
+          setopdDetailsChecklist(jsonData.data.checklist.opd as ChecklistItem[]);
+          setDetailsChecklist(jsonData.data.checklist.ipd_general as ChecklistItem[]);
+          setMedicalChecklist(jsonData.data.checklist.ipd_medical as ChecklistItem[]);
+          setFinancialCheckList(jsonData.data.checklist.ipd_financial as ChecklistItem[]);
+          setLoading(false);
+        })
+        .catch((error) => {
+          console.log("checklist error",error);
+          setChecklistError(error);
+          setLoading(false);
+        });
+    }, []); 
+
 
     const activeClasses = 'text-primary border-primary';
     const inactiveClasses = 'border-transparent';
 
-    
+    const [opddetailsChecklist, setopdDetailsChecklist] = useState<ChecklistItem[]>([
+      {
+        id: "1",
+        name: "All OPD documents are verified",
+      },
+    ]);
+  
+    const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([
+      {
+        id: "1",
+        name: "Proof of Identity Attached",
+      },
+      {
+        id: "2",
+        name: "Policy is Active",
+      },
+    ]);
+  
+    const [medicalchecklist, setMedicalChecklist] = useState<ChecklistItem[]>([
+      {
+        id: "1",
+        name: "Treatment in line with diagnosis",
+      },
+      {
+        id: "2",
+        name: "Discharge summary available",
+      },
+      {
+        id: "3",
+        name: "Discharge summary in line with treatment",
+      },
+    ]);
+  
+    const [financialCheckList, setFinancialCheckList] = useState<ChecklistItem[]>(
+      [
+        {
+          id: "1",
+          name: "Amount within wallet range?",
+        },
+        {
+          id: "2",
+          name: "Procedures not in exclusion list? ",
+        },
+        {
+          id: "3",
+          name: "Procedures as per approved plan?",
+        },
+        {
+          id: "4",
+          name: "Waiting period observed? ",
+        },
+        {
+          id: "5",
+          name: "Policy In force force for the treatment period?",
+        },
+        {
+          id: "6",
+          name: "Needed supporting documents available?",
+        },
+      ]
+    );
+ 
     useEffect(()=>{
-      console.log("claim on refresh", claim)
       if(claim){
         const supportingFiles = (claim as any).resources.claim.supportingInfo || [];
         setSupportFiles(supportingFiles);
@@ -86,67 +165,6 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
       ifsc_code : claim ? claim.ifsc_code !== "1234"? claim.ifsc_code : "Not Available" : "Not Available"
     }
 
-    const [opddetailsChecklist, setopdDetailsChecklist] = useState<ChecklistItem[]>([
-        {
-          id: "1",
-          name: "All OPD documents Verified",
-        },
-      ]);
-    
-      const [detailsChecklist, setDetailsChecklist] = useState<ChecklistItem[]>([
-        {
-          id: "1",
-          name: "Proof of Identity Attached",
-        },
-        {
-          id: "2",
-          name: "Policy Active",
-        },
-      ]);
-    
-      const [checklist, setChecklist] = useState<ChecklistItem[]>([
-        {
-          id: "1",
-          name: "Treatment in line with diagnosis",
-        },
-        {
-          id: "2",
-          name: "Discharge summary available",
-        },
-        {
-          id: "3",
-          name: "Discharge summary in line with treatment",
-        },
-      ]);
-    
-      const [financialCheckList, setFinancialCheckList] = useState<ChecklistItem[]>(
-        [
-          {
-            id: "1",
-            name: "Amount within wallet range?",
-          },
-          {
-            id: "2",
-            name: "Procedures not in exclusion list? ",
-          },
-          {
-            id: "3",
-            name: "Procedures as per approved plan?",
-          },
-          {
-            id: "4",
-            name: "Waiting period observed? ",
-          },
-          {
-            id: "5",
-            name: "Policy In force force for the treatment period?",
-          },
-          {
-            id: "6",
-            name: "Needed supporting documents available?",
-          },
-        ]
-      );
       const handleReject = async (request_id: string, type: string) => {
         await rejectClaim( request_id, type , authToken, "/claim/reject");
         toast("Claim Rejected", { type: "success" });
@@ -157,7 +175,6 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
         type: string,
         remarks: string,
         approved_amount: number) => {
-        console.log("camee in approve",type);
         if (type == "medical" || type == "financial") {
            approveClaim(
             request_id,
@@ -176,7 +193,6 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
               });
             });
         }else{
-          console.log("came in else ", type);
           approveClaim(
             request_id,
             "medical",
@@ -210,7 +226,6 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
       };
 
   const sendCommunication = (type: string, text="") => {
-    console.log("we are here in send comm" , type, text);
     if(type == "text"){
       {claim? sendCommunicationRequest(claim?.request_id,type,claim?.recipient_code,_.get(appData,"password") || "password",claim?.sender_code, text, authToken).then((res)=>{
         toast(`${type} requested using communication request`, { type: "success" });
@@ -400,7 +415,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                                            {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}           
                                           </div>
                                           <div className="flex flex-col gap-9">
-                        <Checklist checklist={checklist} settled={medSettled} appAmount={claimAmount} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={medicalchecklist} settled={medSettled} appAmount={claimAmount} title="Checklist" type="medical" onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
                         <Messages correlation_id={claim.correlation_id} sendCommunication={(type,text) => sendCommunication(type,text)}></Messages>
                         </div>

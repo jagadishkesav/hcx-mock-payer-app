@@ -44,7 +44,6 @@ const ModalForwardResponse: React.FC<ModalForwardProps> = ({request,title,onClos
   }
   
   useEffect(() => {
-      console.log("reloaded app data", appData);
   },[appData])   
     
   return (

@@ -47,7 +47,6 @@ const Messages: React.FC<MessageProps> = ({correlation_id, sendCommunication}:Me
 
     useEffect(() => {
       listCommunication(correlation_id,authToken).then((res:any) => {
-        console.log("Communication is here", res);
         setCommunications(res.data.communication.map((comm:any) =>{
           return CommunicationMapper(comm);
         }));
@@ -139,7 +138,6 @@ const Messages: React.FC<MessageProps> = ({correlation_id, sendCommunication}:Me
                 <button className="flex h-13 w-full max-w-13 items-center justify-center rounded-md bg-primary text-white hover:bg-opacity-90"
                    onClick={() => { sendCommunication && sendCommunication("text",text); 
                     listCommunication(correlation_id,authToken).then((res:any) => {
-                      console.log("Communication is here", res);
                       setCommunications(res.data.communication.map((comm:any) =>{
                         return CommunicationMapper(comm);
                       }));

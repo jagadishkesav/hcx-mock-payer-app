@@ -35,11 +35,7 @@ const CommonDataTable: React.FC<DataTableProps> = ({title, header, data, actions
   const [tableActions, setTableActions] = useState(actions);
   const [pageSelected, setPageSelected]  = useState(Number(1));
   const [searchQuery, setSearchQuery] = useState('');
-
-  console.log("headers", tableHeader);
-  console.log("data", tableData)
   
-
   useEffect(() => {
     // const newData = data.map(item => {
     //   const newItem:DataItem = {};

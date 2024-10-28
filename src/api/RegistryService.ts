@@ -5,3 +5,8 @@ export const getParticipantByCode = async (code:any, token="") => {
     return post("/participant/search", payload, {}, token);
 }
 
+export const getParticipantByRoles = async (role:any, token="") => {
+    var payload = { "filters": { "roles": { "eq":  role} } };
+    return post("/participant/search", payload, {}, token);
+}
+

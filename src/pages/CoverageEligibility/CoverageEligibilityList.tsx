@@ -114,7 +114,6 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
         const  getCoverages = () => {
         listRequest("coverageeligibility", authToken).then((resp:any) => {
           setShowComponent(false);
-          console.log("cov resp", resp);
           setCoverageEligibilityRequests(
             resp.data.coverageeligibility.map(coverageEligibilityMapper)
           ); 
@@ -159,14 +158,12 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
 
       const updateRespFhir = (value: any) => {
         setCoverageResponse(value);
-        console.log("value of responseFHIR", value);
         updateResponse({ request_id: requestId, response_fhir: value }, authToken);
         setShowEditor(false);
         getCoverages();
       }
 
       const onActionClick =(action:string,id:string)=> {
-        console.log("action", action, id);
         setRequestId(id);
         if(action == "View"){
           getCoverage(id);
@@ -194,7 +191,6 @@ import { addParticipantDetails } from "../../reducers/participant_details_reduce
         const obj = coverageEligibilityRequests?.find(
           (coverage: any) => coverage.request_id === id
         )
-        console.log("selected coverage", id, obj);
         setRequestId(id);
         setCoverageMapped(obj)
         getCoverage(id);

@@ -1,7 +1,6 @@
 import { get, post, put } from '../utils/HttpUtil';
 import qs from 'qs';
 
-window.console.log("react env",process.env);
 const hcxUrl = process.env.REACT_APP_HCX_BASE_URL;
 
 export async function generateToken(username: string | undefined, password: string | undefined){

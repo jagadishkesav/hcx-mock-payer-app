@@ -5,6 +5,7 @@ import { RootState, store } from "../store";
 import { toast } from "react-toastify";
 import ModalForwardResponse from "./ModalForwardResponse";
 import _ from "lodash";
+import SingleSelectSearch from "./SingleSelectSearch";
 
 
 interface ForwardProps {
@@ -25,30 +26,26 @@ const ForwardRequest:React.FC<ForwardProps> = ({correlation_id, sender_code, rec
     const [fhir, setFhir] = useState("");
     const [text, setText] = useState("");
     const [showEditor, setShowEditor] = useState(false);
+    const [forwardParticipantCode, setForwardParticipantCode] = useState("");
     let authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
     let participant_code = _.get(store.getState().participantDetailsReducer.participantDetails, "participant_code") || "";
     const dispatch = useDispatch();
 
-    console.log(correlationId);
     useEffect(() => {
         listForwardResponse("claimonsubmit",correlationId,authToken).then(res => {
-            console.log("one request before ", res.data.claimonsubmit);
             if(res.data.claimonsubmit.length){
-            console.log("one request ", res.data.claimonsubmit[0].payload.entry[1].resource.supportingInfo);
             setFhir(JSON.stringify(res.data.claimonsubmit[0].payload, null, 4));
             const supportingFiles = res.data.claimonsubmit[0].payload.entry[1].resource.supportingInfo || [];
             supportingFiles.map((file: any, index: any) => {
-                    console.log("file name and string", file.valueAttachment.url, file.valueString);
                     localStorage.setItem(file.valueAttachment.url, file.valueString);
             });
             setSettled(true);
-                setText("Request was already forwarded for processing yet. Please click View Response button to show the processed response");
+                setText("Request was already forwarded. Please click View Response button to show the response");
             }else{
                 setSettled(false);
-                setText("Request has not been forwarded for processing yet. Please forrward the request to view processed response");
+                setText("Request has not been forwarded yet. Please forward the request to view response");
             }
         }).catch(err => {
-            console.log("error in forward 1", err);
             toast.error(err.response? err.response.data.error.message : "Something went wrong. Try contacting the administrator", {
                 position: toast.POSITION.TOP_RIGHT
               }); 
@@ -56,7 +53,7 @@ const ForwardRequest:React.FC<ForwardProps> = ({correlation_id, sender_code, rec
     }, []);
 
     const forwardReq = () => {
-        forwardRequest("payr_renixi_622423@swasth-hcx-staging", participant_code ,correlation_id,"claimonsubmit",request_fhir,authToken).then((res) => {
+        forwardRequest(forwardParticipantCode, participant_code ,correlation_id,"claimonsubmit",request_fhir,authToken).then((res) => {
             toast("Request forwarded successfully.", {
                 type: "success",
               });
@@ -66,30 +63,37 @@ const ForwardRequest:React.FC<ForwardProps> = ({correlation_id, sender_code, rec
               }); 
         })
     }
-    return(<>
+    return(    <div
+
+        className="w-full max-w-203 rounded-lg border-2 border-gray bg-white py-12 px-8 dark:bg-boxdark md:py-5 md:px-5 mb-3 "
+      >
+  
+        <p className="pb-2 text-xl font-bold text-black dark:text-white sm:">
+          {"Request Forwarding"}
+        </p>
+        <span className="mx-auto mb-6 inline-block h-1 w-25 rounded bg-primary"></span>
         {showEditor ? 
             <ModalForwardResponse title={"Claim"} request={fhir} onClose={() => setShowEditor(false)}></ModalForwardResponse> 
             : null }
-        <div className="w-full max-w-203 rounded-lg border-2 border-gray bg-white py-12 px-8 dark:bg-boxdark md:py-5 md:px-5 mb-3 ">
-        <div className="flex gap-5 mt-2">
+        <SingleSelectSearch onSelectChange={(option) => setForwardParticipantCode(option.value)}></SingleSelectSearch>
+        <div className="flex gap-5 mt-5">
           
           <button className={"inline-flex rounded-full bg-primary py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled ? "opacity-50 cursor-not-allowed" : "")}
             disabled={settled}
             onClick={() => forwardReq()}
            >
 
-            Forward Request For Processing
+            Forward Request
           </button>
           <button className={"inline-flex rounded-full bg-primary py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (!settled ? "opacity-50 cursor-not-allowed" : "")}
             disabled={!settled}
             onClick={() => setShowEditor(true)}
            >
-            View Processed Response
+            View received Response
           </button>
         </div>
         <p className={"mt-5"}>{text}</p>
         </div>
-        </>
     );
 }
 

@@ -24,7 +24,6 @@ const ModalEditor: React.FC<ModalEditorProps> = ({request,response,title,onUpdat
   const [showUpdate, setShowUpdate] = useState(false);
   const activeClasses = 'text-primary border-primary';
   const inactiveClasses = 'border-transparent';
-  console.log("reqwyest", text);
   
   useEffect(() => {
     checkResponseJSONValid();
@@ -50,7 +49,6 @@ const ModalEditor: React.FC<ModalEditorProps> = ({request,response,title,onUpdat
   }
   
   useEffect(() => {
-      console.log("reloaded app data", appData);
   },[appData])   
   
   const handleInputChange = (value: any, event: any) => {

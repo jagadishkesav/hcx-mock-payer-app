@@ -94,7 +94,6 @@ interface claimProps{
 const PreauthList:React.FC<claimProps> = ({claimType}:claimProps) => {
 
     const[claimUseType, setClaimType] = useState(claimType);
-    console.log("claimtype", claimType);
 
     useEffect(() => {
       console.log("came to reload the claims list component");
@@ -192,7 +191,6 @@ const PreauthList:React.FC<claimProps> = ({claimType}:claimProps) => {
         setClaims(undefined);
         listRequest(claimType, authToken).then((res) => {
           setShowComponent(false);
-          console.log("claim list", res);
           const result = _.filter(res.data.preauth, (claim) => claim.payload.entry[0].resource.resourceType === 'Claim');
           setClaims(result.map(claimsMapper));
           setShowComponent(true);

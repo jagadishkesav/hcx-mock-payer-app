@@ -16,9 +16,12 @@ import BeneficiarySearch from './pages/Beneficiary/BeneficiarySearch';
 const DefaultLayout = lazy(() => import('./layout/DefaultLayout'));
 
 function App() {
-  const [loading, setLoading] = useState<boolean>(true);
-  console.log("i started");
 
+  // document.addEventListener('contextmenu', (e) => {
+  //   e.preventDefault();
+  // });
+  
+  const [loading, setLoading] = useState<boolean>(true);
   useEffect(() => {
     setTimeout(() => setLoading(false), 1000);
   }, []);
