@@ -9,13 +9,15 @@ interface ChecklistProps {
   title: string,
   settled: boolean,
   type: "financial" | "medical" | "general" | "opd" | "coverage";
+  platform?: string;
   appAmount?: string;
+  disabled?: boolean;
   onApprove?: (type: string, amount: number, remarks: string) => void;
   onReject?: (type: string) => void;
   sendCommunication?: (type: string) => void;
 }
 
-const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, appAmount, onApprove, onReject, sendCommunication }: ChecklistProps) => {
+const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, appAmount, onApprove, onReject, sendCommunication, platform, disabled = false }: ChecklistProps) => {
   const [title1, setTitle] = useState(title);
   const [remarks, setRemarks] = useState('');
   const [approvedAmount, setApprovedAmount] = useState(parseFloat(appAmount?.replace("INR ","") as string)? parseFloat(appAmount?.replace("INR ","") as string) : 0);
@@ -105,9 +107,9 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
           </div>
         </div>
       </div>
-      {type !== "general" ?
+      {platform === "BSP" || type !== "general" ?
         <div className="flex flex-col gap-5.5 w-full mt-10">
-          {type == "opd" && !settled ?
+          {(platform === "BSP" || type == "opd") && !settled ?
           <>
           <div>
           <p className="pb-2 text-xl mt-5 font-bold text-black dark:text-white sm:">
@@ -118,10 +120,10 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
             <div className="flex gap-5 mt-2">
           
               <button className={"inline-flex rounded-full bg-[#13C296] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled ? "opacity-50 cursor-not-allowed" : "")}
-                disabled={settled}
+                disabled={disabled || settled}
                 onClick={() => { sendCommunication && sendCommunication("otp") }}>
 
-                Verify OTP
+                Send Verification OTP
               </button>
               <button className={"inline-flex rounded-full bg-[#13C296] py-1 px-3 text-sm font-medium text-white hover:bg-opacity-90 " + (settled ? "opacity-50 cursor-not-allowed" : "")}
                 disabled={settled}
@@ -130,7 +132,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
               </button>
             </div>
             <p className="italic text-sm">*OTP verification and bank details are recommended steps for additional verification but not mandatory</p></> : null}
-          {type !== "coverage" ?
+          {platform !== "BSP" && type !== "coverage" ?
             <>
               <div>
                 <label className="mb-3 block text-black dark:text-white">
@@ -160,7 +162,8 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
                 ></textarea>
               </div>
             </> : null}
-          {settled ?
+          {platform !== "BSP" && (
+            settled ?
             <div className="flex gap-5 mt-2">
               <p className="font-semibold">{`${properText(type)} approval is complete`}</p>
             </div>
@@ -175,7 +178,7 @@ const Checklist: React.FC<ChecklistProps> = ({ checklist, title, settled, type, 
                 onClick={() => { onReject && onReject(type) }}>
                 Reject
               </button>
-            </div>}
+            </div>)}
         </div> : null}
           {type == "general" ? 
           <>

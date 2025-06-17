@@ -37,9 +37,9 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
     const [requestID, setRequestId] = useState(_.get(appData,"claim.request_id") || "12345");
     const [claimAmount, setClaimAmount] = useState(_.get(appData,"claim.approved_amount") !== "-" ? _.get(appData,"claim.approved_amount") : _.get(appData,"claim.requested_amount"));
     const authToken = useSelector((state: RootState) => state.tokenReducer.participantToken);
-    const [medSettled, setMedSettled] = useState(claim?.medical_info.status == "Approved" ? true :false)
-    const [finSettled, setFinSettled] = useState(claim?.financial_info.status == "Approved" ? true :false)
-    const [opdSettled, setOpdSettled] = useState(claim?.status == "Approved" ? true :false);
+    const [medSettled, setMedSettled] = useState(claim?.medical_info.status === "Approved")
+    const [finSettled, setFinSettled] = useState(claim?.financial_info.status === "Approved")
+    const [opdSettled, setOpdSettled] = useState(claim?.status === "Approved");
     const [showFilesList, setShowFilesList] = useState(false);
     const [supportFiles, setSupportFiles] = useState([]);
     const [claimDetailsBox, setClaimDetailsBox] = useState(
@@ -328,7 +328,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         <DetailsBox title="Claim Details" claim={claimDetailsBox} fields={Object.keys(claimDetailsBox)}></DetailsBox>
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={detailsChecklist}  settled={opdSettled} title="Checklist" type="general" onApprove={(type,approvedAmount,remarks) => {setOpenTab(2)}}></Checklist>
+                        <Checklist checklist={detailsChecklist}  settled={opdSettled} title="Checklist" type="general" platform={claim.platform} disabled={claim.otp_verification === "successful"} sendCommunication={(type) => sendCommunication(type)} onApprove={() => {setOpenTab(2)}}></Checklist>
                         </div>
                         </div>
                         </>
@@ -358,7 +358,7 @@ const ClaimDetails:React.FC<claimProps> = ({claimType}:claimProps) => {
                         {showFilesList ? <FileManager files={supportFiles}></FileManager> : null}    
                         </div>
                         <div className="flex flex-col gap-9">
-                        <Checklist checklist={opddetailsChecklist} appAmount={claimAmount} settled={opdSettled} type="opd" title="Checklist" sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
+                        <Checklist checklist={opddetailsChecklist} appAmount={claimAmount} settled={opdSettled} type="opd" title="Checklist" disabled={claim.otp_verification === "successful"} sendCommunication={(type) => sendCommunication(type)} onApprove={(type,approvedAmount,remarks) => handleApprove(requestID,type,remarks,approvedAmount) } onReject={(type) => {handleReject(requestID, type)}}></Checklist>
                         <ForwardRequest claim_type={claimType} correlation_id={claim.correlation_id} sender_code={claim.recipient_code} recipient_code={"payr_renixi_622423@swasth-hcx-staging"} request_fhir={JSON.stringify(claim.request_fhir)}></ForwardRequest>
                         <Messages correlation_id={claim.correlation_id} sendCommunication={(type,text) => sendCommunication(type,text)}></Messages>
                         </div>
